@@ -1,0 +1,74 @@
+{
+  "name": "p2pvps-server2",
+  "version": "1.0.0",
+  "description": "Second incarnation of P2P VPS server. More info at http://P2PVPS.org",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "./node_modules/.bin/nodemon index.js",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha",
+    "lint": "eslint src/**/*.js",
+    "docs": "./node_modules/.bin/apidoc -i src/ -o docs"
+  },
+  "keywords": [
+    "koa2-api-boilerplate",
+    "api",
+    "koa",
+    "koa2",
+    "boilerplate",
+    "es6",
+    "mongoose",
+    "passportjs",
+    "apidoc",
+    "p2pvps",
+    "vps",
+    "javascript",
+    "censorship",
+    "server"
+  ],
+  "author": "Chris Troutner <chris.troutner@gmail.com>",
+  "license": "MIT",
+  "apidoc": {
+    "title": "p2pvps-server2",
+    "url": "localhost:5000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/P2PVPS/p2pvps-server2"
+  },
+  "dependencies": {
+    "apidoc": "^0.16.1",
+    "babel-core": "^6.5.1",
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-es2015-node5": "^1.2.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "bcrypt": "^0.8.5",
+    "glob": "^7.0.0",
+    "jsonwebtoken": "^7.1.9",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-generic-session": "^2.0.1",
+    "koa-logger": "^3.1.0",
+    "koa-mount": "^3.0.0",
+    "koa-passport": "^2.0.1",
+    "koa-router": "^7.0.1",
+    "koa-static": "^4.0.2",
+    "mongoose": "^5.0.8",
+    "passport-local": "^1.0.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.0.2",
+    "babel-register": "^6.5.1",
+    "chai": "^4.1.2",
+    "eslint": "^3.4.0",
+    "eslint-config-standard": "^6.0.0",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.0",
+    "mocha": "^3.0.2",
+    "nodemon": "^1.8.1",
+    "supertest": "^2.0.0"
+  }
+}
