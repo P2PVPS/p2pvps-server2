@@ -12,6 +12,7 @@ the open source project much more manageable.
 This new version of the server was based on this
 [Koa Boilerplate project](https://github.com/adrianObel/koa2-api-boilerplate).
 
+test
 
 ## Installation
 ```bash
