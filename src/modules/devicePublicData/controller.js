@@ -66,8 +66,6 @@ async function createDevice (ctx) {
   // const token = user.generateToken()
   const response = device.toJSON()
 
-  // delete response.password
-
   ctx.body = {
     device: response
   }
