@@ -1,12 +1,12 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
-import config from '../config'
+const config = require('../config')
 
 // Connect to the Mongo Database.
 mongoose.Promise = global.Promise
 mongoose.connect(config.database)
 
-import User from '../src/models/users'
+const User = require('../src/models/users')
 
 async function getUsers () {
   const users = await User.find({}, '-password')

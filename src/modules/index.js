@@ -18,7 +18,7 @@ module.exports = function initModules (app) {
 
       // Loop through each route defined in the router.js file.
       routes.forEach((config) => {
-        //console.log(`modules/index.js config: ${JSON.stringify(config, null, 2)}`)
+        // console.log(`modules/index.js config: ${JSON.stringify(config, null, 2)}`)
         // const {
         //  method = '',
         //  route = '',
@@ -30,8 +30,8 @@ module.exports = function initModules (app) {
 
         const lastHandler = handlers.pop()
 
-        instance[method.toLowerCase()](route, ...handlers, async function(ctx) {
-          //console.log(`typeof lastHandler: ${typeof (lastHandler)}`)
+        instance[method.toLowerCase()](route, ...handlers, async function (ctx) {
+          // console.log(`typeof lastHandler: ${typeof (lastHandler)}`)
           return await lastHandler(ctx)
         })
 
