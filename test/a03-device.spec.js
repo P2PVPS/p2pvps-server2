@@ -2,11 +2,12 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
-  -POST /device creates both a public and private data model.
+  -
   -A devicePrivateData model is associated with a devicePublidData model after creation.
   -A devicePublicData model is associated with a devicePrivateData model after creation.
   -Updating a devicePublicData does not change the privateData property.
-  -
+  -Deleting a devicePublicData model can only be done by the ownerUser.
+  -Deleting a devicePublicData model also deletes the devicePrivateData model.
 
 */
 
@@ -194,6 +195,7 @@ describe('Devices', () => {
         let result = await rp(options)
 
         assert(result.body.device.memory === 'test', 'Should return the new device.')
+        assert(result.body.device.privateData !== 'test', 'Should return a GUID to a devicePrivateData model.')
 
         // ownerUser value should be ignored and autoassigned to the current user.
         assert(result.body.device.ownerUser === context.user._id, 'ownerUser should be assigned to current user.')

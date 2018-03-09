@@ -1,4 +1,5 @@
 const DevicePublicData = require('../../models/devicepublicdata')
+const DevicePrivateData = require('../../models/deviceprivatedata')
 
 /**
  * @api {post} /devicePublicData Create a devicePublicData model
@@ -53,11 +54,20 @@ async function createDevice (ctx) {
   // Create the devicePublicData model
   const device = new DevicePublicData(ctx.request.body.device)
 
+  // Point the private model at the public model.
+  //console.log(`device: ${JSON.stringify(device, null, 2)}`)
+  const privateData = {
+    ownerUser: ctx.state.user._id,
+    publicData: device._id.toString()
+  }
+
   // Create the devicePrivateData model.
+  const devicePrivateData = new DevicePrivateData(privateData)
 
   // Point the public model at the private model.
+  device.privateData = devicePrivateData._id.toString();
 
-  // Point the private model at the public model.
+
 
   // Save the devicePublicData model.
   try {
