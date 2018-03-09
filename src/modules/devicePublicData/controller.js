@@ -70,11 +70,10 @@ async function createDevice (ctx) {
   // Save the devicePublicData model.
   try {
     await device.save()
+    await devicePrivateData.save()
   } catch (err) {
     ctx.throw(422, err.message)
   }
-
-  // Save the devicePrivateData model.
 
   // const token = user.generateToken()
   const response = device.toJSON()
@@ -257,7 +256,7 @@ async function updateDevice (ctx) {
  */
 
 async function deleteDevice (ctx) {
-  console.log('Entered delteDevice()')
+  // console.log('Entered delteDevice()')
   const device = ctx.body.device
 
   // Reject if the request user is not the device owner.
@@ -265,7 +264,15 @@ async function deleteDevice (ctx) {
     ctx.throw(401, 'Only device owners can delete devices.')
   }
 
+  // Get the devicePrivateData model associated with this device.
+  const devicePrivateData = await DevicePrivateData.findById(device.privateData)
+
+  if (!devicePrivateData) {
+    ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
+  }
+
   await device.remove()
+  await devicePrivateData.remove()
 
   ctx.status = 200
   ctx.body = {
