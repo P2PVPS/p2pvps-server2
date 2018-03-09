@@ -2,6 +2,11 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
+  -POST /device creates both a public and private data model.
+  -A devicePrivateData model is associated with a devicePublidData model after creation.
+  -A devicePublicData model is associated with a devicePrivateData model after creation.
+  -Updating a devicePublicData does not change the privateData property.
+  -
 
 */
 

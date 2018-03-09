@@ -4,28 +4,33 @@ const DevicePublicData = require('../../models/devicepublicdata')
  * @api {post} /devicePublicData Create a devicePublicData model
  * @apiPermission
  * @apiVersion 1.0.0
- * @apiName CreateUser
- * @apiGroup Users
+ * @apiName CreateDevice
+ * @apiGroup Devices
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -X POST -d '{ "device": { "ownerUser": "user._id", ... } }' localhost:5000/devices
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.username Username.
- * @apiParam {String} user.password Password.
+ * @apiParam {Object} device          Device object (required)
+ * @apiParam {String} device.ownerUser GUID of the User who owns this device.
+ * @apiParam {String} device.renterUser GUID of the User who rents this device.
+ * @apiParam {String} device.privateData GUID of the devicePrivateData model associated with this device.
+ * @apiParam {String} device.obContract GUID of the obContract model associated with this device.
+ * @apiParam {String} device.rentStartDate An ISO date string of when the rental started.
+ * @apiParam {String} device.expiration An ISO date string of when the device should reset.
+ * @apiParam {String} device.deviceName Name displayed in the GUI.
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   device          Device object
+ * @apiSuccess {ObjectId} device._id      Device GUID
+ * @apiSuccess {String}   device.ownerUser GUID of the User who owns this device.
+ * @apiSuccess {String}   device.renterUser GUID of the User who rents this device.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "device": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "ownerUser": "56bd1da600a526986cf65c81"
+ *          "renterUser": ""
  *       }
  *     }
  *
@@ -65,8 +70,6 @@ async function createDevice (ctx) {
 
   // const token = user.generateToken()
   const response = device.toJSON()
-
-  // delete response.password
 
   ctx.body = {
     device: response
@@ -193,7 +196,7 @@ async function getDevice (ctx, next) {
  *
  * @apiUse TokenError
  */
- async function updateDevice (ctx) {
+async function updateDevice (ctx) {
   // console.log(`ctx.body: ${JSON.stringify(ctx.body, null, 2)}`)
   const device = ctx.body.device
 
