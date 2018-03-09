@@ -51,8 +51,22 @@ const passport = require('koa-passport')
  */
 
 async function authUser (ctx, next) {
-  return passport.authenticate('local', (user) => {
+  console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
+  return passport.authenticate('local', (err, user, info, status) => {
+
+    const testObj = {
+      err: err,
+      user: user,
+      info: info,
+      status: status
+    }
+    console.log(`Input values: ${JSON.stringify(testObj,null,2)}`)
+
+    if (err) throw err
+
+    console.log(`user value passed: ${JSON.stringify(user, null, 2)}`)
     if (!user) {
+      console.log(`user: ${JSON.stringify(user, null, 2)}`)
       ctx.throw(401)
     }
 
