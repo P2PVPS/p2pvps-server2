@@ -23,7 +23,7 @@ describe('Auth', () => {
 
       context.user = user
       context.token = token
-      console.log(`User created.`)
+
       done()
     })
   })
@@ -37,7 +37,7 @@ describe('Auth', () => {
         .expect(401, done)
     })
 
-    it('should auth user', async (done) => {
+    it('should auth user', async () => {
       try {
         const options = {
           method: 'POST',
@@ -45,43 +45,22 @@ describe('Auth', () => {
           resolveWithFullResponse: true,
           json: true,
           body: {
-            user: {
-              username: 'test',
-              password: 'pass'
-            }
+            username: 'test',
+            password: 'pass'
           }
         }
 
         let result = await rp(options)
 
-        // context.user = result.body.user
-        // context.token = result.body.token
+        // console.log(`result: ${JSON.stringify(result, null, 2)}`)
 
-        // console.log(`user: ${JSON.stringify(context.user, null, 2)}`)
-        // console.log(`token: ${JSON.stringify(context.token, null, 2)}`)
         assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(result.body.user.username === 'test', 'Username of test expected')
+        assert(result.body.user.password === undefined, 'Password expected to be omited')
       } catch (err) {
         console.log('Error authenticating test user: ' + JSON.stringify(err, null, 2))
         throw err
       }
-/*
-      request
-        .post('/auth')
-        .set('Accept', 'application/json')
-        .send({ username: 'test', password: 'pass' })
-        .expect(200, (err, res) => {
-          if (err) { return done(err) }
-
-          res.body.user.should.have.property('username')
-          res.body.user.username.should.equal('test')
-          expect(res.body.user.password).to.not.exist
-
-          context.user = res.body.user
-          context.token = res.body.token
-
-          done()
-        })
-        */
     })
   })
 })

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Wipe the DB.
 function cleanDb () {
   for (const collection in mongoose.connection.collections) {
     if (mongoose.connection.collections.hasOwnProperty(collection)) {
@@ -8,6 +9,7 @@ function cleanDb () {
   }
 }
 
+// Create the first test user
 function authUser (agent, callback) {
   agent
     .post('/users')
