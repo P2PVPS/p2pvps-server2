@@ -55,7 +55,7 @@ async function createDevice (ctx) {
   const device = new DevicePublicData(ctx.request.body.device)
 
   // Point the private model at the public model.
-  //console.log(`device: ${JSON.stringify(device, null, 2)}`)
+  // console.log(`device: ${JSON.stringify(device, null, 2)}`)
   const privateData = {
     ownerUser: ctx.state.user._id,
     publicData: device._id.toString()
@@ -65,9 +65,7 @@ async function createDevice (ctx) {
   const devicePrivateData = new DevicePrivateData(privateData)
 
   // Point the public model at the private model.
-  device.privateData = devicePrivateData._id.toString();
-
-
+  device.privateData = devicePrivateData._id.toString()
 
   // Save the devicePublicData model.
   try {
@@ -219,8 +217,11 @@ async function updateDevice (ctx) {
   }
 
   // The user creating the model is automatically assigned as the owner.
-  // Override an user-assigned value.
+  // Override any user-assigned value.
   ctx.request.body.device.ownerUser = ctx.state.user._id
+
+  // Override any attempt to reassign the privateData property.
+  ctx.request.body.device.privateData = device.privateData
 
   // TODO Ensure the privateData field is not changed.
 
@@ -256,7 +257,13 @@ async function updateDevice (ctx) {
  */
 
 async function deleteDevice (ctx) {
+  console.log('Entered delteDevice()')
   const device = ctx.body.device
+
+  // Reject if the request user is not the device owner.
+  if (device.ownerUser !== ctx.state.user._id.toString()) {
+    ctx.throw(401, 'Only device owners can delete devices.')
+  }
 
   await device.remove()
 
