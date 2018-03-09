@@ -2,11 +2,7 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
-  -
-  -A devicePrivateData model is associated with a devicePublidData model after creation.
   -A devicePublicData model is associated with a devicePrivateData model after creation.
-  -Updating a devicePublicData does not change the privateData property.
-  -Deleting a devicePublicData model can only be done by the ownerUser.
   -Deleting a devicePublicData model also deletes the devicePrivateData model.
 
 */
@@ -195,6 +191,8 @@ describe('Devices', () => {
         let result = await rp(options)
 
         assert(result.body.device.memory === 'test', 'Should return the new device.')
+
+        // A devicePrivateData model is associated with a devicePublidData model after creation.
         assert(result.body.device.privateData !== 'test', 'Should return a GUID to a devicePrivateData model.')
 
         // ownerUser value should be ignored and autoassigned to the current user.
@@ -417,7 +415,8 @@ describe('Devices', () => {
           body: {
             device: {
               ownerUser: context.badUser._id,
-              memory: 'hasBeenChanged'
+              memory: 'hasBeenChanged',
+              privateData: 'someManipulatedValue'
             }
           },
           headers: {
@@ -433,6 +432,9 @@ describe('Devices', () => {
         // Updating a device model to another user ID fails, the ownerID value stays
         // on the user that created the model.
         assert(result.body.device.ownerUser === context.user._id, 'Should not update ownerUser')
+
+        // Updating a devicePublicData does not change the privateData property.
+        assert(result.body.device.privateData !== 'someManipulatedValue', 'Should not update privateData')
       } catch (err) {
         if (err.statusCode === 422) {
           assert(err.statusCode, 422, 'Error code expected.')
@@ -502,6 +504,33 @@ describe('Devices', () => {
           Authorization: `Bearer ${token}`
         })
         .expect(404, done)
+    })
+
+    it('should throw 401 if device owner doesn\'t match user', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/devices/${context.deviceId}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.badToken}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Malicious user can not delete other users devices.')
+        } else {
+          // console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
     })
 
     it('should delete device', (done) => {
