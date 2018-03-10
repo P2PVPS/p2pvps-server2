@@ -6,7 +6,7 @@ module.exports.baseUrl = '/client'
 module.exports.routes = [
   {
     method: 'GET',
-    route: '/:id',
+    route: '/register/:id',
     handlers: [
       client.register
     ]
