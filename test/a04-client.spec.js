@@ -3,8 +3,6 @@
 
   TODO:
   Tests for register():
-  -Any user-specified checkinTimeStamp value is ignored.
-  -Any user-specified expiration value is ignored.
   -A new obContract model is created.
 
   These tests can not be implemented because there is no devicePrivateData API.
