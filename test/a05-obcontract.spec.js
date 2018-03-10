@@ -10,7 +10,7 @@ should()
 const request = supertest.agent(app.listen())
 const context = {}
 
-describe('Users', () => {
+describe('obContract', () => {
   before(async () => {
     // Login as a test user and get a JWT.
     const config = await utils.loginTestUser()
@@ -197,7 +197,6 @@ describe('Users', () => {
     })
 
     it('should delete contract', (done) => {
-
       request
         .delete(`/obcontract/${context.obContractId}`)
         .set({
