@@ -14,22 +14,35 @@
   -A new obContract model is created.
 */
 
-
 const app = require('../bin/server')
 const supertest = require('supertest')
 const should = require('chai').should
 const rp = require('request-promise')
 const assert = require('chai').assert
+const utils = require('./utils.js')
 
 const LOCALHOST = 'http://localhost:5000'
 
 should()
-const request = supertest.agent(app.listen())
+supertest.agent(app.listen())
 const context = {}
 
 describe('Client', () => {
-  before((done) => {
-    done()
+  before(async () => {
+    // Login as a test user and get a JWT.
+    const config = await utils.loginTestUser()
+    // console.log(`config: ${JSON.stringify(config, null, 2)}`)
+
+    // Create a new device.
+    const device = await utils.createDevice(config)
+    // console.log(`device: ${JSON.stringify(device, null, 2)}`)
+
+    // Initialize the context object.
+    context.token = config.token
+    context.user = config.test
+    context.userId = config.id
+    context.deviceId = device._id.toString()
+    context.privateDataId = device.privateData
   })
 
   describe('GET /register/:id', () => {
@@ -62,5 +75,38 @@ describe('Client', () => {
         }
       }
     })
+
+    it('should register device', async () => {
+      try {
+        const testStartTime = new Date()
+
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/client/register/${context.deviceId}`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            memory: 'Fake Test Data',
+            diskSpace: 'Fake Test Data',
+            processor: 'Fake Test Data',
+            internetSpeed: 'Fake Test Data'
+          }
+        }
+
+        let result = await rp(options)
+
+        const expiration = new Date(result.body.device.expiration)
+
+        //console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(result.statusCode === 200, 'Returned status of 200 expected.')
+        assert(expiration.getTime() >= testStartTime.getTime(), 'Expiratioin date should be greater than now.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+  // End Describe
   })
 })
