@@ -36,8 +36,8 @@ async function register (ctx, next) {
   // const DEFAULT_EXPIRATION = 60000 * 8; // Testing
 
   try {
-    //console.log('register() called.')
-    //console.log(`body data: ${JSON.stringify(ctx.request.body, null, 2)}`)
+    // console.log('register() called.')
+    // console.log(`body data: ${JSON.stringify(ctx.request.body, null, 2)}`)
 
     // Retrieve the device model from the database.
     const device = await DevicePublicData.findById(ctx.params.id)
@@ -45,6 +45,7 @@ async function register (ctx, next) {
       ctx.throw(404, 'Could not find that device.')
     }
 
+    // Save the uploaded data into a handy object.
     const userData = ctx.request.body
 
     // Get the private data model associated with this device.
@@ -56,10 +57,11 @@ async function register (ctx, next) {
 
     // Save device stats to the model.
     device.expiration = expiration.toISOString()
-    device.memory = userData.memory
-    device.diskSpace = userData.diskSpace
-    device.processor = userData.processor
-    device.internetSpeed = userData.internetSpeed
+    device.checkinTimeStamp = now.toISOString()
+    if (userData.memory) device.memory = userData.memory
+    if (userData.diskSpace) device.diskSpace = userData.diskSpace
+    if (userData.processor) device.processor = userData.processor
+    if (userData.internetSpeed) device.internetSpeed = userData.internetSpeed
     device.save()
 
     ctx.body = {
