@@ -5,7 +5,6 @@ const expect = require('chai').expect
 const should = require('chai').should
 const cleanDb = require('./utils').cleanDb
 
-
 should()
 const request = supertest.agent(app.listen())
 const context = {}
