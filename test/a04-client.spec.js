@@ -3,15 +3,16 @@
 
   TODO:
   Tests for register():
-  -should reject with 404 if device does not exist.
   -Any user-specified checkinTimeStamp value is ignored.
   -Any user-specified expiration value is ignored.
-  -devicePublicData model has the expiration updated.
-  -devicePublicData model statistics get updated
+  -A new obContract model is created.
+
+  These tests can not be implemented because there is no devicePrivateData API.
+  May be possible with additional API functionality.
+  register():
   -devicePrivateModel is updated with login details
   -moneyPending and moneyOwed are updated
   -Previously reserved port(s) are released.
-  -A new obContract model is created.
 */
 
 const app = require('../bin/server')
@@ -43,6 +44,7 @@ describe('Client', () => {
     context.userId = config.id
     context.deviceId = device._id.toString()
     context.privateDataId = device.privateData
+    context.deviceData = device
   })
 
   describe('GET /register/:id', () => {
@@ -97,9 +99,48 @@ describe('Client', () => {
 
         const expiration = new Date(result.body.device.expiration)
 
-        //console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(result.statusCode === 200, 'Returned status of 200 expected.')
+
+        // devicePublicData model has the expiration updated
         assert(expiration.getTime() >= testStartTime.getTime(), 'Expiratioin date should be greater than now.')
+
+        // devicePublicData model statistics get updated
+        assert(result.body.device.memory !== context.deviceData.memory, 'Memory statistics updated.')
+        assert(result.body.device.diskSpace !== context.deviceData.diskSpace, 'Memory statistics updated.')
+        assert(result.body.device.processor !== context.deviceData.processor, 'Memory statistics updated.')
+        assert(result.body.device.internetSpeed !== context.deviceData.internetSpeed, 'Memory statistics updated.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+    it('should ignore user-specified checkinTimeStamp and expiration', async () => {
+      try {
+        const testStartTime = new Date()
+        const twoMonths = 60000 * 60 * 24 * 60
+        const twoMonthsFromNow = new Date(testStartTime.getTime() + twoMonths)
+
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/client/register/${context.deviceId}`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            checkinTimeStamp: twoMonthsFromNow.toISOString(),
+            expiration: twoMonthsFromNow.toISOString()
+          }
+        }
+
+        let result = await rp(options)
+
+        const expiration = new Date(result.body.device.expiration)
+        const checkinTimeStamp = new Date(result.body.device.checkinTimeStamp)
+
+        assert(expiration.getTime() < twoMonthsFromNow.getTime(), 'User specified expiration is ignored.')
+        assert(checkinTimeStamp.getTime() < twoMonthsFromNow.getTime(), 'User specified checkinTimeStamp is ignored.')
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
