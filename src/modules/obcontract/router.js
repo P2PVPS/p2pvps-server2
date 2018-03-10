@@ -17,7 +17,6 @@ module.exports.routes = [
     method: 'GET',
     route: '/',
     handlers: [
-      ensureUser,
       obContract.getContracts
     ]
   },
@@ -25,7 +24,6 @@ module.exports.routes = [
     method: 'GET',
     route: '/:id',
     handlers: [
-      ensureUser,
       obContract.getContract
     ]
   },

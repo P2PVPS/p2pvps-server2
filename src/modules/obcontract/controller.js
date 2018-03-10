@@ -79,8 +79,8 @@ async function createContract (ctx) {
  * @apiUse TokenError
  */
 async function getContracts (ctx) {
-  const obContract = await OBContract.find({})
-  ctx.body = { obContract }
+  const obContracts = await OBContract.find({})
+  ctx.body = { obContracts }
 }
 
 /**
@@ -125,6 +125,7 @@ async function getContract (ctx, next) {
       ctx.throw(404)
     }
 
+    console.log(`Error in obcontract.getContract: ${JSON.stringify(err,null,2)}`)
     ctx.throw(500)
   }
 
