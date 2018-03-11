@@ -1,4 +1,4 @@
-const ensureUser = require('../../middleware/validators')
+const ensureUser = require('../../middleware/validators').ensureUser
 const devicePublicData = require('./controller')
 
 module.exports.baseUrl = '/devices'
