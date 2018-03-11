@@ -1,16 +1,16 @@
 const app = require('../bin/server')
 const supertest = require('supertest')
 // const { expect, should } = require('chai')
-const expect = require('chai').expect
+//const expect = require('chai').expect
 const should = require('chai').should
-const cleanDb = require('./utils').cleanDb
+//const cleanDb = require('./utils').cleanDb
 const utils = require('./utils.js')
 
 should()
 const request = supertest.agent(app.listen())
 const context = {}
 
-describe('Users', () => {
+describe('obContract', () => {
   before(async () => {
     // Login as a test user and get a JWT.
     const config = await utils.loginTestUser()
@@ -197,7 +197,6 @@ describe('Users', () => {
     })
 
     it('should delete contract', (done) => {
-
       request
         .delete(`/obcontract/${context.obContractId}`)
         .set({
