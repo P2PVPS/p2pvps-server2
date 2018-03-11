@@ -40,7 +40,8 @@ describe('SSH Ports', () => {
         .expect(200, (err, res) => {
           if (err) { return done(err) }
 
-          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+          context.sshPort = res.body.sshPort.port
+          console.log(`context.sshPort: ${JSON.stringify(context.sshPort, null, 2)}`)
 
           res.body.should.have.property('sshPort')
           res.body.sshPort.should.have.property('username')
@@ -61,8 +62,6 @@ describe('SSH Ports', () => {
         .expect(200, (err, res) => {
           if (err) { return done(err) }
 
-          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
-
           res.body.should.have.property('sshPort')
           res.body.sshPort.should.have.property('username')
           res.body.sshPort.should.have.property('password')
@@ -73,127 +72,37 @@ describe('SSH Ports', () => {
     })
   })
 
-/*
-  describe('GET /obcontract', () => {
-    it('should fetch all contracts', (done) => {
+  describe('DELETE /sshport/:id', () => {
+    it('should throw 404 if sshport is not being used', (done) => {
+      // const { token } = context
       request
-        .get('/obcontract')
+        .delete('/sshport/1')
         .set({
           Accept: 'application/json'
-        })
-        .expect(200, (err, res) => {
-          if (err) { return done(err) }
-
-          res.body.should.have.property('obContracts')
-
-          res.body.obContracts.should.have.length(1)
-
-          done()
-        })
-    })
-  })
-
-  describe('GET /obcontract/:id', () => {
-    it('should throw 404 if contract doesn\'t exist', (done) => {
-      const { token } = context
-      request
-        .get('/obcontract/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
+          // Authorization: `Bearer ${token}`
         })
         .expect(404, done)
     })
 
-    it('should fetch contract', (done) => {
+    it('should throw 404 non-numerical id', (done) => {
+      // const { token } = context
       request
-        .get(`/obcontract/${context.obContractId}`)
+        .delete('/sshport/abc')
         .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
-        })
-        .expect(200, (err, res) => {
-          if (err) { return done(err) }
-
-          res.body.should.have.property('obContract')
-
-          done()
-        })
-    })
-  })
-
-  describe('PUT /obcontract/:id', () => {
-    it('should not update contract if token is invalid', (done) => {
-      request
-        .put('/obcontract/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-    })
-
-    it('should throw 404 if contract doesn\'t exist', (done) => {
-      const { token } = context
-      request
-        .put('/obcontract/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
+          Accept: 'application/json'
+          // Authorization: `Bearer ${token}`
         })
         .expect(404, done)
     })
 
-    it('should update contract', (done) => {
+    it('should release port', (done) => {
       request
-        .put(`/obcontract/${context.obContractId}`)
+        .delete(`/sshport/${context.sshPort}`)
         .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
-        })
-        .send({ obContract: { title: 'hasChanged' } })
-        .expect(200, (err, res) => {
-          if (err) { return done(err) }
-
-          res.body.obContract.should.have.property('title')
-          res.body.obContract.title.should.equal('hasChanged')
-
-          done()
-        })
-    })
-  })
-
-  describe('DELETE /obcontract/:id', () => {
-    it('should not delete contract if token is invalid', (done) => {
-      request
-        .delete('/obcontract/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-    })
-
-    it('should throw 404 if contract doesn\'t exist', (done) => {
-      const { token } = context
-      request
-        .delete('/users/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(404, done)
-    })
-
-    it('should delete contract', (done) => {
-      request
-        .delete(`/obcontract/${context.obContractId}`)
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
+          Accept: 'application/json'
+          // Authorization: `Bearer ${context.token}`
         })
         .expect(200, done)
     })
   })
-  */
 })

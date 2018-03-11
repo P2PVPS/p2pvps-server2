@@ -13,7 +13,7 @@ module.exports.routes = [
     ]
   },
   {
-    method: 'GET',
+    method: 'DELETE',
     route: '/:id',
     handlers: [
       sshport.releasePort
