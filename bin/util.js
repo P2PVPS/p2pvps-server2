@@ -4,10 +4,15 @@
 
 const fs = require('fs')
 const rp = require('request-promise')
+const User = require('../src/models/users')
 
 const LOCALHOST = 'http://localhost:5000'
-const JSON_FILE = './config/system-user.json'
 const context = {}
+
+// Ensure the environment variable is set
+process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+const env = process.env.NODE_ENV
+const JSON_FILE = `system-user-${env}.json`
 
 // Create the first user in the system. A 'admin' level system user that is
 // used by the Listing Manager and test scripts, in order access private API
@@ -29,13 +34,24 @@ async function createSystemUser () {
         }
       }
     }
-
     let result = await rp(options)
 
     context.username = result.body.user.username
     context.id = result.body.user._id
 
-    await _writeJSON(context, JSON_FILE)
+    // Get the mongoDB entry
+    const user = await User.findById(context.id)
+
+    // Change the user type to admin
+    user.type = 'admin'
+    // console.log(`user: ${JSON.stringify(user, null, 2)}`)
+
+    // Save the user model.
+    await user.save()
+
+    // Write out the system user information to a JSON file that external
+    // applications like the Task Manager and the test scripts can access.
+    await _writeJSON(context, `./config/${JSON_FILE}`)
   } catch (err) {
     // Handle existing system user.
     if (err.statusCode === 422) {
@@ -59,7 +75,7 @@ async function createSystemUser () {
 async function deleteExistingSystemUser () {
   try {
     // Read the exising file
-    const existingUser = require(`../config/system-user.json`)
+    const existingUser = require(`../config/${JSON_FILE}`)
     // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
@@ -120,7 +136,7 @@ function _writeJSON (obj, fileName) {
           console.error('Error while trying to write file: ', err)
           return reject(err)
         } else {
-          console.log(`${fileName} written successfully!`)
+          // console.log(`${fileName} written successfully!`)
           return resolve()
         }
       })

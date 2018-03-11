@@ -40,18 +40,22 @@ const User = require('../../models/users')
  */
 async function createUser (ctx) {
   const user = new User(ctx.request.body.user)
+
+  // Enforce default value of 'user'
+  user.type = 'user'
+
   try {
     await user.save()
   } catch (err) {
     ctx.throw(422, err.message)
   }
 
-  //console.log(`new user: ${JSON.stringify(user, null, 2)}`)
+  // console.log(`new user: ${JSON.stringify(user, null, 2)}`)
 
   const token = user.generateToken()
   const response = user.toJSON()
 
-  //console.log(`response: ${JSON.stringify(response, null, 2)}`)
+  // console.log(`response: ${JSON.stringify(response, null, 2)}`)
 
   delete response.password
 

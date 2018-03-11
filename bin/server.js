@@ -41,6 +41,9 @@ modules(app)
 
 // MIDDLEWARE END
 
+// Ensure the environment variable is set
+process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+
 app.listen(config.port, () => {
   console.log(`Server started on ${config.port}`)
 })
