@@ -31,9 +31,14 @@ describe('Users', () => {
         .send({ user: { username: 'supercoolname', password: 'supersecretpassword' } })
         .expect(200, (err, res) => {
           if (err) { return done(err) }
+          console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
 
           res.body.user.should.have.property('username')
           res.body.user.username.should.equal('supercoolname')
+
+          res.body.user.should.have.property('type')
+          res.body.user.type.should.equal('User')
+
           expect(res.body.user.password).to.not.exist
 
           context.user = res.body.user

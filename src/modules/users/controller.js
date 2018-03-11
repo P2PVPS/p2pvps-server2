@@ -46,8 +46,12 @@ async function createUser (ctx) {
     ctx.throw(422, err.message)
   }
 
+  //console.log(`new user: ${JSON.stringify(user, null, 2)}`)
+
   const token = user.generateToken()
   const response = user.toJSON()
+
+  //console.log(`response: ${JSON.stringify(response, null, 2)}`)
 
   delete response.password
 
