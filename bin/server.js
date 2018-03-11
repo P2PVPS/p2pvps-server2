@@ -7,6 +7,7 @@ const session = require('koa-generic-session')
 const passport = require('koa-passport')
 const mount = require('koa-mount')
 const serve = require('koa-static')
+const serverUtil = require('./util')
 
 const config = require('../config')
 const errorMiddleware = require('../src/middleware')
@@ -43,6 +44,9 @@ modules(app)
 app.listen(config.port, () => {
   console.log(`Server started on ${config.port}`)
 })
+
+// Create the system admin user.
+serverUtil.createSystemUser()
 
 // export default app
 module.exports = app
