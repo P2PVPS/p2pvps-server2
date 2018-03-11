@@ -41,7 +41,7 @@ describe('SSH Ports', () => {
           if (err) { return done(err) }
 
           context.sshPort = res.body.sshPort.port
-          console.log(`context.sshPort: ${JSON.stringify(context.sshPort, null, 2)}`)
+          //console.log(`context.sshPort: ${JSON.stringify(context.sshPort, null, 2)}`)
 
           res.body.should.have.property('sshPort')
           res.body.sshPort.should.have.property('username')

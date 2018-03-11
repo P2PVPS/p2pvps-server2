@@ -4,7 +4,7 @@ const config = require('../../config')
 const jwt = require('jsonwebtoken')
 
 const User = new mongoose.Schema({
-  type: { type: String, default: 'User' },
+  type: { type: String, default: 'user' },
   name: { type: String },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true }
@@ -51,8 +51,8 @@ User.methods.generateToken = function generateToken () {
   const user = this
 
   const token = jwt.sign({ id: user.id }, config.token)
-  //console.log(`config.token: ${config.token}`)
-  //console.log(`generated token: ${token}`)
+  // console.log(`config.token: ${config.token}`)
+  // console.log(`generated token: ${token}`)
   return token
 }
 

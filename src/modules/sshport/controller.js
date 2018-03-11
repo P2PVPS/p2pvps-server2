@@ -1,3 +1,10 @@
+/*
+  Dev Note: CT 3/11/18
+  This controller for the port control may be better as a module library instead
+  of an API. Right now, only the client API uses it. If no other areas of the system
+  use this API, then it would be better/more secure as a module library.
+*/
+
 const SSHPort = require('../../models/sshport')
 
 /**
@@ -161,7 +168,7 @@ async function releasePort (ctx) {
       ctx.throw(404)
     } else {
       console.error(`Error in API sshport.releasePort: ${err}`)
-      //console.error(`err stringified: ${JSON.stringify(err, null, 2)}`)
+      // console.error(`err stringified: ${JSON.stringify(err, null, 2)}`)
       throw err
     }
   }
