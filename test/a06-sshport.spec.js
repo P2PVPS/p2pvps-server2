@@ -1,90 +1,79 @@
 const app = require('../bin/server')
 const supertest = require('supertest')
 // const { expect, should } = require('chai')
-//const expect = require('chai').expect
+const expect = require('chai').expect
 const should = require('chai').should
-//const cleanDb = require('./utils').cleanDb
+const cleanDb = require('./utils').cleanDb
 const utils = require('./utils.js')
+const rp = require('request-promise')
+const assert = require('chai').assert
 
 should()
 const request = supertest.agent(app.listen())
 const context = {}
 
-describe('obContract', () => {
+describe('SSH Ports', () => {
   before(async () => {
     // Login as a test user and get a JWT.
     const config = await utils.loginTestUser()
 
     // Create a new device.
-    const device = await utils.createDevice(config)
+    // const device = await utils.createDevice(config)
 
     // Initialize the context object.
     context.token = config.token
     context.user = config.test
     context.userId = config.id
-    context.deviceId = device._id.toString()
-    context.privateDataId = device.privateData
-    context.deviceData = device
+    // context.deviceId = device._id.toString()
+    // context.privateDataId = device.privateData
+    // context.deviceData = device
   })
 
-  describe('POST /obcontract', () => {
-    it('should not create contract if token is invalid', (done) => {
+  describe('POST /sshport', () => {
+    it('First call should return port 6000', (done) => {
       request
-        .post('/obcontract')
+        .post('/sshport')
         .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
+          Accept: 'application/json'
         })
-        .send({ obContract:
-        {
-          ownerUser: context.userId,
-          clientDevice: context.deviceId,
-          title: 'test',
-          description: 'test description'
-        }
-        })
-        .expect(401, done)
-    })
-
-    it('should not create contract when data is incomplete', (done) => {
-      request
-        .post('/obcontract')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
-        })
-        .send({ obContract: { ownerUser: context.userId } })
-        .expect(422, done)
-    })
-
-    it('should create new obContract model', (done) => {
-      request
-        .post('/obcontract')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
-        })
-        .send({ obContract:
-        {
-          ownerUser: context.userId,
-          clientDevice: context.deviceId,
-          title: 'test',
-          description: 'test description'
-        }
-        })
+        .send({})
         .expect(200, (err, res) => {
           if (err) { return done(err) }
 
-          res.body.obContract.should.have.property('ownerUser')
-          res.body.obContract.title.should.equal('test')
+          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
 
-          context.obContractId = res.body.obContract._id.toString()
+          res.body.should.have.property('sshPort')
+          res.body.sshPort.should.have.property('username')
+          res.body.sshPort.should.have.property('password')
+          assert(res.body.sshPort.port === 6000, 'First port should be 6000')
+
+          done()
+        })
+    })
+
+    it('Second call should return port 6001', (done) => {
+      request
+        .post('/sshport')
+        .set({
+          Accept: 'application/json'
+        })
+        .send({})
+        .expect(200, (err, res) => {
+          if (err) { return done(err) }
+
+          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+
+          res.body.should.have.property('sshPort')
+          res.body.sshPort.should.have.property('username')
+          res.body.sshPort.should.have.property('password')
+          assert(res.body.sshPort.port === 6001, 'Second port should be 6001')
 
           done()
         })
     })
   })
 
+/*
   describe('GET /obcontract', () => {
     it('should fetch all contracts', (done) => {
       request
@@ -206,4 +195,5 @@ describe('obContract', () => {
         .expect(200, done)
     })
   })
+  */
 })
