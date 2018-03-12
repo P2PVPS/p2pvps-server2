@@ -28,34 +28,50 @@ describe('Device Private Model', () => {
     context.adminToken = adminUser.token
     context.adminUsername = adminUser.username
     context.adminId = adminUser.id
+
+    // Create a device
+    const device = await utils.createDevice({token: context.userToken})
+    context.device = device
+    console.log(`device: ${JSON.stringify(device, null, 2)}`)
   })
 
-  describe('GET /deviceprivatemodel/:id', () => {
+  describe('GET /deviceprivatedata/:id', () => {
     it('should throw 404 if contract doesn\'t exist', (done) => {
       request
-        .get('/deviceprivatemodel/1')
+        .get('/deviceprivatedata/1')
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${context.adminToken}`
         })
         .expect(404, done)
     })
-/*
-    it('should fetch contract', (done) => {
+
+    it('should throw 401 for normal user', (done) => {
       request
-        .get(`/obcontract/${context.obContractId}`)
+        .get(`/deviceprivatedata/${context.device.privateData}`)
         .set({
           Accept: 'application/json',
-          Authorization: `Bearer ${context.token}`
+          Authorization: `Bearer ${context.userToken}`
+        })
+        .expect(401, done)
+    })
+
+    it('should fetch for admin user', (done) => {
+      request
+        .get(`/deviceprivatedata/${context.device.privateData}`)
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminToken}`
         })
         .expect(200, (err, res) => {
           if (err) { return done(err) }
 
-          res.body.should.have.property('obContract')
+          res.body.should.have.property('devicePrivateData')
+          assert(res.body.devicePrivateData._id.toString() === context.device.privateData, 'IDs match')
+          //console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
 
           done()
         })
     })
-    */
   })
 })

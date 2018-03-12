@@ -35,7 +35,7 @@ async function getModel (ctx, next) {
     }
 
     ctx.body = {
-      DevicePrivateData
+      devicePrivateData
     }
   } catch (err) {
     if (err === 404 || err.name === 'CastError') {
