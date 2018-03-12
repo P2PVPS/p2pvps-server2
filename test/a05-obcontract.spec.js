@@ -1,9 +1,6 @@
 const app = require('../bin/server')
 const supertest = require('supertest')
-// const { expect, should } = require('chai')
-//const expect = require('chai').expect
 const should = require('chai').should
-//const cleanDb = require('./utils').cleanDb
 const utils = require('./utils.js')
 
 should()

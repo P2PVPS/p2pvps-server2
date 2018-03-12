@@ -18,22 +18,44 @@ describe('Device Private Model', () => {
     // Login as a test user and get a JWT.
     const config = await utils.loginTestUser()
 
-    // Initialize the context object.
+    // Initialize the context object with test user login data.
     context.userToken = config.token
     context.userUsername = config.test
     context.userId = config.id
 
+    // Create and system admin user
     const adminUser = await serverUtil.createSystemUser()
-    //console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
-
     context.adminToken = adminUser.token
     context.adminUsername = adminUser.username
     context.adminId = adminUser.id
   })
 
-  describe(`Dummy test`, () => {
-    it(`dummy test`, () => {
-      assert(true, 'yay!')
+  describe('GET /deviceprivatemodel/:id', () => {
+    it('should throw 404 if contract doesn\'t exist', (done) => {
+      request
+        .get('/deviceprivatemodel/1')
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminToken}`
+        })
+        .expect(404, done)
     })
+/*
+    it('should fetch contract', (done) => {
+      request
+        .get(`/obcontract/${context.obContractId}`)
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.token}`
+        })
+        .expect(200, (err, res) => {
+          if (err) { return done(err) }
+
+          res.body.should.have.property('obContract')
+
+          done()
+        })
+    })
+    */
   })
 })
