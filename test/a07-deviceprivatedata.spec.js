@@ -1,3 +1,13 @@
+/*
+  Tests for the devicePrivateData model
+
+  Dev Note 3/12/18:
+  Thought about adding these two tests to the PUT API:
+    Assert the ownerUser has not changed.
+    Assert the publicData has not changed.
+  But since this is a private API for admins, maybe I don't want to enforce that?
+*/
+
 const app = require('../bin/server')
 const supertest = require('supertest')
 // const { expect, should } = require('chai')
@@ -5,7 +15,7 @@ const supertest = require('supertest')
 const should = require('chai').should
 // const cleanDb = require('./utils').cleanDb
 const utils = require('./utils.js')
-const rp = require('request-promise')
+// const rp = require('request-promise')
 const assert = require('chai').assert
 const serverUtil = require('../bin/util')
 
@@ -32,7 +42,7 @@ describe('Device Private Model', () => {
     // Create a device
     const device = await utils.createDevice({token: context.userToken})
     context.device = device
-    console.log(`device: ${JSON.stringify(device, null, 2)}`)
+    //console.log(`device: ${JSON.stringify(device, null, 2)}`)
   })
 
   describe('GET /deviceprivatedata/:id', () => {
@@ -117,13 +127,10 @@ describe('Device Private Model', () => {
         .expect(200, (err, res) => {
           if (err) { return done(err) }
 
-          console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
 
           res.body.devicePrivateData.should.have.property('deviceUserName')
           res.body.devicePrivateData.deviceUserName.should.equal('hasChanged')
-
-          // Assert the ownerUser has not changed.
-          // Assert the publicData has not changed.
 
           done()
         })
