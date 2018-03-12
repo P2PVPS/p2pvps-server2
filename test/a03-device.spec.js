@@ -13,6 +13,7 @@ const should = require('chai').should
 // import { authUser } from './utils'
 const rp = require('request-promise')
 const assert = require('chai').assert
+const utils = require('./utils.js')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -24,52 +25,31 @@ describe('Devices', () => {
   before(async () => {
     // Create the 'good' user.
     try {
-      const options = {
-        method: 'POST',
-        uri: `${LOCALHOST}/users`,
-        resolveWithFullResponse: true,
-        json: true,
-        body: {
-          user: {
-            username: 'test',
-            password: 'pass'
-          }
-        }
+      let userObj = {
+        username: 'test',
+        password: 'pass'
       }
+      let result = await utils.createUser(userObj)
 
-      let result = await rp(options)
-
-      context.user = result.body.user
-      context.token = result.body.token
-
-      // console.log(`user: ${JSON.stringify(context.user, null, 2)}`)
-      // console.log(`token: ${JSON.stringify(context.token, null, 2)}`)
+      context.user = result.user
+      context.token = result.token
     } catch (err) {
-      console.log('Error authenticating test user: ' + JSON.stringify(err, null, 2))
+      console.log('Error creating test user: ' + JSON.stringify(err, null, 2))
       throw err
     }
 
     // Create the 'bad' user.
     try {
-      const options = {
-        method: 'POST',
-        uri: `${LOCALHOST}/users`,
-        resolveWithFullResponse: true,
-        json: true,
-        body: {
-          user: {
-            username: 'baduser',
-            password: 'pass'
-          }
-        }
+      let userObj = {
+        username: 'baduser',
+        password: 'pass'
       }
+      let result = await utils.createUser(userObj)
 
-      let result = await rp(options)
-
-      context.badUser = result.body.user
-      context.badToken = result.body.token
+      context.badUser = result.user
+      context.badToken = result.token
     } catch (err) {
-      console.log('Error authenticating "bad" test user: ' + JSON.stringify(err, null, 2))
+      console.log('Error creating "bad" test user: ' + JSON.stringify(err, null, 2))
       throw err
     }
   })

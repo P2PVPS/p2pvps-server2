@@ -26,9 +26,6 @@ describe('Auth', () => {
 
     context.user = testUser.user
     context.token = testUser.token
-
-    //const success = await serverUtil.createSystemUser()
-    //if (success) console.log(`System admin user created.`)
   })
 
   describe('POST /auth', () => {
