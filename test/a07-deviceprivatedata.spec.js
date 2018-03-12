@@ -68,7 +68,62 @@ describe('Device Private Model', () => {
 
           res.body.should.have.property('devicePrivateData')
           assert(res.body.devicePrivateData._id.toString() === context.device.privateData, 'IDs match')
-          //console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+
+          done()
+        })
+    })
+  })
+
+  describe('PUT /deviceprivatedata/:id', () => {
+    it('should not update model if token is invalid', (done) => {
+      request
+        .put('/deviceprivatedata/1')
+        .set({
+          Accept: 'application/json',
+          Authorization: 'Bearer 1'
+        })
+        .expect(401, done)
+    })
+
+    it('should return 401 for normal user', (done) => {
+      request
+        .put(`/deviceprivatedata/${context.device.privateData}`)
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.userToken}`
+        })
+        .expect(401, done)
+    })
+
+    it('should throw 404 if contract doesn\'t exist', (done) => {
+      request
+        .put('/deviceprivatedata/1')
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminToken}`
+        })
+        .expect(404, done)
+    })
+
+    it('should update contract', (done) => {
+      request
+        .put(`/deviceprivatedata/${context.device.privateData}`)
+        .set({
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminToken}`
+        })
+        .send({ devicePrivateData: { deviceUserName: 'hasChanged' } })
+        .expect(200, (err, res) => {
+          if (err) { return done(err) }
+
+          console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+
+          res.body.devicePrivateData.should.have.property('deviceUserName')
+          res.body.devicePrivateData.deviceUserName.should.equal('hasChanged')
+
+          // Assert the ownerUser has not changed.
+          // Assert the publicData has not changed.
 
           done()
         })
