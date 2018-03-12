@@ -55,7 +55,7 @@ async function authUser (ctx, next) {
   return passport.authenticate('local', (err, user, info, status) => {
     if (err) throw err
 
-    console.log(`user value passed: ${JSON.stringify(user, null, 2)}`)
+    //console.log(`user value passed: ${JSON.stringify(user, null, 2)}`)
     if (!user) {
       ctx.throw(401)
     }

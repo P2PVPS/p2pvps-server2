@@ -7,6 +7,7 @@ const should = require('chai').should
 const utils = require('./utils.js')
 const rp = require('request-promise')
 const assert = require('chai').assert
+const serverUtil = require('../bin/util')
 
 should()
 const request = supertest.agent(app.listen())
@@ -22,8 +23,12 @@ describe('Device Private Model', () => {
     context.userUsername = config.test
     context.userId = config.id
 
-    const adminUser = await utils.loginAdminUser()
-    console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
+    const adminUser = await serverUtil.createSystemUser()
+    //console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
+
+    context.adminToken = adminUser.token
+    context.adminUsername = adminUser.username
+    context.adminId = adminUser.id
   })
 
   describe(`Dummy test`, () => {
