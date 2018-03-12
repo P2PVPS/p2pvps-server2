@@ -1,4 +1,4 @@
-const ensureUser = require('../../middleware/validators')
+const ensureUser = require('../../middleware/validators').ensureUser
 const obContract = require('./controller')
 
 // export const baseUrl = '/users'

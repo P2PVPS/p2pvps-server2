@@ -1,10 +1,12 @@
 const app = require('../bin/server')
 const supertest = require('supertest')
 const should = require('chai').should
-const cleanDb = require('./utils').cleanDb
-const authUser = require('./utils').authUser
+// const cleanDb = require('./utils').cleanDb
+// const authUser = require('./utils').authUser
+const utils = require('./utils')
 const rp = require('request-promise')
 const assert = require('chai').assert
+const serverUtil = require('../bin/util')
 
 should()
 const request = supertest.agent(app.listen())
@@ -13,16 +15,20 @@ const context = {}
 const LOCALHOST = 'http://localhost:5000'
 
 describe('Auth', () => {
-  before((done) => {
-    cleanDb()
-    authUser(request, (err, { user, token }) => {
-      if (err) { return done(err) }
+  before(async () => {
+    utils.cleanDb()
 
-      context.user = user
-      context.token = token
+    const userObj = {
+      username: 'test',
+      password: 'pass'
+    }
+    const testUser = await utils.createUser(userObj)
 
-      done()
-    })
+    context.user = testUser.user
+    context.token = testUser.token
+
+    //const success = await serverUtil.createSystemUser()
+    //if (success) console.log(`System admin user created.`)
   })
 
   describe('POST /auth', () => {

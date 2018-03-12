@@ -29,6 +29,40 @@ function authUser (agent, callback) {
     })
 }
 
+// This function is used to create new users.
+// userObj = {
+//   username,
+//   password
+// }
+async function createUser (userObj) {
+  try {
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/users`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        user: {
+          username: userObj.username,
+          password: userObj.password
+        }
+      }
+    }
+
+    let result = await rp(options)
+
+    const retObj = {
+      user: result.body.user,
+      token: result.body.token
+    }
+
+    return retObj
+  } catch (err) {
+    console.log('Error in utils.js/createUser(): ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 async function loginTestUser () {
   try {
     const options = {
@@ -44,7 +78,7 @@ async function loginTestUser () {
 
     let result = await rp(options)
 
-    //console.log(`result: ${JSON.stringify(result, null, 2)}`)
+    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
 
     const retObj = {
       token: result.body.token,
@@ -55,6 +89,43 @@ async function loginTestUser () {
     return retObj
   } catch (err) {
     console.log('Error authenticating test user: ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
+async function loginAdminUser () {
+  try {
+    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+    console.log(`env: ${process.env.NODE_ENV}`)
+
+    const FILENAME = `../config/system-user-${process.env.NODE_ENV}.json`
+    const adminUserData = require(FILENAME)
+    console.log(`adminUserData: ${JSON.stringify(adminUserData, null, 2)}`)
+
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/auth`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        username: adminUserData.username,
+        password: adminUserData.password
+      }
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
+
+    const retObj = {
+      token: result.body.token,
+      user: result.body.user.username,
+      id: result.body.user._id.toString()
+    }
+
+    return retObj
+  } catch (err) {
+    console.log('Error authenticating test admin user: ' + JSON.stringify(err, null, 2))
     throw err
   }
 }
@@ -107,5 +178,7 @@ module.exports = {
   cleanDb,
   authUser,
   createDevice,
-  loginTestUser
+  loginTestUser,
+  loginAdminUser,
+  createUser
 }

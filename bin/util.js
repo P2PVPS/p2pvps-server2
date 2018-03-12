@@ -38,6 +38,7 @@ async function createSystemUser () {
 
     context.username = result.body.user.username
     context.id = result.body.user._id
+    context.token = result.body.token
 
     // Get the mongoDB entry
     const user = await User.findById(context.id)
@@ -52,6 +53,8 @@ async function createSystemUser () {
     // Write out the system user information to a JSON file that external
     // applications like the Task Manager and the test scripts can access.
     await _writeJSON(context, `./config/${JSON_FILE}`)
+
+    return context
   } catch (err) {
     // Handle existing system user.
     if (err.statusCode === 422) {
