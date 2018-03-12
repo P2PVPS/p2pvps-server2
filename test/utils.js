@@ -29,6 +29,40 @@ function authUser (agent, callback) {
     })
 }
 
+// This function is used to create new users.
+// userObj = {
+//   username,
+//   password
+// }
+async function createUser (userObj) {
+  try {
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/users`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        user: {
+          username: userObj.username,
+          password: userObj.password
+        }
+      }
+    }
+
+    let result = await rp(options)
+
+    const retObj = {
+      user: result.body.user,
+      token: result.body.token
+    }
+
+    return retObj
+  } catch (err) {
+    console.log('Error in utils.js/createUser(): ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 async function loginTestUser () {
   try {
     const options = {
@@ -145,5 +179,6 @@ module.exports = {
   authUser,
   createDevice,
   loginTestUser,
-  loginAdminUser
+  loginAdminUser,
+  createUser
 }

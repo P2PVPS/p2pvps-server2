@@ -1,8 +1,9 @@
 const app = require('../bin/server')
 const supertest = require('supertest')
 const should = require('chai').should
-const cleanDb = require('./utils').cleanDb
-const authUser = require('./utils').authUser
+// const cleanDb = require('./utils').cleanDb
+// const authUser = require('./utils').authUser
+const utils = require('./utils')
 const rp = require('request-promise')
 const assert = require('chai').assert
 
@@ -13,9 +14,11 @@ const context = {}
 const LOCALHOST = 'http://localhost:5000'
 
 describe('Auth', () => {
-  before((done) => {
-    cleanDb()
-    authUser(request, (err, { user, token }) => {
+  before(async () => {
+    utils.cleanDb()
+/*
+    // Create the first test user.
+    utils.authUser(request, (err, { user, token }) => {
       if (err) { return done(err) }
 
       context.user = user
@@ -23,6 +26,15 @@ describe('Auth', () => {
 
       done()
     })
+*/
+    const userObj = {
+      username: 'test',
+      password: 'pass'
+    }
+    const testUser = await utils.createUser(userObj)
+
+    context.user = testUser.user
+    context.token = testUser.token
   })
 
   describe('POST /auth', () => {
