@@ -31,8 +31,9 @@ async function ensureUser (ctx, next) {
   return next()
 }
 
+// This funciton is almost identical to ensureUser, except at the end, it verifies
+// that the 'type' associated with the user equals 'admin'.
 async function ensureAdmin (ctx, next) {
-
   // console.log(`getToken: ${typeof (getToken)}`)
   const token = getToken(ctx)
 
@@ -60,7 +61,7 @@ async function ensureAdmin (ctx, next) {
   if (ctx.state.user.type !== 'admin') {
     ctx.throw(401, 'not admin')
   }
-  
+
   return next()
 }
 
