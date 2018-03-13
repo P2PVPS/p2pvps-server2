@@ -63,7 +63,7 @@ async function register (ctx, next) {
     if (userData.diskSpace) device.diskSpace = userData.diskSpace
     if (userData.processor) device.processor = userData.processor
     if (userData.internetSpeed) device.internetSpeed = userData.internetSpeed
-    device.save()
+    await device.save()
 
     // Get device private data model
     const devicePrivateData = await DevicePrivateData.findById(device.privateData)
@@ -74,6 +74,14 @@ async function register (ctx, next) {
     // Get Login, Password, and Port assignment.
     const loginData = await sshPort.requestPort()
     console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
+
+    // Move any money pending to money owed.
+
+    // Save ssh data to the devicePrivateData model.
+    devicePrivateData.serverSSHPort = loginData.port
+    devicePrivateData.deviceUserName = loginData.username
+    devicePrivateData.devicePassword = loginData.password
+    await devicePrivateData.save()
 
     ctx.body = {
       device
