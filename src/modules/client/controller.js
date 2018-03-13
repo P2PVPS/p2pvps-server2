@@ -73,7 +73,7 @@ async function register (ctx, next) {
 
     // Get Login, Password, and Port assignment.
     const loginData = await sshPort.requestPort()
-    //console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
+    // console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
 
     // TODO Move any money pending to money owed.
 
@@ -89,7 +89,7 @@ async function register (ctx, next) {
     if (usedPort) {
       // Release the used port.
       await sshPort.releasePort(usedPort)
-      // console.log(`port ${usedPort} released.`)
+      console.log(`port ${usedPort} released.`)
     }
 
     ctx.body = {
