@@ -30,6 +30,30 @@ async function requestPort () {
   }
 }
 
+// Release an old port assignment
+async function releasePort (port) {
+  try {
+    const options = {
+      method: 'DELETE',
+      uri: `${LOCALHOST}/sshport/${port}`,
+      resolveWithFullResponse: true,
+      json: true
+    }
+
+    //let result = await rp(options)
+    await rp(options)
+
+    // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+    // return result.body.sshPort
+    return true
+  } catch (err) {
+    console.error(`Error in modules/sshport/index.js/releasePort(): `, err)
+    throw err
+  }
+}
+
 module.exports = {
-  requestPort
+  requestPort,
+  releasePort
 }

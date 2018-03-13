@@ -69,19 +69,28 @@ async function register (ctx, next) {
     const devicePrivateData = await DevicePrivateData.findById(device.privateData)
 
     // Get any previously used port assignment.
-    usedPort = devicePrivateData.serverSSHPort
+    const usedPort = devicePrivateData.serverSSHPort
 
     // Get Login, Password, and Port assignment.
     const loginData = await sshPort.requestPort()
-    console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
+    //console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
 
-    // Move any money pending to money owed.
+    // TODO Move any money pending to money owed.
 
     // Save ssh data to the devicePrivateData model.
     devicePrivateData.serverSSHPort = loginData.port
     devicePrivateData.deviceUserName = loginData.username
     devicePrivateData.devicePassword = loginData.password
     await devicePrivateData.save()
+
+    // If a previous port was being used, release it.
+    // Dev Note: Order of operation is important here. I want to release the old port
+    // *after* I request a new port. Otherwise I'll run into SSH issues.
+    if (usedPort) {
+      // Release the used port.
+      await sshPort.releasePort(usedPort)
+      // console.log(`port ${usedPort} released.`)
+    }
 
     ctx.body = {
       device
