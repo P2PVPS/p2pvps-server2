@@ -1,5 +1,6 @@
 const DevicePublicData = require('../../models/devicepublicdata')
-// const DevicePrivateData = require('../../models/deviceprivatedata')
+const DevicePrivateData = require('../../models/deviceprivatedata')
+const sshPort = require('../sshport')
 
 /**
  * @api {get} /client/register/:id Register a client device on the marketplace
@@ -64,6 +65,16 @@ async function register (ctx, next) {
     if (userData.internetSpeed) device.internetSpeed = userData.internetSpeed
     device.save()
 
+    // Get device private data model
+    const devicePrivateData = await DevicePrivateData.findById(device.privateData)
+
+    // Get any previously used port assignment.
+    usedPort = devicePrivateData.serverSSHPort
+
+    // Get Login, Password, and Port assignment.
+    const loginData = await sshPort.requestPort()
+    console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
+
     ctx.body = {
       device
     }
@@ -72,6 +83,7 @@ async function register (ctx, next) {
       ctx.throw(404)
     }
 
+    console.error(`Error in modules/client/controller.js/register(): `, err)
     ctx.throw(500)
   }
 
