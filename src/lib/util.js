@@ -12,44 +12,44 @@
   createObStoreListing() - create a new listing in the OB store.
   submitToMarket() - generate a new obContract model and store listing.
   removeOBListing() - remove a listing from the OB store.
-
+  createNewMarketListing() - Create a new listing for a device rental.
 */
 
-'use strict';
+'use strict'
 
 // Dependencies
-const keystone = require('keystone');
-const rp = require('request-promise');
+// const keystone = require('keystone')
+const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
 
 // Instantiate Keystone Models
-const logr = keystone.get('logr'); // Logging system
-const DevicePublicModel = keystone.list('DevicePublicModel');
-const DevicePrivateModel = keystone.list('DevicePrivateModel');
-const ObContractModel = keystone.list('obContractModel');
+// const logr = keystone.get('logr'); // Logging system
+// const DevicePublicModel = keystone.list('DevicePublicModel');
+// const DevicePrivateModel = keystone.list('DevicePrivateModel');
+// const ObContractModel = keystone.list('obContractModel');
 
 // Return a promise that resolves to the devicePublicModel.
 function getDevicePublicModel (deviceId) {
   return new Promise(function (resolve, reject) {
     DevicePublicModel.model.findById(deviceId).exec(function (err, devicePublicModel) {
-      if (err) return reject(err);
-      if (!devicePublicModel) return reject('Device not found');
+      if (err) return reject(err)
+      if (!devicePublicModel) return reject('Device not found')
 
-      return resolve(devicePublicModel);
-    });
-  });
+      return resolve(devicePublicModel)
+    })
+  })
 }
 
 // Return a promise that resolves to the devicePrivateModel.
 function getDevicePrivateModel (deviceId) {
   return new Promise(function (resolve, reject) {
     DevicePrivateModel.model.findById(deviceId).exec(function (err, devicePrivateModel) {
-      if (err) return reject(err);
-      if (!devicePrivateModel) return reject('Device private model not found');
+      if (err) return reject(err)
+      if (!devicePrivateModel) return reject('Device private model not found')
 
-      return resolve(devicePrivateModel);
-    });
-  });
+      return resolve(devicePrivateModel)
+    })
+  })
 }
 
 // Return a promise that resolves to an object containing a new login, password,
@@ -59,7 +59,7 @@ function getLoginPassAndPort () {
     method: 'GET',
     uri: 'http://localhost:3000/api/portcontrol/create',
     json: true // Automatically stringifies the body to JSON
-  };
+  }
 
   return rp(options)
 }
@@ -68,12 +68,12 @@ function getLoginPassAndPort () {
 function getObContractModel (deviceId) {
   return new Promise(function (resolve, reject) {
     ObContractModel.model.findById(deviceId).exec(function (err, thisModel) {
-      if (err) return reject(err);
-      if (!thisModel) return reject('Device not found');
+      if (err) return reject(err)
+      if (!thisModel) return reject('Device not found')
 
-      return resolve(thisModel);
-    });
-  });
+      return resolve(thisModel)
+    })
+  })
 }
 
 // Create a new obContract model based on the passed in object.
@@ -107,28 +107,30 @@ function createObStoreListing (obContractModel) {
 // obj = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obj) {
-  logr.debug('Entering devicePublicData.js/submitToMarket().');
+  // logr.debug('Entering devicePublicData.js/submitToMarket().')
+  console.log('Entering devicePublicData.js/submitToMarket().')
 
   try {
     debugger
 
     // Check if device already has an obContract GUID associated with it.
-    const obContractId = device.get('obContract');
+    const obContractId = device.get('obContract')
     if (obContractId !== '' && obContractId !== null) {
-      debugger;
+      debugger
       try {
-        await removeOBListing(device);
+        await removeOBListing(device)
 
-        logr.log(`OB Listing for ${device._id} successfully removed.`);
+        // logr.log(`OB Listing for ${device._id} successfully removed.`)
+        console.log(`OB Listing for ${device._id} successfully removed.`)
       } catch (err) {
-        debugger;
+        debugger
         if (err.toString().indexOf('no obContract model associated with device') > -1) {
-          console.error('Device has no OB listing associated with it. Skipping.');
+          console.error('Device has no OB listing associated with it. Skipping.')
         } else if (err.statusCode >= 500) {
-          console.error(`There was an issue with finding the listing on the OpenBazaar server. Skipping.`);
+          console.error(`There was an issue with finding the listing on the OpenBazaar server. Skipping.`)
         } else {
-          console.error('There was an error trying to remove the OB listing:');
-          console.error(JSON.stringify(err, null, 2));
+          console.error('There was an error trying to remove the OB listing:')
+          console.error(JSON.stringify(err, null, 2))
         }
       }
     }
@@ -137,67 +139,101 @@ async function submitToMarket (device, obj) {
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
     // Create an obContract model.
-    let obContractModel = await createObContract(obj);
+    let obContractModel = await createObContract(obj)
 
     // Create a new store listing.
-    let success = await createObStoreListing(obContractModel);
+    let success = await createObStoreListing(obContractModel)
 
-    if (success.success) logr.log('Successfully created OB listing.');
-    else logr.log('OB listing creation failed.');
+    // if (success.success) logr.log('Successfully created OB listing.')
+    // else logr.log('OB listing creation failed.')
+    if (success.success) console.log('Successfully created OB listing.')
+    else console.log('OB listing creation failed.')
 
     // Return the GUID of the newly created obContract model.
     return obContractModel.collection._id
 
   // Catch any errors.
   } catch (err) {
-    debugger
-    console.error('Error trying to create OB listing in util.js/submitToMarket():');
+    //debugger
+    console.error('Error trying to create OB listing in util.js/submitToMarket():')
     if (err.statusCode >= 500) {
-      console.error('Could not connect to server.');
+      console.error('Could not connect to server.')
     } else {
-      console.error(JSON.stringify(err, null, 2));
+      console.error(JSON.stringify(err, null, 2))
     }
-    throw err;
+    throw err
   }
 }
 
 // This function remove the associated listing from the OB store.
 function removeOBListing (deviceData) {
-  logr.debug('Entering devicePublicData.js/removeOBListing().');
+  //logr.debug('Entering devicePublicData.js/removeOBListing().')
+  console.debug('Entering devicePublicData.js/removeOBListing().')
 
-  debugger;
+  debugger
 
-  const obContractId = deviceData.obContract;
+  const obContractId = deviceData.obContract
 
   // Validation/Error Handling
   if (obContractId === undefined || obContractId === null) {
-    throw `no obContract model associated with device ${deviceData._id}`;
+    throw `no obContract model associated with device ${deviceData._id}`
   }
 
   const options = {
     method: 'GET',
     uri: `http://p2pvps.net/api/ob/removeMarketListing/${obContractId}`,
     json: true // Automatically stringifies the body to JSON
-  };
+  }
 
   return rp(options)
     .then(function (data) {
-      debugger;
+      debugger
 
       if (!data.success) {
-        throw `Could not remove OB store listing for device ${obContractId}`;
+        throw `Could not remove OB store listing for device ${obContractId}`
       }
 
       console.log(
         `Successfully removed listing on OB store with obContract model ID ${obContractId}`
-      );
-      return true;
+      )
+      return true
     })
     .catch(err => {
-      debugger;
-      console.error(`Could not remove OB store listing for device ${obContractId}.`);
-      throw err;
-    });
+      debugger
+      console.error(`Could not remove OB store listing for device ${obContractId}.`)
+      throw err
+    })
+}
+
+function createNewMarketListing (device) {
+  // Generate an expiration date for the store listing.
+  let now = new Date()
+  const oneMonth = 1000 * 60 * 60 * 24 * 30
+  let temp = now.getTime() + oneMonth
+  let oneMonthFromNow = new Date(temp)
+
+  // logr.debug(`oneMonth: ${oneMonth}`);
+  // logr.debug(`now.getTime()+oneMonth = ${temp}, now.getTime() = ${now.getTime()}`);
+  // logr.debug(`Setting experation to: ${oneMonthFromNow.toISOString()}, time now is ${new Date()}`);
+
+  // Create new obContract model
+  var obj = {
+    clientDevice: device._id,
+    ownerUser: device.ownerUser,
+    renterUser: '',
+    price: 30,
+    experation: oneMonthFromNow.toISOString(),
+    title: device.deviceName,
+    description: device.deviceDesc,
+    listingUri: '',
+    imageHash: '',
+    listingState: 'Listed',
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  }
+
+  //return submitToMarket(device, obj)
+  return true;
 }
 
 module.exports = {
@@ -208,5 +244,6 @@ module.exports = {
   createObContract,
   createObStoreListing,
   submitToMarket,
-  removeOBListing
-};
+  removeOBListing,
+  createNewMarketListing
+}

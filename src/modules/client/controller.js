@@ -1,6 +1,7 @@
 const DevicePublicData = require('../../models/devicepublicdata')
 const DevicePrivateData = require('../../models/deviceprivatedata')
 const sshPort = require('../sshport')
+const util = require('../../lib/util')
 
 /**
  * @api {get} /client/register/:id Register a client device on the marketplace
@@ -91,6 +92,12 @@ async function register (ctx, next) {
       await sshPort.releasePort(usedPort)
       console.log(`port ${usedPort} released.`)
     }
+
+    // TODO 1/16/18 check to see if obContract model already exists for this device. If so, delete that model.
+
+    // Create an OB store listing for this device.
+    // let obContractId = await util.submitToMarket(devicePublicModel);
+    const obContractId = await util.createNewMarketListing(device)
 
     ctx.body = {
       device
