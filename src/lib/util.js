@@ -22,6 +22,8 @@
 const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
 
+const LOCALHOST = 'http://localhost:5000'
+
 // Instantiate Keystone Models
 // const logr = keystone.get('logr'); // Logging system
 // const DevicePublicModel = keystone.list('DevicePublicModel');
@@ -80,7 +82,8 @@ function getObContractModel (deviceId) {
 function createObContract (obj) {
   let options = {
     method: 'POST',
-    uri: 'http://localhost:3000/api/obContract/create',
+    // uri: 'http://localhost:3000/api/obContract/create',
+    uri: `${LOCALHOST}/obcontract`,
     body: obj,
     json: true // Automatically stringifies the body to JSON
     // resolveWithFullResponse: true
@@ -103,22 +106,24 @@ function createObStoreListing (obContractModel) {
 
 // Generate an obContract model and use it to create a new listing on the OB
 // store.
-// device = devicePublicModel
+// device = devicePublicData Model
 // obj = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obj) {
   // logr.debug('Entering devicePublicData.js/submitToMarket().')
   console.log('Entering devicePublicData.js/submitToMarket().')
 
+  return true
+
   try {
-    debugger
+    // debugger
 
     // Check if device already has an obContract GUID associated with it.
-    const obContractId = device.get('obContract')
+    const obContractId = device.obContract
     if (obContractId !== '' && obContractId !== null) {
-      debugger
+      // debugger
       try {
-        await removeOBListing(device)
+        // await removeOBListing(device)
 
         // logr.log(`OB Listing for ${device._id} successfully removed.`)
         console.log(`OB Listing for ${device._id} successfully removed.`)
@@ -142,19 +147,19 @@ async function submitToMarket (device, obj) {
     let obContractModel = await createObContract(obj)
 
     // Create a new store listing.
-    let success = await createObStoreListing(obContractModel)
+    // let success = await createObStoreListing(obContractModel)
 
     // if (success.success) logr.log('Successfully created OB listing.')
     // else logr.log('OB listing creation failed.')
-    if (success.success) console.log('Successfully created OB listing.')
-    else console.log('OB listing creation failed.')
+    // if (success.success) console.log('Successfully created OB listing.')
+    // else console.log('OB listing creation failed.')
 
     // Return the GUID of the newly created obContract model.
     return obContractModel.collection._id
 
   // Catch any errors.
   } catch (err) {
-    //debugger
+    // debugger
     console.error('Error trying to create OB listing in util.js/submitToMarket():')
     if (err.statusCode >= 500) {
       console.error('Could not connect to server.')
@@ -167,7 +172,7 @@ async function submitToMarket (device, obj) {
 
 // This function remove the associated listing from the OB store.
 function removeOBListing (deviceData) {
-  //logr.debug('Entering devicePublicData.js/removeOBListing().')
+  // logr.debug('Entering devicePublicData.js/removeOBListing().')
   console.debug('Entering devicePublicData.js/removeOBListing().')
 
   debugger
@@ -232,8 +237,8 @@ function createNewMarketListing (device) {
     updatedAt: now.toISOString()
   }
 
-  //return submitToMarket(device, obj)
-  return true;
+  return submitToMarket(device, obj)
+  // return true
 }
 
 module.exports = {
