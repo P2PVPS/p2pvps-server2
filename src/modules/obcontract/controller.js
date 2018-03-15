@@ -39,6 +39,7 @@ const OBContract = require('../../models/obcontract')
  *     }
  */
 async function createContract (ctx) {
+  //console.log(`createContract(obContract): ${JSON.stringify(ctx.request.body.obContract, null, 2)}`)
   const obContract = new OBContract(ctx.request.body.obContract)
   try {
     await obContract.save()
@@ -125,7 +126,7 @@ async function getContract (ctx, next) {
       ctx.throw(404)
     }
 
-    console.log(`Error in obcontract.getContract: ${JSON.stringify(err,null,2)}`)
+    console.log(`Error in obcontract.getContract: ${JSON.stringify(err, null, 2)}`)
     ctx.throw(500)
   }
 
