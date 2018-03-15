@@ -9,7 +9,7 @@ module.exports.routes = [
     method: 'POST',
     route: '/',
     handlers: [
-      ensureUser,
+      // ensureUser,
       obContract.createContract
     ]
   },

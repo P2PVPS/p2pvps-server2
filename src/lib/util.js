@@ -21,6 +21,7 @@
 // const keystone = require('keystone')
 const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
+const obContractApi = require('../modules/obcontract/index.js')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -113,7 +114,7 @@ async function submitToMarket (device, obj) {
   // logr.debug('Entering devicePublicData.js/submitToMarket().')
   console.log('Entering devicePublicData.js/submitToMarket().')
 
-  return true
+  // return true
 
   try {
     // debugger
@@ -144,7 +145,8 @@ async function submitToMarket (device, obj) {
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
     // Create an obContract model.
-    let obContractModel = await createObContract(obj)
+    let obContractModel = await obContractApi.createContract(obj)
+    // let obContractModel = obContractApi.helloWorld()
 
     // Create a new store listing.
     // let success = await createObStoreListing(obContractModel)
@@ -155,17 +157,17 @@ async function submitToMarket (device, obj) {
     // else console.log('OB listing creation failed.')
 
     // Return the GUID of the newly created obContract model.
-    return obContractModel.collection._id
+    return obContractModel._id
 
   // Catch any errors.
   } catch (err) {
     // debugger
     console.error('Error trying to create OB listing in util.js/submitToMarket():')
-    if (err.statusCode >= 500) {
-      console.error('Could not connect to server.')
-    } else {
-      console.error(JSON.stringify(err, null, 2))
-    }
+    // if (err.statusCode >= 500) {
+    //  console.error('Could not connect to server.')
+    // } else {
+    //  console.error(JSON.stringify(err, null, 2))
+    // }
     throw err
   }
 }

@@ -25,6 +25,7 @@ describe('obContract', () => {
   })
 
   describe('POST /obcontract', () => {
+    /*
     it('should not create contract if token is invalid', (done) => {
       request
         .post('/obcontract')
@@ -42,6 +43,7 @@ describe('obContract', () => {
         })
         .expect(401, done)
     })
+    */
 
     it('should not create contract when data is incomplete', (done) => {
       request
@@ -61,8 +63,8 @@ describe('obContract', () => {
           Accept: 'application/json',
           Authorization: `Bearer ${context.token}`
         })
-        .send({ obContract:
-        {
+        .send({
+          obContract: {
           ownerUser: context.userId,
           clientDevice: context.deviceId,
           title: 'test',
