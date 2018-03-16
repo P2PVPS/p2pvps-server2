@@ -48,8 +48,8 @@ describe('Client', () => {
     // Mock out the URLs.
     nock(`http://dockerconnextcmsp2pvps_openbazaar_1:4002`)
     .persist()
-    .post('/')
-    .reply(200, { success: true })
+    .post('/ob/listing/')
+    .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
   })
 
   describe('GET /register/:id', () => {

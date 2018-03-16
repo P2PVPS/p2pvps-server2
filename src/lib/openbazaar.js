@@ -15,12 +15,16 @@ if (process.env.NODE_ENV === 'test') {
   obLib = require(`openbazaar-node`)
 }
 
-const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1:4002`
+const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1`
+//const OB_URL = `http://localhost`
+const OB_PORT = 4002
 const OB_USERNAME = 'yourUsername'
 const OB_PASSWORD = 'yourPassword'
 const obConfig = {
   clientId: OB_USERNAME,
-  clientSecret: OB_PASSWORD
+  clientSecret: OB_PASSWORD,
+  server: OB_URL,
+  obPort: OB_PORT
 }
 
 // var DevicePublicModel = keystone.list('DevicePublicModel')
@@ -75,7 +79,8 @@ async function createStoreListing (obContractModel) {
     }
 
     var apiCredentials = obLib.getOBAuth(obConfig)
-
+    obConfig.apiCredentials = apiCredentials
+/*
     var options = {
       method: 'POST',
       uri: OB_URL,
@@ -88,7 +93,9 @@ async function createStoreListing (obContractModel) {
     }
 
     const result = await rp(options)
-
+*/
+    // const result = await obLib.getNotifications(obConfig)
+    const result = await obLib.createListing(obConfig, listingData)
     console.log(`result: ${JSON.stringify(result, null, 2)}`)
 
 /*
