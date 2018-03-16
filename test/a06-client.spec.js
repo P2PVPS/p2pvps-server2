@@ -19,6 +19,7 @@ const should = require('chai').should
 const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
+const nock = require('nock')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -43,6 +44,12 @@ describe('Client', () => {
     context.deviceId = device._id.toString()
     context.privateDataId = device.privateData
     context.deviceData = device
+
+    // Mock out the URLs.
+    nock(`http://dockerconnextcmsp2pvps_openbazaar_1:4002`)
+    .persist()
+    .post('/ob/listing/')
+    .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
   })
 
   describe('GET /register/:id', () => {

@@ -51,9 +51,11 @@
     "koa-router": "^7.0.1",
     "koa-static": "^4.0.2",
     "mongoose": "^5.0.8",
+    "openbazaar-node": "^1.2.2",
     "passport-local": "^1.0.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "require": "^2.4.20"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -62,6 +64,7 @@
     "eslint-plugin-promise": "^2.0.1",
     "eslint-plugin-standard": "^2.0.0",
     "mocha": "^3.0.2",
+    "nock": "^9.2.3",
     "nodemon": "^1.8.1",
     "supertest": "^2.0.0"
   }
