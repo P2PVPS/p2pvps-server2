@@ -6,17 +6,18 @@
 // var keystone = require('keystone')
 // var request = require('request')
 // var Promise = require('node-promise') // Promises to handle asynchonous callbacks.
-var rp = require('request-promise')
+// const rp = require('request-promise')
 
 let obLib
-if (process.env.NODE_ENV === 'test') {
-  obLib = require(`../../../openbazaar-node/openbazaar.js`)
-} else {
+//if (process.env.NODE_ENV === 'test') {
+//  obLib = require(`../../../openbazaar-node/openbazaar.js`)
+//} else {
   obLib = require(`openbazaar-node`)
-}
+//}
 
+// Configure for OpenBazaar
 const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1`
-//const OB_URL = `http://localhost`
+// const OB_URL = `http://localhost`
 const OB_PORT = 4002
 const OB_USERNAME = 'yourUsername'
 const OB_PASSWORD = 'yourPassword'
@@ -264,21 +265,6 @@ exports.removeMarketListing = function (req, res) {
 */
 
 /** BEGIN PRIVATE FUNCTIONS ****/
-
-function _getOBAuth () {
-  // debugger
-
-  var clientID = 'yourUsername'
-  var clientSecret = 'yourPassword'
-
-  // Encoding as per Centro API Specification.
-  var combinedCredential = clientID + ':' + clientSecret
-  // var base64Credential = window.btoa(combinedCredential);
-  var base64Credential = Buffer.from(combinedCredential).toString('base64')
-  var readyCredential = 'Basic ' + base64Credential
-
-  return readyCredential
-}
 
 /** END PRIVATE FUNCTIONS **/
 
