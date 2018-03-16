@@ -22,6 +22,7 @@
 const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
 const obContractApi = require('../modules/obcontract/index.js')
+const openbazaar = require(`./openbazaar.js`)
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -110,7 +111,7 @@ function createObStoreListing (obContractModel) {
 // device = devicePublicData Model
 // obj = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
-async function submitToMarket (device, obj) {
+async function submitToMarket (device, obContractData) {
   // logr.debug('Entering devicePublicData.js/submitToMarket().')
   console.log('Entering devicePublicData.js/submitToMarket().')
 
@@ -145,11 +146,10 @@ async function submitToMarket (device, obj) {
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
     // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(obj)
-    // let obContractModel = obContractApi.helloWorld()
+    let obContractModel = await obContractApi.createContract(obContractData)
 
     // Create a new store listing.
-    // let success = await createObStoreListing(obContractModel)
+    let success = await openbazaar.createStoreListing(obContractModel)
 
     // if (success.success) logr.log('Successfully created OB listing.')
     // else logr.log('OB listing creation failed.')

@@ -4,9 +4,24 @@
 */
 
 // var keystone = require('keystone')
-//var request = require('request')
+// var request = require('request')
 // var Promise = require('node-promise') // Promises to handle asynchonous callbacks.
 var rp = require('request-promise')
+
+let obLib
+if (process.env.NODE_ENV === 'test') {
+  obLib = require(`../../../openbazaar-node/openbazaar.js`)
+} else {
+  obLib = require(`openbazaar-node`)
+}
+
+const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1:4002`
+const OB_USERNAME = 'yourUsername'
+const OB_PASSWORD = 'yourPassword'
+const obConfig = {
+  clientId: OB_USERNAME,
+  clientSecret: OB_PASSWORD
+}
 
 // var DevicePublicModel = keystone.list('DevicePublicModel')
 // var DevicePrivateModel = keystone.list('DevicePrivateModel')
@@ -14,69 +29,70 @@ var rp = require('request-promise')
 
 // Creates a listing on OpenBazaar based on an obContractModel.
 // An obContractModel GUID is passed in the URI.
-exports.createMarketListing = function (req, res) {
-  // debugger
+async function createStoreListing (obContractModel) {
+  console.log(`obContractModel: ${JSON.stringify(obContractModel)}`)
 
-  obContractModel.model.findById(req.params.id).exec(function (err, item) {
-    if (err) return res.apiError('database error', err)
-    if (!item) return res.apiError('not found')
-
-    try {
-      var listingData = {
-        coupons: [
-          {
-            discountCode: 'TESTING',
-            title: 'TESTING',
-            priceDiscount: 29
-          }
-        ],
-        refundPolicy: '',
-        shippingOptions: [],
-        termsAndConditions: '',
-        metadata: {
-          contractType: 'SERVICE',
-          expiry: item.get('experation'),
-          format: 'FIXED_PRICE',
-          pricingCurrency: 'USD'
-        },
-        item: {
-          categories: [],
-          condition: 'NEW',
-          description: item.get('description'),
-          nsfw: false,
-          options: [],
-          price: item.get('price'),
-          tags: [],
-          title: item.get('title') + ' (' + item.get('clientDevice') + ')',
-          images: [{
-            filename: 'p2pvp.org.png',
-            original: 'zb2rhdwvBAjky685CtiZHbA291rJGGAVpA7RhvY7vRrznX6Ne',
-            large: 'zb2rhoDG3RLMkFarDGajWALbgeXgGG6xmHCZAqiTYrdrdP8ew',
-            medium: 'zb2rhmdVqhZjnpw6Pwd4tCimB1L79ABcukcRnqDroP1C5B6GE',
-            small: 'zb2rhiBc94WnxN3eNtbnBU2CD9sJ1X1QiaemYFpAVFwQVPDsq',
-            tiny: 'zb2rhYBN6k6udcF86NWaPr1GBB8HpPYLcL1HwFtJZE7gGEpT8'
-          }],
-          skus: [{
-            quantity: 1,
-            productID: item.get('clientDevice')
-          }]
+  try {
+    const listingData = {
+      coupons: [
+        {
+          discountCode: 'TESTING',
+          title: 'TESTING',
+          priceDiscount: 29
         }
+      ],
+      refundPolicy: '',
+      shippingOptions: [],
+      termsAndConditions: '',
+      metadata: {
+        contractType: 'SERVICE',
+        expiry: obContractModel.experation,
+        format: 'FIXED_PRICE',
+        pricingCurrency: 'USD'
+      },
+      item: {
+        categories: [],
+        condition: 'NEW',
+        description: obContractModel.description,
+        nsfw: false,
+        options: [],
+        price: obContractModel.price,
+        tags: [],
+        title: obContractModel.title + ' (' + obContractModel.clientDevice + ')',
+        images: [{
+          filename: 'p2pvp.org.png',
+          original: 'zb2rhdwvBAjky685CtiZHbA291rJGGAVpA7RhvY7vRrznX6Ne',
+          large: 'zb2rhoDG3RLMkFarDGajWALbgeXgGG6xmHCZAqiTYrdrdP8ew',
+          medium: 'zb2rhmdVqhZjnpw6Pwd4tCimB1L79ABcukcRnqDroP1C5B6GE',
+          small: 'zb2rhiBc94WnxN3eNtbnBU2CD9sJ1X1QiaemYFpAVFwQVPDsq',
+          tiny: 'zb2rhYBN6k6udcF86NWaPr1GBB8HpPYLcL1HwFtJZE7gGEpT8'
+        }],
+        skus: [{
+          quantity: 1,
+          productID: obContractModel.clientDevice
+        }]
       }
+    }
 
-      var apiCredentials = _getOBAuth()
+    var apiCredentials = obLib.getOBAuth(obConfig)
 
-      var options = {
-        method: 'POST',
-        uri: 'http://dockerconnextcmsp2pvps_openbazaar_1:4002/ob/listing',
-        body: listingData,
-        json: true, // Automatically stringifies the body to JSON
-        headers: {
-          'Authorization': apiCredentials
-        }
+    var options = {
+      method: 'POST',
+      uri: OB_URL,
+      body: listingData,
+      json: true, // Automatically stringifies the body to JSON
+      headers: {
+        'Authorization': apiCredentials
+      }
         // resolveWithFullResponse: true
-      }
+    }
 
-      rp(options)
+    const result = await rp(options)
+
+    console.log(`result: ${JSON.stringify(result, null, 2)}`)
+
+/*
+    rp(options)
       .then(function (data) {
         // debugger
 
@@ -102,13 +118,15 @@ exports.createMarketListing = function (req, res) {
           return res.apiError('Could not create marketlisting. Error communicating with local OpenBazaar Server!')
         }
       })
-    } catch (err) {
-      debugger
-      return res.apiError('API error: ', err)
-    }
-  })
+    */
+  } catch (err) {
+    // debugger
+    console.log('Error in src/lib/openbazaar.js/createStoreListing()')
+    throw err
+  }
 }
 
+/*
 // Updates a listing on OpenBazaar based on data in an obContractModel.
 // An obContractModel GUID is passed in the URI.
 exports.updateListing = function (req, res) {
@@ -236,6 +254,7 @@ exports.removeMarketListing = function (req, res) {
     }
   })
 }
+*/
 
 /** BEGIN PRIVATE FUNCTIONS ****/
 
@@ -255,3 +274,7 @@ function _getOBAuth () {
 }
 
 /** END PRIVATE FUNCTIONS **/
+
+module.exports = {
+  createStoreListing
+}
