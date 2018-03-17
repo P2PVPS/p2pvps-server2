@@ -66,20 +66,50 @@ async function createSystemUser () {
         createSystemUser()
       } catch (err2) {
         console.error(`Error in util.js/createSystemUser() while trying generate new system user: `, err2)
-        process.end(1)
+        // process.end(1)
+        throw err2
       }
     } else {
       console.log('Error in util.js/createSystemUser: ' + JSON.stringify(err, null, 2))
-      process.end(1)
+      // process.end(1)
+      throw err
     }
   }
 }
 
 async function deleteExistingSystemUser () {
   try {
+    let result = await loginAdmin()
+
+    const token = result.body.token
+    const id = result.body.user._id.toString()
+
+    // Delete the user.
+    const options = {
+      method: 'DELETE',
+      uri: `${LOCALHOST}/users/${id}`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    result = await rp(options)
+    // console.log(`result2: ${JSON.stringify(result, null, 2)}`)
+
+    return result.body.success
+  } catch (err) {
+    console.log(`Error in util.js/deleteExistingSystemUser()`)
+    throw err
+  }
+}
+
+async function loginAdmin () {
+  console.log(`loginAdmin() running.`)
+  try {
     // Read the exising file
     const existingUser = require(`../config/${JSON_FILE}`)
-    // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
+    console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
     let options = {
@@ -95,25 +125,9 @@ async function deleteExistingSystemUser () {
     let result = await rp(options)
     // console.log(`result1: ${JSON.stringify(result, null, 2)}`)
 
-    const token = result.body.token
-    const id = result.body.user._id.toString()
-
-    // Delete the user.
-    options = {
-      method: 'DELETE',
-      uri: `${LOCALHOST}/users/${id}`,
-      resolveWithFullResponse: true,
-      json: true,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-    result = await rp(options)
-    // console.log(`result2: ${JSON.stringify(result, null, 2)}`)
-
-    return result.body.success
+    return result
   } catch (err) {
-    console.log(`Error in util.js/deleteExistingSystemUser()`)
+    console.log(`Error in bin/util.js/loginAdmin()`)
     throw err
   }
 }
@@ -152,5 +166,6 @@ function _writeJSON (obj, fileName) {
 
 module.exports = {
   createSystemUser,
-  randomString
+  randomString,
+  loginAdmin
 }

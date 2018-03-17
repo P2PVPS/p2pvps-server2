@@ -23,6 +23,7 @@ const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
 const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
+const serverUtil = require('../../bin/util')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -144,14 +145,14 @@ async function submitToMarket (device, obContractData) {
     // logr.debug(`Time now: ${new Date()}`);
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
-    const admin = await loginAdmin()
+    const admin = await serverUtil.loginAdmin()
     console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
 
     // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(admin, obContractData)
+    let obContractModel = await obContractApi.createContract(admin.body, obContractData)
 
     // Create a new store listing.
-    obContractModel = await openbazaar.createStoreListing(admin, obContractModel)
+    obContractModel = await openbazaar.createStoreListing(admin.body, obContractModel)
 
     // Update the contract model.
     // await obContractApi.updateContract(obContractModel)
