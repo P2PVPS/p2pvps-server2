@@ -146,16 +146,17 @@ async function submitToMarket (device, obContractData) {
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
     const admin = await serverUtil.loginAdmin()
-    console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
+    const token = admin.body.token
+    //console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
 
     // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(admin.body, obContractData)
+    let obContractModel = await obContractApi.createContract(token, obContractData)
 
     // Create a new store listing.
-    obContractModel = await openbazaar.createStoreListing(admin.body, obContractModel)
+    obContractModel = await openbazaar.createStoreListing(obContractModel)
 
     // Update the contract model.
-    // await obContractApi.updateContract(obContractModel)
+    await obContractApi.updateContract(token, obContractModel)
 
     // if (success.success) logr.log('Successfully created OB listing.')
     // else logr.log('OB listing creation failed.')

@@ -35,6 +35,7 @@ describe('Device Private Model', () => {
 
     // Create and system admin user
     const adminUser = await serverUtil.createSystemUser()
+    console.log(`adminUser: ${JSON.stringify(adminUser,null,2)}`)
     context.adminToken = adminUser.token
     context.adminUsername = adminUser.username
     context.adminId = adminUser.id
