@@ -130,7 +130,6 @@ async function submitToMarket (device, obContractData) {
         // logr.log(`OB Listing for ${device._id} successfully removed.`)
         console.log(`OB Listing for ${device._id} successfully removed.`)
       } catch (err) {
-        debugger
         if (err.toString().indexOf('no obContract model associated with device') > -1) {
           console.error('Device has no OB listing associated with it. Skipping.')
         } else if (err.statusCode >= 500) {
@@ -145,11 +144,17 @@ async function submitToMarket (device, obContractData) {
     // logr.debug(`Time now: ${new Date()}`);
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
+    const admin = await loginAdmin()
+    console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
+
     // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(obContractData)
+    let obContractModel = await obContractApi.createContract(admin, obContractData)
 
     // Create a new store listing.
-    let success = await openbazaar.createStoreListing(obContractModel)
+    obContractModel = await openbazaar.createStoreListing(admin, obContractModel)
+
+    // Update the contract model.
+    // await obContractApi.updateContract(obContractModel)
 
     // if (success.success) logr.log('Successfully created OB listing.')
     // else logr.log('OB listing creation failed.')
@@ -243,6 +248,57 @@ function createNewMarketListing (device) {
   // return true
 }
 
+async function loginAdmin () {
+  try {
+    // Ensure the environment variable is set
+    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+    const env = process.env.NODE_ENV
+    const JSON_FILE = `system-user-${env}.json`
+
+    const ADMIN_INFO = `${__dirname}/../../config/${JSON_FILE}`
+    const admin = require(ADMIN_INFO)
+    console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
+
+    // Log in as the user.
+    let options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/auth`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        username: admin.username,
+        password: admin.password
+      }
+    }
+    let result = await rp(options)
+
+    admin.token = result.body.token
+
+    return admin
+    /*
+    const existingUser = require(`../config/${JSON_FILE}`)
+
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/auth`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        username: 'test',
+        password: 'pass'
+      }
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
+    */
+  } catch (err) {
+    console.log('Error retrieving system admin auth info in src/lib/util.js/loginAdmin()')
+    throw err
+  }
+}
+
 module.exports = {
   getDevicePublicModel,
   getDevicePrivateModel,
@@ -252,5 +308,6 @@ module.exports = {
   createObStoreListing,
   submitToMarket,
   removeOBListing,
-  createNewMarketListing
+  createNewMarketListing,
+  loginAdmin
 }

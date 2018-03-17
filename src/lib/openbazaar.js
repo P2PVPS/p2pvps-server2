@@ -9,11 +9,11 @@
 // const rp = require('request-promise')
 
 let obLib
-//if (process.env.NODE_ENV === 'test') {
+// if (process.env.NODE_ENV === 'test') {
 //  obLib = require(`../../../openbazaar-node/openbazaar.js`)
-//} else {
-  obLib = require(`openbazaar-node`)
-//}
+// } else {
+obLib = require(`openbazaar-node`)
+// }
 
 // Configure for OpenBazaar
 const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1`
@@ -98,6 +98,13 @@ async function createStoreListing (obContractModel) {
     // const result = await obLib.getNotifications(obConfig)
     const result = await obLib.createListing(obConfig, listingData)
     console.log(`result: ${JSON.stringify(result, null, 2)}`)
+
+    obContractModel.listingSlug = result.slug
+    obContractModel.imageHash = 'zb2rhe8p68xzhqVnVBPTELk2Sc9RuPSck3dkyJuRpM7LNfEYf'
+    // await obContractModel.save()
+
+    // Return the updated model data.
+    return obContractModel
 
 /*
     rp(options)
