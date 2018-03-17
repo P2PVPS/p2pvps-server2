@@ -51,7 +51,7 @@
     "koa-router": "^7.0.1",
     "koa-static": "^4.0.2",
     "mongoose": "^5.0.8",
-    "openbazaar-node": "^1.2.2",
+    "openbazaar-node": "^1.3.0",
     "passport-local": "^1.0.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
