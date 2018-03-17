@@ -114,7 +114,7 @@ function createObStoreListing (obContractModel) {
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obContractData) {
   // logr.debug('Entering devicePublicData.js/submitToMarket().')
-  console.log('Entering devicePublicData.js/submitToMarket().')
+  //console.log('Entering devicePublicData.js/submitToMarket().')
 
   // return true
 
@@ -147,7 +147,7 @@ async function submitToMarket (device, obContractData) {
 
     const admin = await serverUtil.loginAdmin()
     const token = admin.body.token
-    //console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
+    // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
 
     // Create an obContract model.
     let obContractModel = await obContractApi.createContract(token, obContractData)

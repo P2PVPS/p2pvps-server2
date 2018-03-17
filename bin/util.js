@@ -63,7 +63,8 @@ async function createSystemUser () {
         await deleteExistingSystemUser()
 
         // Call this function again.
-        createSystemUser()
+        return createSystemUser()
+        
       } catch (err2) {
         console.error(`Error in util.js/createSystemUser() while trying generate new system user: `, err2)
         // process.end(1)
@@ -105,11 +106,11 @@ async function deleteExistingSystemUser () {
 }
 
 async function loginAdmin () {
-  //console.log(`loginAdmin() running.`)
+  // console.log(`loginAdmin() running.`)
   try {
     // Read the exising file
     const existingUser = require(`../config/${JSON_FILE}`)
-    //console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
+    // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
     let options = {
