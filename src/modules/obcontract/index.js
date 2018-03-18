@@ -87,8 +87,39 @@ async function getContract (contractId) {
   }
 }
 
+// Remove an obContract model from the database.
+async function removeContract(token, obContract) {
+  try {
+    // console.log(`contractObj: ${JSON.stringify(contractObj, null, 2)}`)
+
+    const options = {
+      method: 'PUT',
+      uri: `${LOCALHOST}/obcontract/${obContract._id.toString()}`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: {
+        obContract
+      }
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+    return result.body.obContract
+  } catch (err) {
+    console.error(`Error in modules/obcontract/index.js/updateContract(): `, err)
+    throw err
+  }
+
+}
+
 module.exports = {
   createContract,
   updateContract,
-  getContract
+  getContract,
+  removeContract
 }

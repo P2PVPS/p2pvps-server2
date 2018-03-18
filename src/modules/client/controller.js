@@ -90,7 +90,7 @@ async function register (ctx, next) {
     if (usedPort) {
       // Release the used port.
       await sshPort.releasePort(usedPort)
-      console.log(`port ${usedPort} released.`)
+      //console.log(`port ${usedPort} released.`)
     }
 
     // TODO 1/16/18 check to see if obContract model already exists for this device. If so, delete that model.

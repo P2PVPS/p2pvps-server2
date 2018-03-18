@@ -138,6 +138,7 @@ async function submitToMarket (device, obContractData) {
     // logr.debug(`Time now: ${new Date()}`);
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
+    // Log in as the system admin.
     const admin = await serverUtil.loginAdmin()
     const token = admin.body.token
     // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
@@ -169,25 +170,33 @@ async function submitToMarket (device, obContractData) {
 
 // This function remove the associated listing from the OB store.
 async function removeOBListing (deviceData) {
-  // logr.debug('Entering devicePublicData.js/removeOBListing().')
-  console.debug('Entering devicePublicData.js/removeOBListing().')
+  // console.debug('Entering devicePublicData.js/removeOBListing().')
+  try {
+    const obContractId = deviceData.obContract
 
-  const obContractId = deviceData.obContract
+    // Validation/Error Handling
+    if (obContractId === undefined || obContractId === null) {
+      throw `no obContract model associated with device ${deviceData._id}`
+    }
+    // console.log(`obContractId: ${obContractId}`)
 
-  // Validation/Error Handling
-  if (obContractId === undefined || obContractId === null) {
-    throw `no obContract model associated with device ${deviceData._id}`
+    // Get the obContract model.
+    const obContract = await obContractApi.getContract(obContractId)
+    // console.log(`obContract: ${JSON.stringify(obContract, null, 2)}`)
+
+    // Remove the OB store listing
+    await openbazaar.removeMarketListing(obContract.listingSlug)
+
+    // Log in as the system admin.
+    const admin = await serverUtil.loginAdmin()
+    const token = admin.body.token
+
+    // Remove the obContract model from the DB.
+    await obContractApi.removeContract(token, obContract)
+  } catch (err) {
+    console.error(`Error in src/lib/util.js in removeOBListing().`)
+    throw err
   }
-  // console.log(`obContractId: ${obContractId}`)
-
-  // Get the obContract model.
-  const obContract = await obContractApi.getContract(obContractId)
-  //console.log(`obContract: ${JSON.stringify(obContract, null, 2)}`)
-
-  // TODO Remove the OB store listing
-  await openbazaar.removeMarketListing(obContract.listingSlug)
-
-  // TODO Remove the obContract model from the DB.
 }
 
 function createNewMarketListing (device) {

@@ -167,7 +167,7 @@ exports.updateListing = function (req, res) {
 // Removes a listing on OpenBazaar based on data in an obContractModel.
 // An obContractModel GUID is passed in the URI.
 async function removeMarketListing (slug) {
-  console.log(`openbazaar.removeMarketListing() fired. Slug: ${slug}`)
+  //console.log(`openbazaar.removeMarketListing() fired. Slug: ${slug}`)
 
   try {
     await obLib.removeListing(obConfig, slug)
