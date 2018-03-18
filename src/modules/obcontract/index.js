@@ -67,7 +67,28 @@ async function updateContract (token, obContract) {
   }
 }
 
+async function getContract (contractId) {
+  try {
+    const options = {
+      method: 'GET',
+      uri: `${LOCALHOST}/obcontract/${contractId}`,
+      // resolveWithFullResponse: true,
+      json: true
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+    return result.obContract
+  } catch (err) {
+    console.error(`Error in modules/obcontract/index.js/getContract(): `, err)
+    throw err
+  }
+}
+
 module.exports = {
   createContract,
-  updateContract
+  updateContract,
+  getContract
 }

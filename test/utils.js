@@ -143,7 +143,7 @@ async function createDevice (config) {
           ownerUser: 'test',
           renterUser: 'test',
           privateData: 'test',
-          obContract: 'test',
+          obContract: '',
           rentStartDate: 'test',
           expiration: 'test',
           deviceName: 'test',

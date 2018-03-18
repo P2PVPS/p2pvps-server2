@@ -18,6 +18,10 @@ const obConfig = {
   obPort: OB_PORT
 }
 
+// Get authorization to communicate with OpenBazaar (OB) API.
+var apiCredentials = obLib.getOBAuth(obConfig)
+obConfig.apiCredentials = apiCredentials
+
 // Creates a listing on OpenBazaar based on an obContractModel.
 // An obContractModel GUID is passed in the URI.
 async function createStoreListing (obContractModel) {
@@ -64,10 +68,6 @@ async function createStoreListing (obContractModel) {
         }]
       }
     }
-
-    // Get authorization to communicate with OpenBazaar (OB) API.
-    var apiCredentials = obLib.getOBAuth(obConfig)
-    obConfig.apiCredentials = apiCredentials
 
     // Create the listing on the OB store.
     const result = await obLib.createListing(obConfig, listingData)
@@ -162,65 +162,27 @@ exports.updateListing = function (req, res) {
     }
   })
 }
+*/
 
 // Removes a listing on OpenBazaar based on data in an obContractModel.
 // An obContractModel GUID is passed in the URI.
-exports.removeMarketListing = function (req, res) {
-  obContractModel.model.findById(req.params.id).exec(function (err, item) {
-    if (err) return res.apiError('database error', err)
-    if (!item) return res.apiError('not found')
+async function removeMarketListing (slug) {
+  console.log(`openbazaar.removeMarketListing() fired. Slug: ${slug}`)
 
-    debugger
-
-    try {
-      var apiCredentials = _getOBAuth()
-
-      var listingData = {
-        slug: item.get('listingSlug')
-      }
-
-      var options = {
-        method: 'DELETE',
-        uri: 'http://dockerconnextcmsp2pvps_openbazaar_1:4002/ob/listing/' + item.get('listingSlug'),
-        body: listingData,
-        json: true, // Automatically stringifies the body to JSON
-        headers: {
-          'Authorization': apiCredentials
-        }
-        // resolveWithFullResponse: true
-      }
-
-      rp(options)
-      .then(function (data) {
-        debugger
-
-        // return res.apiResponse({success: true})
-
-        // Also delete the obContract model
-        item.remove(function (err) {
-          if (err) return res.apiError('database error', err)
-
-          return res.apiResponse({
-            success: true
-          })
-        })
-      })
-      .catch(function (err) {
-        debugger
-        return res.apiError('Could not remove market listing. Error communicating with local OpenBazaar Server!', err)
-      })
-    } catch (err) {
-      debugger
-      return res.apiError('API error: ', err)
-    }
-  })
+  try {
+    await obLib.removeListing(obConfig, slug)
+    return true
+  } catch (err) {
+    console.error(`Error in src/lib/openbazaar.js removeMarketListing().`)
+    throw err
+  }
 }
-*/
 
 /** BEGIN PRIVATE FUNCTIONS ****/
 
 /** END PRIVATE FUNCTIONS **/
 
 module.exports = {
-  createStoreListing
+  createStoreListing,
+  removeMarketListing
 }

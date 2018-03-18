@@ -117,7 +117,7 @@ async function submitToMarket (device, obContractData) {
     // Check if device already has an obContract GUID associated with it.
     const obContractId = device.obContract
     if (obContractId !== '' && obContractId !== null) {
-      // debugger
+      // console.log(`submitToMarket() obContractId: ${obContractId}`)
       try {
         await removeOBListing(device)
 
@@ -129,7 +129,7 @@ async function submitToMarket (device, obContractData) {
         } else if (err.statusCode >= 500) {
           console.error(`There was an issue with finding the listing on the OpenBazaar server. Skipping.`)
         } else {
-          console.error('There was an error trying to remove the OB listing:')
+          console.error('There was an error trying to remove the OB listing:', err)
           console.error(JSON.stringify(err, null, 2))
         }
       }
@@ -168,7 +168,7 @@ async function submitToMarket (device, obContractData) {
 }
 
 // This function remove the associated listing from the OB store.
-function removeOBListing (deviceData) {
+async function removeOBListing (deviceData) {
   // logr.debug('Entering devicePublicData.js/removeOBListing().')
   console.debug('Entering devicePublicData.js/removeOBListing().')
 
@@ -178,11 +178,16 @@ function removeOBListing (deviceData) {
   if (obContractId === undefined || obContractId === null) {
     throw `no obContract model associated with device ${deviceData._id}`
   }
+  // console.log(`obContractId: ${obContractId}`)
+
+  // Get the obContract model.
+  const obContract = await obContractApi.getContract(obContractId)
+  //console.log(`obContract: ${JSON.stringify(obContract, null, 2)}`)
 
   // TODO Remove the OB store listing
+  await openbazaar.removeMarketListing(obContract.listingSlug)
 
   // TODO Remove the obContract model from the DB.
-
 }
 
 function createNewMarketListing (device) {
