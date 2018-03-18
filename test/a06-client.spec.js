@@ -50,6 +50,11 @@ describe('Client', () => {
     .persist()
     .post('/ob/listing/')
     .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
+
+    nock(`http://dockerconnextcmsp2pvps_openbazaar_1:4002`)
+    .persist()
+    .delete('/ob/listing/test-5aab2816aa39c214596eb900')
+    .reply(200, { })
   })
 
   describe('GET /register/:id', () => {

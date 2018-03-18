@@ -52,10 +52,11 @@ const passport = require('koa-passport')
 
 // Authenticate a user and generate the JWT for them.
 async function authUser (ctx, next) {
+  // console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
   return passport.authenticate('local', (err, user, info, status) => {
     if (err) throw err
 
-    //console.log(`user value passed: ${JSON.stringify(user, null, 2)}`)
+    // console.log(`user value passed: ${JSON.stringify(user, null, 2)}`)
     if (!user) {
       ctx.throw(401)
     }

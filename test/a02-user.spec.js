@@ -4,6 +4,7 @@ const supertest = require('supertest')
 const expect = require('chai').expect
 const should = require('chai').should
 const cleanDb = require('./utils').cleanDb
+const serverUtil = require('../bin/util')
 
 should()
 const request = supertest.agent(app.listen())
@@ -13,6 +14,11 @@ describe('Users', () => {
   before((done) => {
     cleanDb()
     done()
+  })
+
+  after(async () => {
+    // Restore the admin user.
+    await serverUtil.createSystemUser()
   })
 
   describe('POST /users', () => {
@@ -31,7 +37,7 @@ describe('Users', () => {
         .send({ user: { username: 'supercoolname', password: 'supersecretpassword', type: 'blah' } })
         .expect(200, (err, res) => {
           if (err) { return done(err) }
-          //console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
+          // console.log(`res.body: ${JSON.stringify(res.body, null, 2)}`)
 
           res.body.user.should.have.property('username')
           res.body.user.username.should.equal('supercoolname')
@@ -99,7 +105,7 @@ describe('Users', () => {
         })
         .expect(200, (err, res) => {
           if (err) { return done(err) }
-
+          //console.log(`Users: ${JSON.stringify(res.body, null, 2)}`)
           res.body.should.have.property('users')
 
           res.body.users.should.have.length(1)

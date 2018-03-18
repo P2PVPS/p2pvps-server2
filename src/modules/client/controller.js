@@ -90,7 +90,7 @@ async function register (ctx, next) {
     if (usedPort) {
       // Release the used port.
       await sshPort.releasePort(usedPort)
-      console.log(`port ${usedPort} released.`)
+      //console.log(`port ${usedPort} released.`)
     }
 
     // TODO 1/16/18 check to see if obContract model already exists for this device. If so, delete that model.
@@ -98,6 +98,11 @@ async function register (ctx, next) {
     // Create an OB store listing for this device.
     // let obContractId = await util.submitToMarket(devicePublicModel);
     const obContractId = await util.createNewMarketListing(device)
+    //console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+
+    // Update the devicePublicModel with the newly created obContract model GUID.
+    device.obContract = obContractId.toString()
+    await device.save()
 
     ctx.body = {
       device

@@ -1,5 +1,7 @@
 module.exports = function getToken (ctx) {
   const header = ctx.request.header.authorization
+  //console.log(`header: ${header}`)
+
   if (!header) {
     return null
   }

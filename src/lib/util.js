@@ -23,6 +23,7 @@ const rp = require('request-promise')
 // const openbazaar = require('openbazaar-node');
 const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
+const serverUtil = require('../../bin/util')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -109,34 +110,26 @@ function createObStoreListing (obContractModel) {
 // Generate an obContract model and use it to create a new listing on the OB
 // store.
 // device = devicePublicData Model
-// obj = object used to create an obContract model.
+// obContractData = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obContractData) {
-  // logr.debug('Entering devicePublicData.js/submitToMarket().')
-  console.log('Entering devicePublicData.js/submitToMarket().')
-
-  // return true
-
   try {
-    // debugger
-
     // Check if device already has an obContract GUID associated with it.
     const obContractId = device.obContract
     if (obContractId !== '' && obContractId !== null) {
-      // debugger
+      // console.log(`submitToMarket() obContractId: ${obContractId}`)
       try {
-        // await removeOBListing(device)
+        await removeOBListing(device)
 
         // logr.log(`OB Listing for ${device._id} successfully removed.`)
         console.log(`OB Listing for ${device._id} successfully removed.`)
       } catch (err) {
-        debugger
         if (err.toString().indexOf('no obContract model associated with device') > -1) {
           console.error('Device has no OB listing associated with it. Skipping.')
         } else if (err.statusCode >= 500) {
           console.error(`There was an issue with finding the listing on the OpenBazaar server. Skipping.`)
         } else {
-          console.error('There was an error trying to remove the OB listing:')
+          console.error('There was an error trying to remove the OB listing:', err)
           console.error(JSON.stringify(err, null, 2))
         }
       }
@@ -145,16 +138,19 @@ async function submitToMarket (device, obContractData) {
     // logr.debug(`Time now: ${new Date()}`);
     // logr.debug(`Setting expiration to: ${obj.experation}`);
 
+    // Log in as the system admin.
+    const admin = await serverUtil.loginAdmin()
+    const token = admin.body.token
+    // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
+
     // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(obContractData)
+    let obContractModel = await obContractApi.createContract(token, obContractData)
 
     // Create a new store listing.
-    let success = await openbazaar.createStoreListing(obContractModel)
+    obContractModel = await openbazaar.createStoreListing(obContractModel)
 
-    // if (success.success) logr.log('Successfully created OB listing.')
-    // else logr.log('OB listing creation failed.')
-    // if (success.success) console.log('Successfully created OB listing.')
-    // else console.log('OB listing creation failed.')
+    // Update the contract model.
+    await obContractApi.updateContract(token, obContractModel)
 
     // Return the GUID of the newly created obContract model.
     return obContractModel._id
@@ -173,43 +169,34 @@ async function submitToMarket (device, obContractData) {
 }
 
 // This function remove the associated listing from the OB store.
-function removeOBListing (deviceData) {
-  // logr.debug('Entering devicePublicData.js/removeOBListing().')
-  console.debug('Entering devicePublicData.js/removeOBListing().')
+async function removeOBListing (deviceData) {
+  // console.debug('Entering devicePublicData.js/removeOBListing().')
+  try {
+    const obContractId = deviceData.obContract
 
-  debugger
+    // Validation/Error Handling
+    if (obContractId === undefined || obContractId === null) {
+      throw `no obContract model associated with device ${deviceData._id}`
+    }
+    // console.log(`obContractId: ${obContractId}`)
 
-  const obContractId = deviceData.obContract
+    // Get the obContract model.
+    const obContract = await obContractApi.getContract(obContractId)
+    // console.log(`obContract: ${JSON.stringify(obContract, null, 2)}`)
 
-  // Validation/Error Handling
-  if (obContractId === undefined || obContractId === null) {
-    throw `no obContract model associated with device ${deviceData._id}`
+    // Remove the OB store listing
+    await openbazaar.removeMarketListing(obContract.listingSlug)
+
+    // Log in as the system admin.
+    const admin = await serverUtil.loginAdmin()
+    const token = admin.body.token
+
+    // Remove the obContract model from the DB.
+    await obContractApi.removeContract(token, obContract)
+  } catch (err) {
+    console.error(`Error in src/lib/util.js in removeOBListing().`)
+    throw err
   }
-
-  const options = {
-    method: 'GET',
-    uri: `http://p2pvps.net/api/ob/removeMarketListing/${obContractId}`,
-    json: true // Automatically stringifies the body to JSON
-  }
-
-  return rp(options)
-    .then(function (data) {
-      debugger
-
-      if (!data.success) {
-        throw `Could not remove OB store listing for device ${obContractId}`
-      }
-
-      console.log(
-        `Successfully removed listing on OB store with obContract model ID ${obContractId}`
-      )
-      return true
-    })
-    .catch(err => {
-      debugger
-      console.error(`Could not remove OB store listing for device ${obContractId}.`)
-      throw err
-    })
 }
 
 function createNewMarketListing (device) {
@@ -243,6 +230,57 @@ function createNewMarketListing (device) {
   // return true
 }
 
+async function loginAdmin () {
+  try {
+    // Ensure the environment variable is set
+    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+    const env = process.env.NODE_ENV
+    const JSON_FILE = `system-user-${env}.json`
+
+    const ADMIN_INFO = `${__dirname}/../../config/${JSON_FILE}`
+    const admin = require(ADMIN_INFO)
+    console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
+
+    // Log in as the user.
+    let options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/auth`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        username: admin.username,
+        password: admin.password
+      }
+    }
+    let result = await rp(options)
+
+    admin.token = result.body.token
+
+    return admin
+    /*
+    const existingUser = require(`../config/${JSON_FILE}`)
+
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/auth`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        username: 'test',
+        password: 'pass'
+      }
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
+    */
+  } catch (err) {
+    console.log('Error retrieving system admin auth info in src/lib/util.js/loginAdmin()')
+    throw err
+  }
+}
+
 module.exports = {
   getDevicePublicModel,
   getDevicePrivateModel,
@@ -252,5 +290,6 @@ module.exports = {
   createObStoreListing,
   submitToMarket,
   removeOBListing,
-  createNewMarketListing
+  createNewMarketListing,
+  loginAdmin
 }
