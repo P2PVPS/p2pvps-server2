@@ -1,6 +1,10 @@
 /*
   This library contains functions for interacting with a local OpenBazaar
   server via its REST API.
+
+  This file is basically a wrapper for the openbazaar-node library. These
+  functions prepare objects and data, then call the openbazaar-node library
+  functions.
 */
 
 const obLib = require(`openbazaar-node`)
@@ -167,7 +171,7 @@ exports.updateListing = function (req, res) {
 // Removes a listing on OpenBazaar based on data in an obContractModel.
 // An obContractModel GUID is passed in the URI.
 async function removeMarketListing (slug) {
-  //console.log(`openbazaar.removeMarketListing() fired. Slug: ${slug}`)
+  // console.log(`openbazaar.removeMarketListing() fired. Slug: ${slug}`)
 
   try {
     await obLib.removeListing(obConfig, slug)
