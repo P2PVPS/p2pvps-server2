@@ -101,7 +101,7 @@ async function register (ctx, next) {
     const obContractId = await util.createNewMarketListing(device)
     // console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
-    // Update the devicePublicModel with the newly created obContract model GUID.
+    // Update the device with the newly created obContract model GUID.
     device.obContract = obContractId.toString()
     await device.save()
 
@@ -121,6 +121,45 @@ async function register (ctx, next) {
   if (next) { return next() }
 }
 
+// This function allows Clients to check-in and notify the server they are still
+// actively connected to the internet. This should happen every 2 minutes. It
+// updates the checkinTimeStamp of the device
+async function checkIn (ctx, next) {
+  //console.log('Entering devicePublicData.js/checkIn().')
+
+  try {
+    // Retrieve the device model from the database.
+    const device = await DevicePublicData.findById(ctx.params.id)
+    if (!device) {
+      ctx.throw(404, 'Could not find that device.')
+    }
+
+    // Save the user-provided data into a handy object.
+    // const userData = ctx.request.body
+
+    var now = new Date()
+    var timeStamp = now.toISOString()
+
+    device.checkinTimeStamp = timeStamp
+    await device.save()
+
+    // Return success
+    ctx.body = {
+      success: true
+    }
+  } catch (err) {
+    if (err === 404 || err.name === 'CastError') {
+      ctx.throw(404)
+    }
+
+    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
+    ctx.throw(500)
+  }
+
+  if (next) { return next() }
+}
+
 module.exports = {
-  register
+  register,
+  checkIn
 }

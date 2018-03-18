@@ -160,4 +160,50 @@ describe('Client', () => {
 
   // End Describe
   })
+
+  describe('GET /checkin/:id', () => {
+    it('should reject with 404 if device can not be found', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/client/checkin/1`,
+          resolveWithFullResponse: true,
+          json: true
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 404) {
+          assert(err.statusCode === 404, 'Error code 404 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should check in device', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/client/checkin/${context.deviceId}`,
+          // resolveWithFullResponse: true,
+          json: true
+        }
+        let result = await rp(options)
+
+        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.success, 'Should return true')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+  })
 })
