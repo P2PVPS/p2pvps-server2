@@ -35,7 +35,7 @@ describe('Device Private Model', () => {
 
     // Create and system admin user
     const adminUser = await serverUtil.createSystemUser()
-    console.log(`adminUser: ${JSON.stringify(adminUser,null,2)}`)
+    //console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
     context.adminToken = adminUser.token
     context.adminUsername = adminUser.username
     context.adminId = adminUser.id
@@ -43,7 +43,7 @@ describe('Device Private Model', () => {
     // Create a device
     const device = await utils.createDevice({token: context.userToken})
     context.device = device
-    //console.log(`device: ${JSON.stringify(device, null, 2)}`)
+    // console.log(`device: ${JSON.stringify(device, null, 2)}`)
   })
 
   describe('GET /deviceprivatedata/:id', () => {

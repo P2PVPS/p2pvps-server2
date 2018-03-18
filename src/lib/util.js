@@ -110,11 +110,11 @@ function createObStoreListing (obContractModel) {
 // Generate an obContract model and use it to create a new listing on the OB
 // store.
 // device = devicePublicData Model
-// obj = object used to create an obContract model.
+// obContractData = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obContractData) {
   // logr.debug('Entering devicePublicData.js/submitToMarket().')
-  //console.log('Entering devicePublicData.js/submitToMarket().')
+  // console.log('Entering devicePublicData.js/submitToMarket().')
 
   // return true
 
