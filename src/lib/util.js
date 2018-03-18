@@ -1,6 +1,7 @@
 /*
   This library contains several common used utility functions used by the
-  P2P VPS server APIs.
+  P2P VPS server APIs. This file essentially contains the low-level business
+  logic expressed by the /client API.
 
   Functions included in this library:
 
@@ -107,68 +108,8 @@ function createObStoreListing (obContractModel) {
   return rp(options)
 }
 
-// Generate an obContract model and use it to create a new listing on the OB
-// store.
-// device = devicePublicData Model
-// obContractData = object used to create an obContract model.
-// Returns a promise that resolves to the ID of the newly created obContract model.
-async function submitToMarket (device, obContractData) {
-  try {
-    // Check if device already has an obContract GUID associated with it.
-    const obContractId = device.obContract
-    if (obContractId !== '' && obContractId !== null) {
-      // console.log(`submitToMarket() obContractId: ${obContractId}`)
-      try {
-        await removeOBListing(device)
-
-        // logr.log(`OB Listing for ${device._id} successfully removed.`)
-        console.log(`OB Listing for ${device._id} successfully removed.`)
-      } catch (err) {
-        if (err.toString().indexOf('no obContract model associated with device') > -1) {
-          console.error('Device has no OB listing associated with it. Skipping.')
-        } else if (err.statusCode >= 500) {
-          console.error(`There was an issue with finding the listing on the OpenBazaar server. Skipping.`)
-        } else {
-          console.error('There was an error trying to remove the OB listing:', err)
-          console.error(JSON.stringify(err, null, 2))
-        }
-      }
-    }
-
-    // logr.debug(`Time now: ${new Date()}`);
-    // logr.debug(`Setting expiration to: ${obj.experation}`);
-
-    // Log in as the system admin.
-    const admin = await serverUtil.loginAdmin()
-    const token = admin.body.token
-    // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
-
-    // Create an obContract model.
-    let obContractModel = await obContractApi.createContract(token, obContractData)
-
-    // Create a new store listing.
-    obContractModel = await openbazaar.createStoreListing(obContractModel)
-
-    // Update the contract model.
-    await obContractApi.updateContract(token, obContractModel)
-
-    // Return the GUID of the newly created obContract model.
-    return obContractModel._id
-
-  // Catch any errors.
-  } catch (err) {
-    // debugger
-    console.error('Error trying to create OB listing in util.js/submitToMarket():')
-    // if (err.statusCode >= 500) {
-    //  console.error('Could not connect to server.')
-    // } else {
-    //  console.error(JSON.stringify(err, null, 2))
-    // }
-    throw err
-  }
-}
-
-// This function remove the associated listing from the OB store.
+// This function removes the associated listing from the OB store,
+// and it also removed the obContract model from the database.
 async function removeOBListing (deviceData) {
   // console.debug('Entering devicePublicData.js/removeOBListing().')
   try {
@@ -212,8 +153,8 @@ function createNewMarketListing (device) {
 
   // Create new obContract model
   var obj = {
-    clientDevice: device._id,
-    ownerUser: device.ownerUser,
+    clientDevice: device._id.toString(),
+    ownerUser: device.ownerUser.toString(),
     renterUser: '',
     price: 30,
     experation: oneMonthFromNow.toISOString(),
@@ -228,6 +169,48 @@ function createNewMarketListing (device) {
 
   return submitToMarket(device, obj)
   // return true
+}
+
+// Generate an obContract model and use it to create a new listing on the OB
+// store.
+// device = devicePublicData Model
+// obContractData = object used to create an obContract model.
+// Returns a promise that resolves to the ID of the newly created obContract model.
+async function submitToMarket (device, obContractData) {
+  try {
+
+    // Check if device already has an obContract GUID associated with it.
+    const obContractId = device.obContract
+    if (obContractId !== '' && obContractId !== null) {
+      // console.log(`submitToMarket() obContractId: ${obContractId}`)
+
+      // Remove the old store listing and obContract Model.
+      await removeOBListing(device)
+      console.log(`OB Listing for ${device._id} successfully removed.`)
+    }
+
+    // Log in as the system admin.
+    const admin = await serverUtil.loginAdmin()
+    const token = admin.body.token
+    // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
+
+    // Create an obContract model.
+    let obContractModel = await obContractApi.createContract(token, obContractData)
+
+    // Create a new store listing.
+    obContractModel = await openbazaar.createStoreListing(obContractModel)
+
+    // Update the contract model.
+    await obContractApi.updateContract(token, obContractModel)
+
+    // Return the GUID of the newly created obContract model.
+    return obContractModel._id
+
+  // Catch any errors.
+  } catch (err) {
+    console.error('Error trying to create OB listing in util.js/submitToMarket():')
+    throw err
+  }
 }
 
 async function loginAdmin () {

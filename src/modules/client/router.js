@@ -10,5 +10,12 @@ module.exports.routes = [
     handlers: [
       client.register
     ]
+  },
+  {
+    method: 'GET',
+    route: '/checkin/:id',
+    handlers: [
+      client.checkIn
+    ]
   }
 ]

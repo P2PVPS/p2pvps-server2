@@ -32,10 +32,10 @@ const util = require('../../lib/util')
  */
 // This API is called by Client device to register itself into the marketplace.
 async function register (ctx, next) {
-  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30; // Thirty Days
+  // const DEFAULT_EXPIRATION = 60000 * 8; // Testing
   const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
   // const DEFAULT_EXPIRATION = 60000 * 60; // One Hour
-  // const DEFAULT_EXPIRATION = 60000 * 8; // Testing
+  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30; // Thirty Days
 
   try {
     // console.log('register() called.')
@@ -47,7 +47,7 @@ async function register (ctx, next) {
       ctx.throw(404, 'Could not find that device.')
     }
 
-    // Save the uploaded data into a handy object.
+    // Save the user-provided data into a handy object.
     const userData = ctx.request.body
 
     // Get the private data model associated with this device.
@@ -68,6 +68,9 @@ async function register (ctx, next) {
 
     // Get device private data model
     const devicePrivateData = await DevicePrivateData.findById(device.privateData)
+    if (!devicePrivateData) {
+      ctx.throw(404, 'Could not find private data model associated with the device.')
+    }
 
     // Get any previously used port assignment.
     const usedPort = devicePrivateData.serverSSHPort
@@ -90,20 +93,19 @@ async function register (ctx, next) {
     if (usedPort) {
       // Release the used port.
       await sshPort.releasePort(usedPort)
-      //console.log(`port ${usedPort} released.`)
+      // console.log(`port ${usedPort} released.`)
     }
 
-    // TODO 1/16/18 check to see if obContract model already exists for this device. If so, delete that model.
-
     // Create an OB store listing for this device.
-    // let obContractId = await util.submitToMarket(devicePublicModel);
+    // Note: the utility function will automaticaly remove old listings if they exist.
     const obContractId = await util.createNewMarketListing(device)
-    //console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+    // console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
-    // Update the devicePublicModel with the newly created obContract model GUID.
+    // Update the device with the newly created obContract model GUID.
     device.obContract = obContractId.toString()
     await device.save()
 
+    // Return the updated device model.
     ctx.body = {
       device
     }
@@ -119,6 +121,45 @@ async function register (ctx, next) {
   if (next) { return next() }
 }
 
+// This function allows Clients to check-in and notify the server they are still
+// actively connected to the internet. This should happen every 2 minutes. It
+// updates the checkinTimeStamp of the device
+async function checkIn (ctx, next) {
+  //console.log('Entering devicePublicData.js/checkIn().')
+
+  try {
+    // Retrieve the device model from the database.
+    const device = await DevicePublicData.findById(ctx.params.id)
+    if (!device) {
+      ctx.throw(404, 'Could not find that device.')
+    }
+
+    // Save the user-provided data into a handy object.
+    // const userData = ctx.request.body
+
+    var now = new Date()
+    var timeStamp = now.toISOString()
+
+    device.checkinTimeStamp = timeStamp
+    await device.save()
+
+    // Return success
+    ctx.body = {
+      success: true
+    }
+  } catch (err) {
+    if (err === 404 || err.name === 'CastError') {
+      ctx.throw(404)
+    }
+
+    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
+    ctx.throw(500)
+  }
+
+  if (next) { return next() }
+}
+
 module.exports = {
-  register
+  register,
+  checkIn
 }
