@@ -113,20 +113,13 @@ function createObStoreListing (obContractModel) {
 // obContractData = object used to create an obContract model.
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obContractData) {
-  // logr.debug('Entering devicePublicData.js/submitToMarket().')
-  // console.log('Entering devicePublicData.js/submitToMarket().')
-
-  // return true
-
   try {
-    // debugger
-
     // Check if device already has an obContract GUID associated with it.
     const obContractId = device.obContract
     if (obContractId !== '' && obContractId !== null) {
       // debugger
       try {
-        // await removeOBListing(device)
+        await removeOBListing(device)
 
         // logr.log(`OB Listing for ${device._id} successfully removed.`)
         console.log(`OB Listing for ${device._id} successfully removed.`)
@@ -158,11 +151,6 @@ async function submitToMarket (device, obContractData) {
     // Update the contract model.
     await obContractApi.updateContract(token, obContractModel)
 
-    // if (success.success) logr.log('Successfully created OB listing.')
-    // else logr.log('OB listing creation failed.')
-    // if (success.success) console.log('Successfully created OB listing.')
-    // else console.log('OB listing creation failed.')
-
     // Return the GUID of the newly created obContract model.
     return obContractModel._id
 
@@ -184,8 +172,6 @@ function removeOBListing (deviceData) {
   // logr.debug('Entering devicePublicData.js/removeOBListing().')
   console.debug('Entering devicePublicData.js/removeOBListing().')
 
-  debugger
-
   const obContractId = deviceData.obContract
 
   // Validation/Error Handling
@@ -193,30 +179,10 @@ function removeOBListing (deviceData) {
     throw `no obContract model associated with device ${deviceData._id}`
   }
 
-  const options = {
-    method: 'GET',
-    uri: `http://p2pvps.net/api/ob/removeMarketListing/${obContractId}`,
-    json: true // Automatically stringifies the body to JSON
-  }
+  // TODO Remove the OB store listing
 
-  return rp(options)
-    .then(function (data) {
-      debugger
+  // TODO Remove the obContract model from the DB.
 
-      if (!data.success) {
-        throw `Could not remove OB store listing for device ${obContractId}`
-      }
-
-      console.log(
-        `Successfully removed listing on OB store with obContract model ID ${obContractId}`
-      )
-      return true
-    })
-    .catch(err => {
-      debugger
-      console.error(`Could not remove OB store listing for device ${obContractId}.`)
-      throw err
-    })
 }
 
 function createNewMarketListing (device) {

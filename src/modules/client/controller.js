@@ -98,7 +98,7 @@ async function register (ctx, next) {
     // Create an OB store listing for this device.
     // let obContractId = await util.submitToMarket(devicePublicModel);
     const obContractId = await util.createNewMarketListing(device)
-    console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+    //console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
     // Update the devicePublicModel with the newly created obContract model GUID.
     device.obContract = obContractId.toString()
