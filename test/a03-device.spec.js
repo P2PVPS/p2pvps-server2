@@ -4,7 +4,8 @@
   TODO:
   -A devicePublicData model is associated with a devicePrivateData model after creation.
   -Deleting a devicePublicData model also deletes the devicePrivateData model.
-
+  -Create a device with the 'bad user', and ensure the device is not returned when
+  the 'good' user calls listById().
 */
 
 const app = require('../bin/server')
@@ -299,12 +300,42 @@ describe('Devices', () => {
 
         let result = await rp(options)
 
-        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        //console.log(`result stringified: ${JSON.stringify(result.body, null, 2)}`)
 
         context.deviceId = result.body.devices[0]._id
 
         assert.isArray(result.body.devices, 'devices should be an array')
         assert(result.statusCode === 200, 'Status Code 200 expected')
+      } catch (err) {
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+  })
+
+  describe('GET /devices/listbyid', () => {
+    it('should fetch only devices associated with user', async () => {
+      const { token } = context
+
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/devices/listbyid`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`result stringified: ${JSON.stringify(result.body, null, 2)}`)
+        // console.log(`User: ${context.user._id}`)
+
+        assert.isArray(result.body.devices, 'devices should be an array')
+        assert(result.statusCode === 200, 'Status Code 200 expected')
+        assert(result.body.devices[0].ownerUser === context.user._id, 'User IDs should match')
       } catch (err) {
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err

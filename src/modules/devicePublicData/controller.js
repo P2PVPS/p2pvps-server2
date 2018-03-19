@@ -116,6 +116,52 @@ async function getDevices (ctx) {
 }
 
 /**
+ * @api {get} /users Get all users
+ * @apiPermission user
+ * @apiVersion 1.0.0
+ * @apiName GetUsers
+ * @apiGroup Users
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ *
+ * @apiSuccess {Object[]} users           Array of user objects
+ * @apiSuccess {ObjectId} users._id       User id
+ * @apiSuccess {String}   users.name      User name
+ * @apiSuccess {String}   users.username  User username
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "users": [{
+ *          "_id": "56bd1da600a526986cf65c80"
+ *          "name": "John Doe"
+ *          "username": "johndoe"
+ *       }]
+ *     }
+ *
+ * @apiUse TokenError
+ */
+// Get a list of devices associated with the current user.
+async function listById (ctx) {
+  const allDevices = await DevicePublicData.find({})
+
+  const thisUser = ctx.state.user._id.toString()
+  //console.log(`This user: ${thisUser}`)
+
+  // Find the devices associated with the current user.
+  const devices = []
+  for (var i = 0; i < allDevices.length; i++) {
+    const thisDevice = allDevices[i]
+    //console.log(`thisDevice: ${JSON.stringify(thisDevice, null, 2)}`)
+
+    if (thisDevice.ownerUser === thisUser) { devices.push(thisDevice) }
+  }
+
+  ctx.body = { devices }
+}
+
+/**
  * @api {get} /users/:id Get user by id
  * @apiPermission user
  * @apiVersion 1.0.0
@@ -283,6 +329,7 @@ async function deleteDevice (ctx) {
 module.exports = {
   createDevice,
   getDevices,
+  listById,
   getDevice,
   updateDevice,
   deleteDevice
