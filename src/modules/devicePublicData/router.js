@@ -22,6 +22,14 @@ module.exports.routes = [
   },
   {
     method: 'GET',
+    route: '/listbyid',
+    handlers: [
+      ensureUser,
+      devicePublicData.listById
+    ]
+  },
+  {
+    method: 'GET',
     route: '/:id',
     handlers: [
       ensureUser,
