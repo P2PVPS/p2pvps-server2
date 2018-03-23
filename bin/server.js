@@ -49,8 +49,13 @@ app.listen(config.port, () => {
 })
 
 // Create the system admin user.
-const success = serverUtil.createSystemUser()
-if(success) console.log(`System admin user created.`)
+// const success = await serverUtil.createSystemUser()
+// if(success) console.log(`System admin user created.`)
+
+serverUtil.createSystemUser()
+.then(success => {
+  if (success) console.log(`System admin user created.`)
+})
 
 // export default app
 module.exports = app

@@ -114,7 +114,8 @@ async function register (ctx, next) {
       ctx.throw(404)
     }
 
-    console.error(`Error in modules/client/controller.js/register(): `, err)
+    //console.error(`Error in modules/client/controller.js/register(): `, err)
+    console.error(`Error in modules/client/controller.js/register(). `)
     ctx.throw(500)
   }
 
@@ -196,13 +197,14 @@ async function getExpiration (ctx, next) {
 
     if (next) { return next() }
   } catch (err) {
-    //console.error('Error in /client/getExpiration: ' + err)
+    // console.error('Error in /client/getExpiration: ' + err)
 
     if (err === 404 || err.name === 'CastError') {
       ctx.throw(404)
     }
 
-    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
+    // console.error(`Error in modules/client/controller.js/checkIn(): `, err)
+    console.error(`Error in modules/client/controller.js/checkIn(). `)
     ctx.throw(500)
   }
 }
