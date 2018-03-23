@@ -5,6 +5,9 @@
   Tests for register():
   -A new obContract model is created.
 
+  -Test code path for /client/expiration/:id when expiration has passed.
+
+
   These tests can not be implemented because there is no devicePrivateData API.
   May be possible with additional API functionality.
   register():
@@ -244,7 +247,7 @@ describe('Client', () => {
 
         // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
 
-        assert(typeof(result.expiration) === "string", 'Should return true')
+        assert(typeof (result.expiration) === 'string', 'Should return true')
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
