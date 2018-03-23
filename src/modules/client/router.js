@@ -5,7 +5,7 @@ module.exports.baseUrl = '/client'
 
 module.exports.routes = [
   {
-    method: 'GET',
+    method: 'POST',
     route: '/register/:id',
     handlers: [
       client.register
@@ -17,5 +17,13 @@ module.exports.routes = [
     handlers: [
       client.checkIn
     ]
+  },
+  {
+    method: 'GET',
+    route: '/expiration/:id',
+    handlers: [
+      client.getExpiration
+    ]
   }
+
 ]
