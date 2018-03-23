@@ -125,7 +125,7 @@ async function register (ctx, next) {
 // actively connected to the internet. This should happen every 2 minutes. It
 // updates the checkinTimeStamp of the device
 async function checkIn (ctx, next) {
-  //console.log('Entering devicePublicData.js/checkIn().')
+  // console.log('Entering devicePublicData.js/checkIn().')
 
   try {
     // Retrieve the device model from the database.
@@ -159,7 +159,56 @@ async function checkIn (ctx, next) {
   if (next) { return next() }
 }
 
+// This function allows the p2p-vps-client.js application running on the Client
+// to download the expiration for the current Client. When the expiration is
+// hit, it resets the device and wipes the old Docker container and persistant
+// storage.
+async function getExpiration (ctx, next) {
+  try {
+    // let devicePublicModel = await util.getDevicePublicModel(req.params.id);
+    // Retrieve the device model from the database.
+    const device = await DevicePublicData.findById(ctx.params.id)
+    if (!device) {
+      ctx.throw(404, 'Could not find that device.')
+    }
+
+    const now = new Date()
+
+    let expiration = new Date(device.expiration)
+
+    // If the expiration time has passed.
+    if (expiration.getTime() < now.getTime()) {
+      console.log(`Removing listing for ${device._id}`)
+
+      // Remove the listing from the OB store
+      try {
+        await util.removeOBListing(device)
+      } catch (err) {
+        console.warn(`obContract could not be found. Skipping removal.`)
+      }
+
+      console.log(`OB Listing for ${device._id} successfully removed.`)
+    }
+
+    ctx.body = {
+      expiration: device.expiration
+    }
+
+    if (next) { return next() }
+  } catch (err) {
+    //console.error('Error in /client/getExpiration: ' + err)
+
+    if (err === 404 || err.name === 'CastError') {
+      ctx.throw(404)
+    }
+
+    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
+    ctx.throw(500)
+  }
+}
+
 module.exports = {
   register,
-  checkIn
+  checkIn,
+  getExpiration
 }

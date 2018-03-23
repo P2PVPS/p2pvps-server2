@@ -17,8 +17,7 @@ module.exports.routes = [
     handlers: [
       client.checkIn
     ]
-  }
-  /*
+  },
   {
     method: 'GET',
     route: '/expiration/:id',
@@ -26,5 +25,5 @@ module.exports.routes = [
       client.getExpiration
     ]
   }
-  */
+
 ]
