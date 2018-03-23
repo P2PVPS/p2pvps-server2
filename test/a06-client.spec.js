@@ -57,11 +57,11 @@ describe('Client', () => {
     .reply(200, { })
   })
 
-  describe('GET /register/:id', () => {
+  describe('POST /register/:id', () => {
     it('should reject with 404 if device can not be found', async () => {
       try {
         const options = {
-          method: 'GET',
+          method: 'POST',
           uri: `${LOCALHOST}/client/register/1`,
           resolveWithFullResponse: true,
           json: true,
@@ -93,7 +93,7 @@ describe('Client', () => {
         const testStartTime = new Date()
 
         const options = {
-          method: 'GET',
+          method: 'POST',
           uri: `${LOCALHOST}/client/register/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
@@ -134,7 +134,7 @@ describe('Client', () => {
         const twoMonthsFromNow = new Date(testStartTime.getTime() + twoMonths)
 
         const options = {
-          method: 'GET',
+          method: 'POST',
           uri: `${LOCALHOST}/client/register/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,

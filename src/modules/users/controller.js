@@ -40,7 +40,7 @@ const User = require('../../models/users')
  */
 async function createUser (ctx) {
   const user = new User(ctx.request.body.user)
-  console.log(`ctx.request.body.user: ${JSON.stringify(ctx.request.body.user,null,2)}`)
+
   // Enforce default value of 'user'
   user.type = 'user'
 
