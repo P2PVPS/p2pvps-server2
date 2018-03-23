@@ -117,7 +117,8 @@ async function removeOBListing (deviceData) {
 
     // Validation/Error Handling
     if (obContractId === undefined || obContractId === null) {
-      throw `no obContract model associated with device ${deviceData._id}`
+      // throw `no obContract model associated with device ${deviceData._id}`
+      return
     }
     // console.log(`obContractId: ${obContractId}`)
 
@@ -178,7 +179,6 @@ function createNewMarketListing (device) {
 // Returns a promise that resolves to the ID of the newly created obContract model.
 async function submitToMarket (device, obContractData) {
   try {
-
     // Check if device already has an obContract GUID associated with it.
     const obContractId = device.obContract
     if (obContractId !== '' && obContractId !== null) {

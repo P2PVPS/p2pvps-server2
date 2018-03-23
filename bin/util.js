@@ -64,7 +64,6 @@ async function createSystemUser () {
 
         // Call this function again.
         return createSystemUser()
-        
       } catch (err2) {
         console.error(`Error in util.js/createSystemUser() while trying generate new system user: `, err2)
         // process.end(1)
@@ -109,8 +108,8 @@ async function loginAdmin () {
   // console.log(`loginAdmin() running.`)
   try {
     // Read the exising file
-    const existingUser = require(`../config/${JSON_FILE}`)
-    // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
+    const existingUser = await _readJSON(`${__dirname}/../config/${JSON_FILE}`)
+    //console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
     let options = {
@@ -128,7 +127,7 @@ async function loginAdmin () {
 
     return result
   } catch (err) {
-    console.log(`Error in bin/util.js/loginAdmin()`)
+    console.error(`Error in bin/util.js/loginAdmin(): `, err)
     throw err
   }
 }
@@ -160,6 +159,24 @@ function _writeJSON (obj, fileName) {
       })
     } catch (err) {
       console.error('Error trying to write out object in util.js/_writeJSON().', err)
+      return reject(err)
+    }
+  })
+}
+
+// Read and parse a JSON file.
+function _readJSON (fileName) {
+  return new Promise(function (resolve, reject) {
+    try {
+      fs.readFile(fileName, (err, data) => {
+        if (err) throw err
+
+        const obj = JSON.parse(data)
+
+        return resolve(obj)
+      })
+    } catch (err) {
+      console.error('Error trying to read JSON file in util.js/_readJSON().', err)
       return reject(err)
     }
   })
