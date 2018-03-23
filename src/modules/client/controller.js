@@ -95,31 +95,32 @@ async function register (ctx, next) {
       await sshPort.releasePort(usedPort)
       // console.log(`port ${usedPort} released.`)
     }
-
+    console.log(`Getting obContractId`)
     // Create an OB store listing for this device.
     // Note: the utility function will automaticaly remove old listings if they exist.
     const obContractId = await util.createNewMarketListing(device)
-    // console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+    console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
     // Update the device with the newly created obContract model GUID.
     device.obContract = obContractId.toString()
     await device.save()
+    console.log(`device data saved.`)
 
     // Return the updated device model.
     ctx.body = {
       device
     }
+
+    // if (next) { return next() }
   } catch (err) {
     if (err === 404 || err.name === 'CastError') {
       ctx.throw(404)
     }
 
-    //console.error(`Error in modules/client/controller.js/register(): `, err)
-    console.error(`Error in modules/client/controller.js/register(). `)
+    console.error(`Error in modules/client/controller.js/register(): `, err)
+    //console.error(`Error in modules/client/controller.js/register(). `)
     ctx.throw(500)
   }
-
-  if (next) { return next() }
 }
 
 // This function allows Clients to check-in and notify the server they are still
