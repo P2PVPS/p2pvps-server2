@@ -1,5 +1,5 @@
 const app = require('../bin/server')
-const supertest = require('supertest')
+//const supertest = require('supertest')
 // const { expect, should } = require('chai')
 const expect = require('chai').expect
 const should = require('chai').should
@@ -7,13 +7,14 @@ const cleanDb = require('./utils').cleanDb
 const serverUtil = require('../bin/util')
 
 should()
-const request = supertest.agent(app.listen())
+// const request = supertest.agent(app.listen())
 const context = {}
 
 describe('Users', () => {
-  before((done) => {
+  before(async () => {
+    await app.startServer()
+
     cleanDb()
-    done()
   })
 
   after(async () => {
@@ -105,7 +106,7 @@ describe('Users', () => {
         })
         .expect(200, (err, res) => {
           if (err) { return done(err) }
-          //console.log(`Users: ${JSON.stringify(res.body, null, 2)}`)
+          // console.log(`Users: ${JSON.stringify(res.body, null, 2)}`)
           res.body.should.have.property('users')
 
           res.body.users.should.have.length(1)
