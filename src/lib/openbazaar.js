@@ -10,7 +10,7 @@
 const obLib = require(`openbazaar-node`)
 
 // Configure for OpenBazaar
-const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1`
+const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1` // Testing
 // const OB_URL = `http://localhost`
 const OB_PORT = 4002
 const OB_USERNAME = 'yourUsername'
@@ -177,6 +177,13 @@ async function removeMarketListing (slug) {
     await obLib.removeListing(obConfig, slug)
     return true
   } catch (err) {
+    if (err.statusCode === 404) return true // 404 errors are OK.
+
+    if (err.name === "RequestError'") {
+      console.error(`Connection to OpenBazaar server refused. Is OpenBazaar running?`)
+      throw err
+    }
+
     console.error(`Error in src/lib/openbazaar.js removeMarketListing().`)
     throw err
   }

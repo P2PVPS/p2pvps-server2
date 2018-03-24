@@ -4,9 +4,9 @@
   TODO:
   Tests for register():
   -A new obContract model is created.
+  -Returns username, password, and port for newly created shell.
 
   -Test code path for /client/expiration/:id when expiration has passed.
-
 
   These tests can not be implemented because there is no devicePrivateData API.
   May be possible with additional API functionality.
@@ -110,9 +110,9 @@ describe('Client', () => {
 
         let result = await rp(options)
 
+        //console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         const expiration = new Date(result.body.device.expiration)
 
-        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(result.statusCode === 200, 'Returned status of 200 expected.')
 
         // devicePublicData model has the expiration updated

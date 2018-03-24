@@ -32,8 +32,8 @@ const util = require('../../lib/util')
  */
 // This API is called by Client device to register itself into the marketplace.
 async function register (ctx, next) {
-  // const DEFAULT_EXPIRATION = 60000 * 8; // Testing
-  const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
+  const DEFAULT_EXPIRATION = 60000 * 8 // Testing
+  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
   // const DEFAULT_EXPIRATION = 60000 * 60; // One Hour
   // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30; // Thirty Days
 
@@ -95,31 +95,38 @@ async function register (ctx, next) {
       await sshPort.releasePort(usedPort)
       // console.log(`port ${usedPort} released.`)
     }
-
+    console.log(`Getting obContractId`)
     // Create an OB store listing for this device.
     // Note: the utility function will automaticaly remove old listings if they exist.
     const obContractId = await util.createNewMarketListing(device)
-    // console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+    console.log(`obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
     // Update the device with the newly created obContract model GUID.
     device.obContract = obContractId.toString()
     await device.save()
+    console.log(`device data saved.`)
+
+    //const retObj = Object.assign({}, device)
+    const retObj = getDeviceProperties(device)
+    retObj.username = loginData.username
+    retObj.password = loginData.password
+    retObj.port = loginData.port
 
     // Return the updated device model.
     ctx.body = {
-      device
+      device: retObj
     }
+
+    // if (next) { return next() }
   } catch (err) {
     if (err === 404 || err.name === 'CastError') {
       ctx.throw(404)
     }
 
-    //console.error(`Error in modules/client/controller.js/register(): `, err)
-    console.error(`Error in modules/client/controller.js/register(). `)
+    console.error(`Error in modules/client/controller.js/register(): `, err)
+    // console.error(`Error in modules/client/controller.js/register(). `)
     ctx.throw(500)
   }
-
-  if (next) { return next() }
 }
 
 // This function allows Clients to check-in and notify the server they are still
@@ -213,4 +220,49 @@ module.exports = {
   register,
   checkIn,
   getExpiration
+}
+
+// Copy properties from the device model to a generic object.
+function getDeviceProperties(device) {
+  const {
+    ownerUser,
+    renterUser,
+    privateData,
+    obContract,
+    rentStartDate,
+    expiration,
+    deviceName,
+    deviceDesc,
+    rentHourlyRate,
+    subdomain,
+    httpPort,
+    sshPort,
+    memory,
+    diskSpace,
+    processor,
+    internetSpeed,
+    checkinTimeStamp
+  } = device;
+
+  const retObj = {
+    ownerUser,
+    renterUser,
+    privateData,
+    obContract,
+    rentStartDate,
+    expiration,
+    deviceName,
+    deviceDesc,
+    rentHourlyRate,
+    subdomain,
+    httpPort,
+    sshPort,
+    memory,
+    diskSpace,
+    processor,
+    internetSpeed,
+    checkinTimeStamp
+  }
+
+  return retObj;
 }

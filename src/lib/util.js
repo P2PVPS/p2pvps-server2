@@ -195,12 +195,15 @@ async function submitToMarket (device, obContractData) {
     // console.log(`admin.body: ${JSON.stringify(admin.body, null, 2)}`)
 
     // Create an obContract model.
+    console.log(`Creating new obContract.`)
     let obContractModel = await obContractApi.createContract(token, obContractData)
 
     // Create a new store listing.
+    console.log(`Creating OpenBazaar store listing.`)
     obContractModel = await openbazaar.createStoreListing(obContractModel)
 
     // Update the contract model.
+    console.log(`Updating obContract.`)
     await obContractApi.updateContract(token, obContractModel)
 
     // Return the GUID of the newly created obContract model.
