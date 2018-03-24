@@ -4,9 +4,9 @@
   TODO:
   Tests for register():
   -A new obContract model is created.
+  -Returns username, password, and port for newly created shell.
 
   -Test code path for /client/expiration/:id when expiration has passed.
-
 
   These tests can not be implemented because there is no devicePrivateData API.
   May be possible with additional API functionality.

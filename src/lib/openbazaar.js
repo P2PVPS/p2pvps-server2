@@ -179,6 +179,11 @@ async function removeMarketListing (slug) {
   } catch (err) {
     if (err.statusCode === 404) return true // 404 errors are OK.
 
+    if(err.name === "RequestError'") {
+      console.error(`Connection to OpenBazaar server refused. Is OpenBazaar running?`)
+      throw err
+    }
+
     console.error(`Error in src/lib/openbazaar.js removeMarketListing().`)
     throw err
   }
