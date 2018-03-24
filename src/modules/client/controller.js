@@ -106,13 +106,16 @@ async function register (ctx, next) {
     await device.save()
     console.log(`device data saved.`)
 
-    const retObj = Object.assign({}, device)
+    //const retObj = Object.assign({}, device)
+    const retObj = getDeviceProperties(device)
     retObj.username = loginData.username
     retObj.password = loginData.password
     retObj.port = loginData.port
 
     // Return the updated device model.
-    ctx.body = retObj
+    ctx.body = {
+      device: retObj
+    }
 
     // if (next) { return next() }
   } catch (err) {
@@ -217,4 +220,49 @@ module.exports = {
   register,
   checkIn,
   getExpiration
+}
+
+// Copy properties from the device model to a generic object.
+function getDeviceProperties(device) {
+  const {
+    ownerUser,
+    renterUser,
+    privateData,
+    obContract,
+    rentStartDate,
+    expiration,
+    deviceName,
+    deviceDesc,
+    rentHourlyRate,
+    subdomain,
+    httpPort,
+    sshPort,
+    memory,
+    diskSpace,
+    processor,
+    internetSpeed,
+    checkinTimeStamp
+  } = device;
+
+  const retObj = {
+    ownerUser,
+    renterUser,
+    privateData,
+    obContract,
+    rentStartDate,
+    expiration,
+    deviceName,
+    deviceDesc,
+    rentHourlyRate,
+    subdomain,
+    httpPort,
+    sshPort,
+    memory,
+    diskSpace,
+    processor,
+    internetSpeed,
+    checkinTimeStamp
+  }
+
+  return retObj;
 }

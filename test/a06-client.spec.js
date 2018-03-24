@@ -110,9 +110,9 @@ describe('Client', () => {
 
         let result = await rp(options)
 
+        //console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         const expiration = new Date(result.body.device.expiration)
 
-        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(result.statusCode === 200, 'Returned status of 200 expected.')
 
         // devicePublicData model has the expiration updated
