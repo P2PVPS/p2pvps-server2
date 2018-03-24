@@ -16,46 +16,64 @@ const errorMiddleware = require('../src/middleware')
 const app = new Koa()
 app.keys = [config.session]
 
-// Connect to the Mongo Database.
-mongoose.Promise = global.Promise
-mongoose.connect(config.database)
+async function startServer () {
+  try {
+  // Connect to the Mongo Database.
+    mongoose.Promise = global.Promise
+    await mongoose.connect(config.database)
 
-// MIDDLEWARE START
+  // MIDDLEWARE START
 
-app.use(convert(logger()))
-app.use(bodyParser())
-app.use(session())
-app.use(errorMiddleware())
+    app.use(convert(logger()))
+    app.use(bodyParser())
+    app.use(session())
+    app.use(errorMiddleware())
 
-// Used to generate the docs.
-app.use(convert(mount('/docs', serve(`${process.cwd()}/docs`))))
+  // Used to generate the docs.
+    app.use(convert(mount('/docs', serve(`${process.cwd()}/docs`))))
 
-// User Authentication
-require('../config/passport')
-app.use(passport.initialize())
-app.use(passport.session())
+  // User Authentication
+    require('../config/passport')
+    app.use(passport.initialize())
+    app.use(passport.session())
 
-// Custom Middleware Modules
-const modules = require('../src/modules')
-modules(app)
+  // Custom Middleware Modules
+    const modules = require('../src/modules')
+    modules(app)
 
-// MIDDLEWARE END
+  // MIDDLEWARE END
 
-// Ensure the environment variable is set
-process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+  // Ensure the environment variable is set
+    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
 
-app.listen(config.port, () => {
-  console.log(`Server started on ${config.port}`)
+  // app.listen(config.port, () => {
+  //  console.log(`Server started on ${config.port}`)
+  // })
+    await app.listen(config.port)
+    console.log(`Server started on ${config.port}`)
+
+  // Create the system admin user.
+  // const success = await serverUtil.createSystemUser()
+  // if(success) console.log(`System admin user created.`)
+
+    const success = await serverUtil.createSystemUser()
+    if (success) console.log(`System admin user created.`)
+  } catch (err) {
+    throw err
+  }
+}
+
+startServer()
+.catch(err => {
+  console.error(`Error trying to start p2pvps-server: `, err)
+  process.exit(1)
 })
 
-// Create the system admin user.
-// const success = await serverUtil.createSystemUser()
-// if(success) console.log(`System admin user created.`)
-
-serverUtil.createSystemUser()
-.then(success => {
-  if (success) console.log(`System admin user created.`)
-})
+app.startServer = startServer
 
 // export default app
 module.exports = app
+
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}

@@ -10,12 +10,19 @@ const serverUtil = require('../bin/util')
 
 should()
 const request = supertest.agent(app.listen())
+//const request = supertest.agent(app.startServer())
 const context = {}
 
 const LOCALHOST = 'http://localhost:5000'
 
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 describe('Auth', () => {
   before(async () => {
+    await sleep(1000)
+
     utils.cleanDb()
 
     const userObj = {
