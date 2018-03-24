@@ -106,10 +106,14 @@ async function register (ctx, next) {
     await device.save()
     console.log(`device data saved.`)
 
+    const retObj = Object.assign({}, device)
+    retObj.username = loginData.username
+    retObj.password = loginData.password
+    retObj.port = loginData.port
+
     // Return the updated device model.
-    ctx.body = {
-      device
-    }
+    ctx.body = retObj
+
 
     // if (next) { return next() }
   } catch (err) {
@@ -118,7 +122,7 @@ async function register (ctx, next) {
     }
 
     console.error(`Error in modules/client/controller.js/register(): `, err)
-    //console.error(`Error in modules/client/controller.js/register(). `)
+    // console.error(`Error in modules/client/controller.js/register(). `)
     ctx.throw(500)
   }
 }

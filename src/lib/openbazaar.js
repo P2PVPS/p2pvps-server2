@@ -177,6 +177,8 @@ async function removeMarketListing (slug) {
     await obLib.removeListing(obConfig, slug)
     return true
   } catch (err) {
+    if (err.statusCode === 404) return true // 404 errors are OK.
+
     console.error(`Error in src/lib/openbazaar.js removeMarketListing().`)
     throw err
   }
