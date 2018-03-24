@@ -52,7 +52,7 @@ async function createSystemUser () {
 
     // Write out the system user information to a JSON file that external
     // applications like the Task Manager and the test scripts can access.
-    await _writeJSON(context, `${__dirname}/../config/${JSON_FILE}`)
+    await _writeJSON(context, `${__dirname}/../persist/${JSON_FILE}`)
 
     return context
   } catch (err) {
@@ -108,7 +108,7 @@ async function loginAdmin () {
   // console.log(`loginAdmin() running.`)
   try {
     // Read the exising file
-    const existingUser = await _readJSON(`${__dirname}/../config/${JSON_FILE}`)
+    const existingUser = await _readJSON(`${__dirname}/../persist/${JSON_FILE}`)
     // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
