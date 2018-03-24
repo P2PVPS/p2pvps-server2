@@ -20,7 +20,12 @@ async function startServer () {
 
     // Connect to the Mongo Database.
     mongoose.Promise = global.Promise
-    await mongoose.connect(config.database)
+    // await mongoose.connect(config.database)
+    const dbSuccess = await connectToMongo()
+    if (!dbSuccess) {
+      console.error(`Could not connect to MongoDB! Exiting.`)
+      process.exit(1)
+    }
 
     // MIDDLEWARE START
 
@@ -68,4 +73,30 @@ async function startServer () {
 // export default app
 module.exports = {
   startServer
+}
+
+async function connectToMongo () {
+  for (var i = 0; i < 5; i++) {
+    let success = await tryToConnect()
+
+    if (success) {
+      return true
+    } else {
+      await sleep(1000)
+    }
+  }
+  return false
+
+  async function tryToConnect () {
+    try {
+      await mongoose.connect(config.database)
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  function sleep (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
 }
