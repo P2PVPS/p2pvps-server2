@@ -108,8 +108,8 @@ async function loginAdmin () {
   // console.log(`loginAdmin() running.`)
   try {
     // Read the exising file
-    const existingUser = await _readJSON(`${__dirname}/../config/${JSON_FILE}`)
-    //console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
+    const existingUser = await _readJSON(`${__dirname}/../config/env/${JSON_FILE}`)
+    // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
     let options = {
