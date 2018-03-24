@@ -12,17 +12,17 @@ const serverUtil = require('./util')
 const config = require('../config')
 const errorMiddleware = require('../src/middleware')
 
-// Create a Koa instance.
-const app = new Koa()
-app.keys = [config.session]
-
 async function startServer () {
   try {
-  // Connect to the Mongo Database.
+    // Create a Koa instance.
+    const app = new Koa()
+    app.keys = [config.session]
+
+    // Connect to the Mongo Database.
     mongoose.Promise = global.Promise
     await mongoose.connect(config.database)
 
-  // MIDDLEWARE START
+    // MIDDLEWARE START
 
     app.use(convert(logger()))
     app.use(bodyParser())
@@ -58,22 +58,14 @@ async function startServer () {
 
     const success = await serverUtil.createSystemUser()
     if (success) console.log(`System admin user created.`)
+
+    return app
   } catch (err) {
     throw err
   }
 }
 
-startServer()
-.catch(err => {
-  console.error(`Error trying to start p2pvps-server: `, err)
-  process.exit(1)
-})
-
-app.startServer = startServer
-
 // export default app
-module.exports = app
-
-function sleep (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+module.exports = {
+  startServer
 }
