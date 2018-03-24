@@ -34,10 +34,13 @@ async function startServer () {
     app.use(session())
     app.use(errorMiddleware())
 
-  // Used to generate the docs.
+    // Used to generate the docs.
     app.use(convert(mount('/docs', serve(`${process.cwd()}/docs`))))
 
-  // User Authentication
+    // Used to generate the under-construction page
+    app.use(convert(mount('/', serve(`${process.cwd()}/under-construction`))))
+
+    // User Authentication
     require('../config/passport')
     app.use(passport.initialize())
     app.use(passport.session())
