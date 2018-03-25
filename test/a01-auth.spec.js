@@ -15,9 +15,9 @@ const context = {}
 
 const LOCALHOST = 'http://localhost:5000'
 
-//function sleep (ms) {
+// function sleep (ms) {
 //  return new Promise(resolve => setTimeout(resolve, ms))
-//}
+// }
 
 describe('Auth', () => {
   before(async () => {
@@ -35,12 +35,12 @@ describe('Auth', () => {
     context.token = testUser.token
   })
 
-  describe('POST /auth', () => {
+  describe('POST /api/auth', () => {
     it('should throw 401 if credentials are incorrect', async () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/auth`,
+          uri: `${LOCALHOST}/api/auth`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -72,7 +72,7 @@ describe('Auth', () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/auth`,
+          uri: `${LOCALHOST}/api/auth`,
           resolveWithFullResponse: true,
           json: true,
           body: {

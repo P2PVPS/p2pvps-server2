@@ -1,7 +1,7 @@
 const ensureUser = require('../../middleware/validators').ensureUser
 const devicePublicData = require('./controller')
 
-module.exports.baseUrl = '/devices'
+module.exports.baseUrl = '/api/devices'
 
 module.exports.routes = [
   {

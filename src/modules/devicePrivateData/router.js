@@ -3,7 +3,7 @@ const validators = require('../../middleware/validators')
 const ensureAdmin = validators.ensureAdmin
 const devicePrivateData = require('./controller')
 
-module.exports.baseUrl = '/deviceprivatedata'
+module.exports.baseUrl = '/api/deviceprivatedata'
 
 module.exports.routes = [
   {

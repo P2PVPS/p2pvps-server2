@@ -2,7 +2,7 @@ const ensureUser = require('../../middleware/validators').ensureUser
 const obContract = require('./controller')
 
 // export const baseUrl = '/users'
-module.exports.baseUrl = '/obcontract'
+module.exports.baseUrl = '/api/obcontract'
 
 module.exports.routes = [
   {

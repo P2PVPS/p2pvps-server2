@@ -2,7 +2,7 @@ const ensureUser = require('../../middleware/validators').ensureUser
 const user = require('./controller')
 
 // export const baseUrl = '/users'
-module.exports.baseUrl = '/users'
+module.exports.baseUrl = '/api/users'
 
 module.exports.routes = [
   {

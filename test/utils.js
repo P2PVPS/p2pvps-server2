@@ -16,7 +16,7 @@ function cleanDb () {
 // TODO refactor and Replace this code with a request-promise equivelant.
 function authUser (agent, callback) {
   agent
-    .post('/users')
+    .post('/api/users')
     .set('Accept', 'application/json')
     .send({ user: { username: 'test', password: 'pass' } })
     .end((err, res) => {
@@ -38,7 +38,7 @@ async function createUser (userObj) {
   try {
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/users`,
+      uri: `${LOCALHOST}/api/users`,
       resolveWithFullResponse: true,
       json: true,
       body: {
@@ -67,7 +67,7 @@ async function loginTestUser () {
   try {
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/auth`,
+      uri: `${LOCALHOST}/api/auth`,
       resolveWithFullResponse: true,
       json: true,
       body: {
@@ -104,7 +104,7 @@ async function loginAdminUser () {
 
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/auth`,
+      uri: `${LOCALHOST}/api/auth`,
       resolveWithFullResponse: true,
       json: true,
       body: {
@@ -135,7 +135,7 @@ async function createDevice (config) {
   try {
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/devices`,
+      uri: `${LOCALHOST}/api/devices`,
       resolveWithFullResponse: true,
       json: true,
       body: {

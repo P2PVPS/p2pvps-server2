@@ -24,7 +24,7 @@ async function createSystemUser () {
 
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/users`,
+      uri: `${LOCALHOST}/api/users`,
       resolveWithFullResponse: true,
       json: true,
       body: {
@@ -87,7 +87,7 @@ async function deleteExistingSystemUser () {
     // Delete the user.
     const options = {
       method: 'DELETE',
-      uri: `${LOCALHOST}/users/${id}`,
+      uri: `${LOCALHOST}/api/users/${id}`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -114,7 +114,7 @@ async function loginAdmin () {
     // Log in as the user.
     let options = {
       method: 'POST',
-      uri: `${LOCALHOST}/auth`,
+      uri: `${LOCALHOST}/api/auth`,
       resolveWithFullResponse: true,
       json: true,
       body: {
