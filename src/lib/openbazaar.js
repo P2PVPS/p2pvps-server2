@@ -10,7 +10,7 @@
 const obLib = require(`openbazaar-node`)
 
 // Configure for OpenBazaar
-const OB_URL = `http://dockerconnextcmsp2pvps_openbazaar_1` // Testing
+const OB_URL = `http://serverdeployment2_openbazaar_1` // Testing
 // const OB_URL = `http://localhost`
 const OB_PORT = 4002
 const OB_USERNAME = 'yourUsername'
