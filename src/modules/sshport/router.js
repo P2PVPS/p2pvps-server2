@@ -9,7 +9,7 @@
 const sshport = require('./controller')
 
 // export const baseUrl = '/users'
-module.exports.baseUrl = '/sshport'
+module.exports.baseUrl = '/api/sshport'
 
 module.exports.routes = [
   {
