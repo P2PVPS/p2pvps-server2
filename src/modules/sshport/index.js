@@ -11,7 +11,7 @@ async function requestPort () {
   try {
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/sshport`,
+      uri: `${LOCALHOST}/api/sshport`,
       resolveWithFullResponse: true,
       json: true,
       body: {
@@ -35,12 +35,12 @@ async function releasePort (port) {
   try {
     const options = {
       method: 'DELETE',
-      uri: `${LOCALHOST}/sshport/${port}`,
+      uri: `${LOCALHOST}/api/sshport/${port}`,
       resolveWithFullResponse: true,
       json: true
     }
 
-    //let result = await rp(options)
+    // let result = await rp(options)
     await rp(options)
 
     // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)

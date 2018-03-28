@@ -16,7 +16,7 @@ async function createContract (token, obContract) {
 
     const options = {
       method: 'POST',
-      uri: `${LOCALHOST}/obcontract`,
+      uri: `${LOCALHOST}/api/obcontract`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -45,7 +45,7 @@ async function updateContract (token, obContract) {
 
     const options = {
       method: 'PUT',
-      uri: `${LOCALHOST}/obcontract/${obContract._id.toString()}`,
+      uri: `${LOCALHOST}/api/obcontract/${obContract._id.toString()}`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -71,7 +71,7 @@ async function getContract (contractId) {
   try {
     const options = {
       method: 'GET',
-      uri: `${LOCALHOST}/obcontract/${contractId}`,
+      uri: `${LOCALHOST}/api/obcontract/${contractId}`,
       // resolveWithFullResponse: true,
       json: true
     }
@@ -94,7 +94,7 @@ async function removeContract(token, obContract) {
 
     const options = {
       method: 'PUT',
-      uri: `${LOCALHOST}/obcontract/${obContract._id.toString()}`,
+      uri: `${LOCALHOST}/api/obcontract/${obContract._id.toString()}`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
