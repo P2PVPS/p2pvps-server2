@@ -580,11 +580,35 @@ describe('Users', () => {
         })
       */
     })
-
   })
-  /*
+
   describe('DELETE /users/:id', () => {
-    it('should not delete user if token is invalid', (done) => {
+    it('should not delete user if token is invalid', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/users/${context.user._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer 1`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+      /*
       request
         .delete('/users/1')
         .set({
@@ -592,9 +616,35 @@ describe('Users', () => {
           Authorization: 'Bearer 1'
         })
         .expect(401, done)
+      */
     })
 
-    it('should throw 404 if user doesn\'t exist', (done) => {
+    it('should throw 404 if user doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/users/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 404) {
+          assert(err.statusCode === 404, 'Error code 404 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+      /*
       const { token } = context
       request
         .delete('/users/1')
@@ -603,9 +653,37 @@ describe('Users', () => {
           Authorization: `Bearer ${token}`
         })
         .expect(404, done)
+      */
     })
 
-    it('should delete user', (done) => {
+    it('should delete user', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/users/${context.user._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          },
+          body: {
+            user: {
+              username: 'updatedcoolname'
+            }
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+      /*
       const {
         user: { _id },
         token
@@ -618,7 +696,7 @@ describe('Users', () => {
           Authorization: `Bearer ${token}`
         })
         .expect(200, done)
+      */
     })
   })
-  */
 })
