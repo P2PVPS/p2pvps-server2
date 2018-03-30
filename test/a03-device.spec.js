@@ -19,7 +19,7 @@ const utils = require('./utils.js')
 const LOCALHOST = 'http://localhost:5000'
 
 should()
-const request = supertest.agent(app.listen())
+// const request = supertest.agent(app.listen())
 const context = {}
 
 describe('Devices', () => {
@@ -60,7 +60,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/devices`,
+          uri: `${LOCALHOST}/api/devices`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -91,7 +91,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/devices`,
+          uri: `${LOCALHOST}/api/devices`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -140,7 +140,7 @@ describe('Devices', () => {
 
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/devices`,
+          uri: `${LOCALHOST}/api/devices`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -195,7 +195,7 @@ describe('Devices', () => {
 
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/devices`,
+          uri: `${LOCALHOST}/api/devices`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -243,43 +243,184 @@ describe('Devices', () => {
     })
   })
 
-  describe('GET /devices', () => {
-    it('should not fetch devices if the authorization header is missing', (done) => {
+  describe('GET /api/devices', () => {
+    it('should not fetch devices if the authorization header is missing', async () => {
+      try {
+        const { token } = context
+
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/api/devices`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            device: {
+              ownerUser: context.badUser._id,
+              renterUser: 'test',
+              privateData: 'test',
+              obContract: 'test',
+              rentStartDate: 'test',
+              expiration: 'test',
+              deviceName: 'test',
+              deviceDesc: 'test',
+              rentHourlyRate: 'test',
+              subdomain: 'test',
+              httpPort: 'test',
+              sshPort: 'test',
+              memory: 'test',
+              diskSpace: 'test',
+              processor: 'test',
+              internetSpeed: 'test',
+              checkinTimeStamp: 'test'
+            }
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result.')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       request
-        .get('/devices')
+        .get('/api/devices')
         .set('Accept', 'application/json')
         .expect(401, done)
+      */
     })
 
-    it('should not fetch devices if the authorization header is missing the scheme', (done) => {
+    it('should not fetch devices if the authorization header is missing the scheme', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/devices`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: '1'
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // if (err.statusCode === 422) {
+        //  assert(err.statusCode === 422, 'Error code 422 expected.')
+        // } else
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       request
-        .get('/devices')
+        .get('/api/devices')
         .set({
           Accept: 'application/json',
           Authorization: '1'
         })
         .expect(401, done)
+        */
     })
 
-    it('should not fetch devices if the authorization header has invalid scheme', (done) => {
+    it('should not fetch devices if the authorization header has invalid scheme', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/devices`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Unknown ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // if (err.statusCode === 422) {
+        //  assert(err.statusCode === 422, 'Error code 422 expected.')
+        // } else
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       const { token } = context
       request
-        .get('/devices')
+        .get('/api/devices')
         .set({
           Accept: 'application/json',
           Authorization: `Unknown ${token}`
         })
         .expect(401, done)
+      */
     })
 
-    it('should not fetch devices if token is invalid', (done) => {
+    it('should not fetch devices if token is invalid', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/devices`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Bearer: '1'
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        //if (err.statusCode === 422) {
+        //  assert(err.statusCode === 422, 'Error code 422 expected.')
+        //} else
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       request
-        .get('/devices')
+        .get('/api/devices')
         .set({
           Accept: 'application/json',
           Authorization: 'Bearer 1'
         })
         .expect(401, done)
+      */
     })
 
     it('should fetch all devices', async () => {
@@ -290,7 +431,7 @@ describe('Devices', () => {
 
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/devices`,
+          uri: `${LOCALHOST}/api/devices`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -300,7 +441,7 @@ describe('Devices', () => {
 
         let result = await rp(options)
 
-        //console.log(`result stringified: ${JSON.stringify(result.body, null, 2)}`)
+        // console.log(`result stringified: ${JSON.stringify(result.body, null, 2)}`)
 
         context.deviceId = result.body.devices[0]._id
 
@@ -320,7 +461,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/devices/listbyid`,
+          uri: `${LOCALHOST}/api/devices/listbyid`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -346,7 +487,7 @@ describe('Devices', () => {
   describe('GET /devices/:id', () => {
     it('should not fetch user if token is invalid', (done) => {
       request
-        .get('/devices/1')
+        .get('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: 'Bearer 1'
@@ -357,7 +498,7 @@ describe('Devices', () => {
     it('should throw 404 if device doesn\'t exist', (done) => {
       const { token } = context
       request
-        .get('/devices/1')
+        .get('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
@@ -369,7 +510,7 @@ describe('Devices', () => {
       const { token } = context
 
       request
-        .get(`/devices/${context.deviceId}`)
+        .get(`/api/devices/${context.deviceId}`)
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
@@ -393,7 +534,7 @@ describe('Devices', () => {
   describe('PUT /devices/:id', () => {
     it('should not update device if token is invalid', (done) => {
       request
-        .put('/devices/1')
+        .put('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: 'Bearer 1'
@@ -404,7 +545,7 @@ describe('Devices', () => {
     it('should throw 404 if device doesn\'t exist', (done) => {
       const { token } = context
       request
-        .put('/devices/1')
+        .put('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
@@ -420,7 +561,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/devices/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/devices/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -465,7 +606,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/devices/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/devices/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -498,7 +639,7 @@ describe('Devices', () => {
   describe('DELETE /devices/:id', () => {
     it('should not delete device if token is invalid', (done) => {
       request
-        .delete('/devices/1')
+        .delete('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: 'Bearer 1'
@@ -509,7 +650,7 @@ describe('Devices', () => {
     it('should throw 404 if device doesn\'t exist', (done) => {
       const { token } = context
       request
-        .delete('/devices/1')
+        .delete('/api/devices/1')
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
@@ -521,7 +662,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'DELETE',
-          uri: `${LOCALHOST}/devices/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/devices/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -548,7 +689,7 @@ describe('Devices', () => {
       const { token } = context
 
       request
-        .delete(`/devices/${context.deviceId}`)
+        .delete(`/api/devices/${context.deviceId}`)
         .set({
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
