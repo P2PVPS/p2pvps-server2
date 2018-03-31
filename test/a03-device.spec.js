@@ -617,7 +617,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/api/devices/${context.deviceModel._id.toString()}`,
+          uri: `${LOCALHOST}/api/devices/${context.deviceId.toString()}`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -630,9 +630,9 @@ describe('Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-         if (err.statusCode === 401) {
+        if (err.statusCode === 401) {
           assert(err.statusCode === 401, 'Error code 401 expected.')
-        //if (err.statusCode === 404) { // TODO Should this be a 404 or a 401?
+        // if (err.statusCode === 404) { // TODO Should this be a 404 or a 401?
         //  assert(err.statusCode === 404, 'Error code 404 expected.')
         } else {
           console.error('Error: ', err)
@@ -809,8 +809,34 @@ describe('Devices', () => {
         .expect(401, done)
         */
     })
-/*
-    it('should throw 404 if device doesn\'t exist', (done) => {
+
+    it('should throw 404 if device doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 404) {
+          assert(err.statusCode === 404, 'Error code 404 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       const { token } = context
       request
         .delete('/api/devices/1')
@@ -819,6 +845,7 @@ describe('Devices', () => {
           Authorization: `Bearer ${token}`
         })
         .expect(404, done)
+      */
     })
 
     it('should throw 401 if device owner doesn\'t match user', async () => {
@@ -848,7 +875,29 @@ describe('Devices', () => {
       }
     })
 
-    it('should delete device', (done) => {
+    it('should delete device', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/${context.deviceId.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+      /*
       const { token } = context
 
       request
@@ -858,7 +907,7 @@ describe('Devices', () => {
           Authorization: `Bearer ${token}`
         })
         .expect(200, done)
+      */
     })
-    */
   })
 })
