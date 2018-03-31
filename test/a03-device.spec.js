@@ -617,7 +617,7 @@ describe('Devices', () => {
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/api/devicess/${context.deviceModel._id.toString()}`,
+          uri: `${LOCALHOST}/api/devices/${context.deviceModel._id.toString()}`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -630,10 +630,10 @@ describe('Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        // if (err.statusCode === 401) {
-        //  assert(err.statusCode === 401, 'Error code 401 expected.')
-        if (err.statusCode === 404) { // TODO Should this be a 404 or a 401?
-          assert(err.statusCode === 404, 'Error code 404 expected.')
+         if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        //if (err.statusCode === 404) { // TODO Should this be a 404 or a 401?
+        //  assert(err.statusCode === 404, 'Error code 404 expected.')
         } else {
           console.error('Error: ', err)
           console.log('Error stringified: ' + JSON.stringify(err, null, 2))
@@ -771,9 +771,35 @@ describe('Devices', () => {
       }
     })
   })
-  /*
+
   describe('DELETE /devices/:id', () => {
-    it('should not delete device if token is invalid', (done) => {
+    it('should not delete device if token is invalid', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/${context.user._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer 1`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+
+      /*
       request
         .delete('/api/devices/1')
         .set({
@@ -781,8 +807,9 @@ describe('Devices', () => {
           Authorization: 'Bearer 1'
         })
         .expect(401, done)
+        */
     })
-
+/*
     it('should throw 404 if device doesn\'t exist', (done) => {
       const { token } = context
       request
@@ -832,6 +859,6 @@ describe('Devices', () => {
         })
         .expect(200, done)
     })
+    */
   })
-  */
 })
