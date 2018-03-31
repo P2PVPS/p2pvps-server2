@@ -8,8 +8,6 @@
   the 'good' user calls listById().
 */
 
-const app = require('../bin/server')
-const supertest = require('supertest')
 const should = require('chai').should
 // import { authUser } from './utils'
 const rp = require('request-promise')
@@ -246,8 +244,6 @@ describe('Devices', () => {
   describe('GET /api/devices', () => {
     it('should not fetch devices if the authorization header is missing', async () => {
       try {
-        const { token } = context
-
         const options = {
           method: 'POST',
           uri: `${LOCALHOST}/api/devices`,
@@ -293,13 +289,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      request
-        .get('/api/devices')
-        .set('Accept', 'application/json')
-        .expect(401, done)
-      */
     })
 
     it('should not fetch devices if the authorization header is missing the scheme', async () => {
@@ -330,16 +319,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      request
-        .get('/api/devices')
-        .set({
-          Accept: 'application/json',
-          Authorization: '1'
-        })
-        .expect(401, done)
-        */
     })
 
     it('should not fetch devices if the authorization header has invalid scheme', async () => {
@@ -359,9 +338,6 @@ describe('Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        // if (err.statusCode === 422) {
-        //  assert(err.statusCode === 422, 'Error code 422 expected.')
-        // } else
         if (err.statusCode === 401) {
           assert(err.statusCode === 401, 'Error code 401 expected.')
         } else {
@@ -370,17 +346,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      const { token } = context
-      request
-        .get('/api/devices')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Unknown ${token}`
-        })
-        .expect(401, done)
-      */
     })
 
     it('should not fetch devices if token is invalid', async () => {
@@ -411,16 +376,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      request
-        .get('/api/devices')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-      */
     })
 
     it('should fetch all devices', async () => {
@@ -513,15 +468,6 @@ describe('Devices', () => {
           throw err
         }
       }
-      /*
-      request
-        .get('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-      */
     })
 
     it('should throw 404 if device doesn\'t exist', async () => {
@@ -549,16 +495,6 @@ describe('Devices', () => {
           throw err
         }
       }
-      /*
-      const { token } = context
-      request
-        .get('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(404, done)
-      */
     })
 
     it('should fetch device', async () => {
@@ -586,29 +522,6 @@ describe('Devices', () => {
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err
       }
-      /*
-      const { token } = context
-
-      request
-        .get(`/api/devices/${context.deviceId}`)
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(200, (err, res) => {
-          if (err) { return done(err) }
-
-          // console.log(`result: ${JSON.stringify(res, null, 2)}`)
-
-          context.deviceModel = res.body.device
-
-          res.body.should.have.property('device')
-
-          // expect(res.body.user.password).to.not.exist
-
-          done()
-        })
-        */
     })
   })
 
@@ -640,16 +553,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      request
-        .put('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-      */
     })
 
     it('should throw 404 if device doesn\'t exist', async () => {
@@ -677,16 +580,6 @@ describe('Devices', () => {
           throw err
         }
       }
-      /*
-      const { token } = context
-      request
-        .put('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(404, done)
-      */
     })
 
     it('should update device', async () => {
@@ -798,16 +691,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      request
-        .delete('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: 'Bearer 1'
-        })
-        .expect(401, done)
-        */
     })
 
     it('should throw 404 if device doesn\'t exist', async () => {
@@ -835,17 +718,6 @@ describe('Devices', () => {
           throw err
         }
       }
-
-      /*
-      const { token } = context
-      request
-        .delete('/api/devices/1')
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(404, done)
-      */
     })
 
     it('should throw 401 if device owner doesn\'t match user', async () => {
@@ -897,17 +769,6 @@ describe('Devices', () => {
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err
       }
-      /*
-      const { token } = context
-
-      request
-        .delete(`/api/devices/${context.deviceId}`)
-        .set({
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        })
-        .expect(200, done)
-      */
     })
   })
 })
