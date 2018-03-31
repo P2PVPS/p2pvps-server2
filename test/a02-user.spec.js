@@ -246,9 +246,10 @@ describe('Users', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        if (err.statusCode === 422) {
-          assert(err.statusCode === 422, 'Error code 422 expected.')
-        } else if (err.statusCode === 401) {
+        // if (err.statusCode === 422) {
+        //  assert(err.statusCode === 422, 'Error code 422 expected.')
+        // } else
+        if (err.statusCode === 401) {
           assert(err.statusCode === 401, 'Error code 401 expected.')
         } else {
           console.error('Error: ', err)
