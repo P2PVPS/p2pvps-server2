@@ -1,4 +1,3 @@
-const should = require('chai').should
 const utils = require('./utils.js')
 const rp = require('request-promise')
 const assert = require('chai').assert
