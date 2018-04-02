@@ -15,3 +15,5 @@ services:
 before_install:
   - ./install-mongo
   #- npm install -g mocha
+
+script: "npm run test-travis"
