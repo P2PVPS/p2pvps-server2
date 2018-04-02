@@ -2,7 +2,7 @@
 
 */
 
-const RentedDevices = require('../../models/renteddevices')
+const RentedDevices = require('../../models/renteddevice')
 
 /**
  * @api {post} /users Create a new user
@@ -47,7 +47,6 @@ async function addDevice (ctx) {
   // console.log(`POST /sshport/requestPort called`)
 
   try {
-
     // deviceId should be passed in Post.
     const deviceId = ctx.request.body.deviceId
 
@@ -116,6 +115,7 @@ async function addDevice (ctx) {
  * @apiUse TokenError
  */
 async function removeDevice (ctx) {
+
   try {
     // Retrieve the Rented Devices array.
     let rentedDevices = await RentedDevices.find({})
@@ -156,6 +156,7 @@ async function removeDevice (ctx) {
       throw err
     }
   }
+  
 }
 
 module.exports = {
