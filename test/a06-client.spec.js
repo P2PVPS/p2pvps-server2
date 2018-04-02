@@ -16,9 +16,6 @@
   -Previously reserved port(s) are released.
 */
 
-const app = require('../bin/server')
-const supertest = require('supertest')
-const should = require('chai').should
 const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
@@ -26,8 +23,7 @@ const nock = require('nock')
 
 const LOCALHOST = 'http://localhost:5000'
 
-should()
-supertest.agent(app.listen())
+// supertest.agent(app.listen())
 const context = {}
 
 describe('Client', () => {
@@ -49,23 +45,23 @@ describe('Client', () => {
     context.deviceData = device
 
     // Mock out the URLs.
-    nock(`http://dockerconnextcmsp2pvps_openbazaar_1:4002`)
+    nock(`http://serverdeployment2_openbazaar_1:4002`)
     .persist()
     .post('/ob/listing/')
     .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
 
-    nock(`http://dockerconnextcmsp2pvps_openbazaar_1:4002`)
+    nock(`http://serverdeployment2_openbazaar_1:4002`)
     .persist()
     .delete('/ob/listing/test-5aab2816aa39c214596eb900')
     .reply(200, { })
   })
 
-  describe('POST /register/:id', () => {
+  describe('POST /api/register/:id', () => {
     it('should reject with 404 if device can not be found', async () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/client/register/1`,
+          uri: `${LOCALHOST}/api/client/register/1`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -97,7 +93,7 @@ describe('Client', () => {
 
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/client/register/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/client/register/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -110,7 +106,7 @@ describe('Client', () => {
 
         let result = await rp(options)
 
-        //console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         const expiration = new Date(result.body.device.expiration)
 
         assert(result.statusCode === 200, 'Returned status of 200 expected.')
@@ -138,7 +134,7 @@ describe('Client', () => {
 
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/client/register/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/client/register/${context.deviceId}`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -164,12 +160,12 @@ describe('Client', () => {
   // End Describe
   })
 
-  describe('GET /checkin/:id', () => {
+  describe('GET /api/checkin/:id', () => {
     it('should reject with 404 if device can not be found', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/client/checkin/1`,
+          uri: `${LOCALHOST}/api/client/checkin/1`,
           resolveWithFullResponse: true,
           json: true
         }
@@ -193,7 +189,7 @@ describe('Client', () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/client/checkin/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/client/checkin/${context.deviceId}`,
           // resolveWithFullResponse: true,
           json: true
         }
@@ -210,12 +206,12 @@ describe('Client', () => {
     })
   })
 
-  describe('GET /expiration/:id', () => {
+  describe('GET /api/client/expiration/:id', () => {
     it('should reject with 404 if device can not be found', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/client/expiration/1`,
+          uri: `${LOCALHOST}/api/client/expiration/1`,
           resolveWithFullResponse: true,
           json: true
         }
@@ -239,7 +235,7 @@ describe('Client', () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/client/expiration/${context.deviceId}`,
+          uri: `${LOCALHOST}/api/client/expiration/${context.deviceId}`,
           // resolveWithFullResponse: true,
           json: true
         }
