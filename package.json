@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "./node_modules/.bin/nodemon index.js",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha -t 10000 --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
+    "test": "NODE_ENV=test YOURPACKAGE_COVERAGE=1  ./node_modules/.bin/mocha -t 10000 --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
     "lint": "eslint src/**/*.js",
     "docs": "./node_modules/.bin/apidoc -i src/ -o docs"
   },
@@ -58,6 +58,7 @@
     "require": "^2.4.20"
   },
   "devDependencies": {
+    "blanket": "^1.2.3",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
     "eslint": "^3.4.0",
