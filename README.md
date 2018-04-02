@@ -1,6 +1,8 @@
 # P2P VPS Server (v2)
 [![Build Status](https://travis-ci.org/P2PVPS/p2pvps-server2.svg?branch=master)](https://travis-ci.org/P2PVPS/p2pvps-server2)
 
+[![Coverage Status](https://coveralls.io/repos/github/P2PVPS/p2pvps-server2/badge.svg?branch=master)](https://coveralls.io/github/P2PVPS/p2pvps-server2?branch=master)
+
 This is the second incarnation of the P2P VPS server. Whereas the
 [first repository](https://github.com/P2PVPS/p2pvps-server) focused on proof-of-concept,
 this second version focuses on
