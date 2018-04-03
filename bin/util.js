@@ -182,7 +182,7 @@ function _readJSON (fileName) {
             console.log(`err: ${JSON.stringify(err, null, 2)}`)
           }
 
-          throw err
+          return reject(err);
         }
 
         const obj = JSON.parse(data)
