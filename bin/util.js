@@ -128,13 +128,6 @@ async function loginAdmin () {
     return result
   } catch (err) {
     console.error(`Error in bin/util.js/loginAdmin(): `, err)
-
-    if (err.code === 'ELIFECYCLE') {
-      console.log(`-->ELIFECYCLE detected.<--`)
-    } else {
-      console.log(`err: ${JSON.stringify(err, null, 2)}`)
-    }
-
     throw err
   }
 }
@@ -176,7 +169,15 @@ function _readJSON (fileName) {
   return new Promise(function (resolve, reject) {
     try {
       fs.readFile(fileName, (err, data) => {
-        if (err) throw err
+        if (err) {
+          if (err.code === 'ELIFECYCLE') {
+            console.log(`-->ELIFECYCLE detected.<--`)
+          } else {
+            console.log(`err: ${JSON.stringify(err, null, 2)}`)
+          }
+          
+          throw err
+        }
 
         const obj = JSON.parse(data)
 
