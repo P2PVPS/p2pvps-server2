@@ -107,9 +107,15 @@ async function deleteExistingSystemUser () {
 async function loginAdmin () {
   // console.log(`loginAdmin() running.`)
   try {
+    let existingUser
+    try {
     // Read the exising file
-    const existingUser = await _readJSON(`${__dirname}/../persist/${JSON_FILE}`)
+      existingUser = await _readJSON(`${__dirname}/../persist/${JSON_FILE}`)
     // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
+    } catch (err2) {
+      console.error(`err2 caught! `, err2)
+      process.exit(1)
+    }
 
     // Log in as the user.
     let options = {
@@ -170,7 +176,7 @@ function _readJSON (fileName) {
     try {
       fs.readFile(fileName, (err, data) => {
         if (err) {
-          if (err.code === "ENOENT") {
+          if (err.code === 'ENOENT') {
             console.log(`-->ENOENT detected.<--`)
           } else {
             console.log(`err: ${JSON.stringify(err, null, 2)}`)
