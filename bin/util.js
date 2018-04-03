@@ -177,6 +177,11 @@ function _readJSON (fileName) {
       })
     } catch (err) {
       console.error('Error trying to read JSON file in util.js/_readJSON().', err)
+      if (err.code === 'ELIFECYCLE') {
+        console.log(`-->ELIFECYCLE detected.<--`)
+      } else {
+        console.log(`err: ${JSON.stringify(err, null, 2)}`)
+      }
       return reject(err)
     }
   })

@@ -94,6 +94,41 @@ async function addDevice (ctx) {
   }
 }
 
+
+/**
+ * @api {get} /users Get all users
+ * @apiPermission user
+ * @apiVersion 1.0.0
+ * @apiName GetUsers
+ * @apiGroup Users
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ *
+ * @apiSuccess {Object[]} users           Array of user objects
+ * @apiSuccess {ObjectId} users._id       User id
+ * @apiSuccess {String}   users.name      User name
+ * @apiSuccess {String}   users.username  User username
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "users": [{
+ *          "_id": "56bd1da600a526986cf65c80"
+ *          "name": "John Doe"
+ *          "username": "johndoe"
+ *       }]
+ *     }
+ *
+ * @apiUse TokenError
+ */
+async function getDevices (ctx) {
+  const rentedDevices = await RentedDevices.find({})
+  ctx.body = { 
+    devices: rentedDevices[0].deviceList
+  }
+}
+
 /**
  * @api {delete} /users/:id Delete a user
  * @apiPermission
@@ -115,7 +150,6 @@ async function addDevice (ctx) {
  * @apiUse TokenError
  */
 async function removeDevice (ctx) {
-
   try {
     // Retrieve the Rented Devices array.
     let rentedDevices = await RentedDevices.find({})
@@ -156,10 +190,10 @@ async function removeDevice (ctx) {
       throw err
     }
   }
-  
 }
 
 module.exports = {
   addDevice,
+  getDevices,
   removeDevice
 }
