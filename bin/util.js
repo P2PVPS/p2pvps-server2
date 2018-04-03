@@ -170,12 +170,12 @@ function _readJSON (fileName) {
     try {
       fs.readFile(fileName, (err, data) => {
         if (err) {
-          if (err.code === 'ELIFECYCLE') {
-            console.log(`-->ELIFECYCLE detected.<--`)
+          if (err.code === "ENOENT") {
+            console.log(`-->ENOENT detected.<--`)
           } else {
             console.log(`err: ${JSON.stringify(err, null, 2)}`)
           }
-          
+
           throw err
         }
 
