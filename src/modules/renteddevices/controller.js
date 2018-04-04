@@ -121,11 +121,23 @@ async function addDevice (ctx) {
  *
  * @apiUse TokenError
  */
+// Get a list of all the devices currently rented.
 async function getDevices (ctx) {
   try {
+    // Get the rentedDevices model from the DB.
     const rentedDevices = await RentedDevices.find({})
-    ctx.body = {
-      devices: rentedDevices[0].deviceList
+
+    // Empty DB.
+    if (rentedDevices === undefined) {
+      ctx.body = {
+        devices: []
+      }
+
+    // All other cases.
+    } else {
+      ctx.body = {
+        devices: rentedDevices[0].deviceList
+      }
     }
   } catch (err) {
     console.error(`Error in /api/renteddevices/getDevices(): `, err)
