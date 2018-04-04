@@ -94,7 +94,6 @@ async function addDevice (ctx) {
   }
 }
 
-
 /**
  * @api {get} /users Get all users
  * @apiPermission user
@@ -123,9 +122,14 @@ async function addDevice (ctx) {
  * @apiUse TokenError
  */
 async function getDevices (ctx) {
-  const rentedDevices = await RentedDevices.find({})
-  ctx.body = { 
-    devices: rentedDevices[0].deviceList
+  try {
+    const rentedDevices = await RentedDevices.find({})
+    ctx.body = {
+      devices: rentedDevices[0].deviceList
+    }
+  } catch (err) {
+    console.error(`Error in /api/renteddevices/getDevices(): `, err)
+    ctx.throw(503, err.message)
   }
 }
 
