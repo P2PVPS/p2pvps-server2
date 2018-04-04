@@ -126,10 +126,9 @@ async function getDevices (ctx) {
   try {
     // Get the rentedDevices model from the DB.
     const rentedDevices = await RentedDevices.find({})
-    console.log(`rentedDevices: ${JSON.stringify(rentedDevices, null, 2)}`)
+
     // Empty DB.
     if (!rentedDevices || rentedDevices.length === 0) {
-      console.log(`Caught corner case!`)
       ctx.body = {
         devices: []
       }
