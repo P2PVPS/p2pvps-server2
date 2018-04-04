@@ -126,7 +126,7 @@ async function getDevices (ctx) {
   try {
     // Get the rentedDevices model from the DB.
     const rentedDevices = await RentedDevices.find({})
-
+console.log(`rentedDevices: ${JSON.stringify(rentedDevices,null,2)}`)
     // Empty DB.
     if (rentedDevices === undefined) {
       ctx.body = {
