@@ -255,7 +255,7 @@ async function updateDevice (ctx) {
 
   // Reject update if the user is not the device owner.
   if (device.ownerUser.toString() !== ctx.state.user._id.toString()) {
-    console.log('Non-Device User tryint to change Device model!')
+    console.log('Non-Device User trying to change Device model!')
     console.log(`Current device owner: ${device.ownerUser}`)
     console.log(`Current user: ${ctx.state.user._id}`)
     ctx.throw(401, 'Only device owners can edit device details.')
