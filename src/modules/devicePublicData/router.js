@@ -40,7 +40,7 @@ module.exports.routes = [
     method: 'PUT',
     route: '/:id',
     handlers: [
-      ensureUser,
+      //ensureUser,
       devicePublicData.getDevice,
       devicePublicData.updateDevice
     ]
