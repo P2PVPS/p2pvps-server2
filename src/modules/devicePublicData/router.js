@@ -32,7 +32,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/:id',
     handlers: [
-      ensureUser,
+      // ensureUser,
       devicePublicData.getDevice
     ]
   },

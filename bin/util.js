@@ -65,7 +65,7 @@ async function createSystemUser () {
         // Call this function again.
         return createSystemUser()
       } catch (err2) {
-        console.error(`Error in util.js/createSystemUser() while trying generate new system user: `, err2)
+        console.error(`Error in util.js/createSystemUser() while trying generate new system user.`)
         // process.end(1)
         throw err2
       }
@@ -107,8 +107,10 @@ async function deleteExistingSystemUser () {
 async function loginAdmin () {
   // console.log(`loginAdmin() running.`)
   try {
+    let existingUser
+
     // Read the exising file
-    const existingUser = await _readJSON(`${__dirname}/../persist/${JSON_FILE}`)
+    existingUser = await _readJSON(`${__dirname}/../persist/${JSON_FILE}`)
     // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
 
     // Log in as the user.
@@ -127,7 +129,7 @@ async function loginAdmin () {
 
     return result
   } catch (err) {
-    console.error(`Error in bin/util.js/loginAdmin(): `, err)
+    console.error(`Error in bin/util.js/loginAdmin().`)
     throw err
   }
 }
@@ -169,7 +171,15 @@ function _readJSON (fileName) {
   return new Promise(function (resolve, reject) {
     try {
       fs.readFile(fileName, (err, data) => {
-        if (err) throw err
+        if (err) {
+          if (err.code === 'ENOENT') {
+            console.log(`Admin .json file not found!`)
+          } else {
+            console.log(`err: ${JSON.stringify(err, null, 2)}`)
+          }
+
+          return reject(err)
+        }
 
         const obj = JSON.parse(data)
 

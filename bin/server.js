@@ -69,7 +69,8 @@ async function startServer () {
 
     return app
   } catch (err) {
-    throw err
+    console.log(`Error trying to start the P2P VPS Server! `, err);
+    process.exit(1);
   }
 }
 

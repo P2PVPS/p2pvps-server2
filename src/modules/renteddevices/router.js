@@ -17,6 +17,14 @@ module.exports.routes = [
     ]
   },
   {
+    method: 'GET',
+    route: '/',
+    handlers: [
+      // ensureUser,
+      renteddevices.getDevices
+    ]
+  },
+  {
     method: 'DELETE',
     route: '/:id',
     handlers: [
