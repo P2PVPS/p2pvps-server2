@@ -209,6 +209,17 @@ async function updateContract (ctx) {
 async function deleteContract (ctx) {
   const obContract = ctx.body.obContract
 
+  const isNotOwner = obContract.ownerUser.toString() !== ctx.state.user._id.toString()
+  const isNotAdmin = ctx.state.user.type !== 'admin'
+
+  // Reject update if the user is not the device owner.
+  if (isNotOwner && isNotAdmin) {
+    console.log('Non-Device User trying to change Device model!')
+    console.log(`Current device owner: ${obContract.ownerUser}`)
+    console.log(`Current user: ${ctx.state.user._id}`)
+    ctx.throw(401, 'Only device owners can edit device details.')
+  }
+
   await obContract.remove()
 
   ctx.status = 200
