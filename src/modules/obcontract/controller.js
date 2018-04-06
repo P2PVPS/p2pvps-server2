@@ -39,7 +39,7 @@ const OBContract = require('../../models/obcontract')
  *     }
  */
 async function createContract (ctx) {
-  //console.log(`createContract(obContract): ${JSON.stringify(ctx.request.body.obContract, null, 2)}`)
+  // console.log(`createContract(obContract): ${JSON.stringify(ctx.request.body.obContract, null, 2)}`)
   const obContract = new OBContract(ctx.request.body.obContract)
   try {
     await obContract.save()
@@ -122,7 +122,7 @@ async function getContract (ctx, next) {
       obContract
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
+    if (err === 404 || err.name === 'CastError' || err.message === 'Not Found') {
       ctx.throw(404)
     }
 
