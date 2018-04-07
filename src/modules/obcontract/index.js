@@ -82,7 +82,7 @@ async function getContract (contractId) {
 
     return result.obContract
   } catch (err) {
-    console.error(`Error in modules/obcontract/index.js/getContract(): `, err)
+    console.error(`Error in modules/obcontract/index.js/getContract().`)
     throw err
   }
 }
