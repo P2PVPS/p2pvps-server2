@@ -253,7 +253,7 @@ async function updateDevice (ctx) {
   // console.log(`ctx.body: ${JSON.stringify(ctx.body, null, 2)}`)
   const device = ctx.body.device
 
-  const isNotOwner = device.ownerUser.toString() !== ctx.state.user._id.toString();
+  const isNotOwner = device.ownerUser.toString() !== ctx.state.user._id.toString()
   const isNotAdmin = ctx.state.user.type !== 'admin'
 
   // Reject update if the user is not the device owner.
@@ -266,7 +266,10 @@ async function updateDevice (ctx) {
 
   // The user creating the model is automatically assigned as the owner.
   // Override any user-assigned value.
-  ctx.request.body.device.ownerUser = ctx.state.user._id
+  //ctx.request.body.device.ownerUser = ctx.state.user._id
+  // Above does not work with Listing Manager.
+  // Override any attempt to reassignn the ownerUser.
+  ctx.request.body.device.ownerUser = device.ownerUser
 
   // Override any attempt to reassign the privateData property.
   ctx.request.body.device.privateData = device.privateData
