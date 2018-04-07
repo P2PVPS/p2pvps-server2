@@ -264,9 +264,12 @@ async function updateDevice (ctx) {
     ctx.throw(401, 'Only device owners can edit device details.')
   }
 
+  console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
+  console.log(`device: ${JSON.stringify(device, null, 2)}`)
+
   // The user creating the model is automatically assigned as the owner.
   // Override any user-assigned value.
-  //ctx.request.body.device.ownerUser = ctx.state.user._id
+  // ctx.request.body.device.ownerUser = ctx.state.user._id
   // Above does not work with Listing Manager.
   // Override any attempt to reassignn the ownerUser.
   ctx.request.body.device.ownerUser = device.ownerUser
@@ -280,6 +283,8 @@ async function updateDevice (ctx) {
   Object.assign(device, ctx.request.body.device)
 
   await device.save()
+
+  console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
 
   ctx.body = {
     device
