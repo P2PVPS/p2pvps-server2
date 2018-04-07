@@ -457,12 +457,11 @@ describe('Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-
         // Temorarily passing test:
         if (err.statusCode === 404) {
           assert(err.statusCode === 404, 'Error code 401 expected.')
 
-        //if (err.statusCode === 401) {
+        // if (err.statusCode === 401) {
         //  assert(err.statusCode === 401, 'Error code 401 expected.')
         } else {
           console.error('Error: ', err)
@@ -608,6 +607,9 @@ describe('Devices', () => {
         }
 
         let result = await rp(options)
+
+        // TODO: Assert that change in obContract values are changed. Both
+        // blank strings, and actual string values.
 
         // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(result.body.device.memory === 'hasBeenChanged', 'Should return the update data')

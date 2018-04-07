@@ -277,10 +277,12 @@ async function updateDevice (ctx) {
   // Override any attempt to reassign the privateData property.
   ctx.request.body.device.privateData = device.privateData
 
-  // TODO Ensure the privateData field is not changed.
-
   // Update the devicePublicData model.
   Object.assign(device, ctx.request.body.device)
+
+  // Clear obContract ID if passed value is blank.
+  if(ctx.request.body.device.obContract === "")
+    device.obContract = "";
 
   await device.save()
 
