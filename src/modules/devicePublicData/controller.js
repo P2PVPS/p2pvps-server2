@@ -281,8 +281,11 @@ async function updateDevice (ctx) {
   Object.assign(device, ctx.request.body.device)
 
   // Clear obContract ID if passed value is blank.
-  if(ctx.request.body.device.obContract === "")
-    device.obContract = "";
+  if (ctx.request.body.device.obContract === '') {
+    console.log(`removing obContract from device.`)
+    device.obContract = ''
+  }
+  console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
 
   await device.save()
 
