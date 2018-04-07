@@ -264,8 +264,8 @@ async function updateDevice (ctx) {
     ctx.throw(401, 'Only device owners can edit device details.')
   }
 
-  console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
-  console.log(`device: ${JSON.stringify(device, null, 2)}`)
+  //console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
+  //console.log(`device: ${JSON.stringify(device, null, 2)}`)
 
   // The user creating the model is automatically assigned as the owner.
   // Override any user-assigned value.
@@ -282,14 +282,14 @@ async function updateDevice (ctx) {
 
   // Clear obContract ID if passed value is blank.
   if (ctx.request.body.device.obContract === '') {
-    console.log(`removing obContract from device.`)
+    //console.log(`removing obContract from device.`)
     device.obContract = ''
   }
-  console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
+  //console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
 
   await device.save()
 
-  console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
+  //console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
 
   ctx.body = {
     device
