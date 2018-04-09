@@ -34,7 +34,7 @@ async function getModel (ctx, next) {
       ctx.throw(404)
     }
 
-    console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
+    //console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
 
     ctx.body = {
       devicePrivateData
