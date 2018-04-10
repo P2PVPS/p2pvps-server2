@@ -32,9 +32,9 @@ const util = require('../../lib/util')
  */
 // This API is called by Client device to register itself into the marketplace.
 async function register (ctx, next) {
-  const DEFAULT_EXPIRATION = 60000 * 8 // Testing
+  // const DEFAULT_EXPIRATION = 60000 * 8 // Testing
   // const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
-  // const DEFAULT_EXPIRATION = 60000 * 60; // One Hour
+  const DEFAULT_EXPIRATION = 60000 * 60; // One Hour
   // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30; // Thirty Days
 
   try {
