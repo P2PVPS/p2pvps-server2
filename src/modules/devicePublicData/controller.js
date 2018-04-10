@@ -147,13 +147,13 @@ async function listById (ctx) {
   const allDevices = await DevicePublicData.find({})
 
   const thisUser = ctx.state.user._id.toString()
-  //console.log(`This user: ${thisUser}`)
+  // console.log(`This user: ${thisUser}`)
 
   // Find the devices associated with the current user.
   const devices = []
   for (var i = 0; i < allDevices.length; i++) {
     const thisDevice = allDevices[i]
-    //console.log(`thisDevice: ${JSON.stringify(thisDevice, null, 2)}`)
+    // console.log(`thisDevice: ${JSON.stringify(thisDevice, null, 2)}`)
 
     if (thisDevice.ownerUser === thisUser) { devices.push(thisDevice) }
   }
@@ -253,27 +253,43 @@ async function updateDevice (ctx) {
   // console.log(`ctx.body: ${JSON.stringify(ctx.body, null, 2)}`)
   const device = ctx.body.device
 
+  const isNotOwner = device.ownerUser.toString() !== ctx.state.user._id.toString()
+  const isNotAdmin = ctx.state.user.type !== 'admin'
+
   // Reject update if the user is not the device owner.
-  if (device.ownerUser.toString() !== ctx.state.user._id.toString()) {
+  if (isNotOwner && isNotAdmin) {
     console.log('Non-Device User trying to change Device model!')
     console.log(`Current device owner: ${device.ownerUser}`)
     console.log(`Current user: ${ctx.state.user._id}`)
     ctx.throw(401, 'Only device owners can edit device details.')
   }
 
+  //console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
+  //console.log(`device: ${JSON.stringify(device, null, 2)}`)
+
   // The user creating the model is automatically assigned as the owner.
   // Override any user-assigned value.
-  ctx.request.body.device.ownerUser = ctx.state.user._id
+  // ctx.request.body.device.ownerUser = ctx.state.user._id
+  // Above does not work with Listing Manager.
+  // Override any attempt to reassignn the ownerUser.
+  ctx.request.body.device.ownerUser = device.ownerUser
 
   // Override any attempt to reassign the privateData property.
   ctx.request.body.device.privateData = device.privateData
 
-  // TODO Ensure the privateData field is not changed.
-
   // Update the devicePublicData model.
   Object.assign(device, ctx.request.body.device)
 
+  // Clear obContract ID if passed value is blank.
+  if (ctx.request.body.device.obContract === '') {
+    //console.log(`removing obContract from device.`)
+    device.obContract = ''
+  }
+  //console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
+
   await device.save()
+
+  //console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
 
   ctx.body = {
     device
