@@ -33,9 +33,9 @@ const util = require('../../lib/util')
 // This API is called by Client device to register itself into the marketplace.
 async function register (ctx, next) {
   // const DEFAULT_EXPIRATION = 60000 * 8 // Testing
-  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
-  const DEFAULT_EXPIRATION = 60000 * 60; // One Hour
-  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30; // Thirty Days
+  // const DEFAULT_EXPIRATION = 60000 * 60 // One Hour
+  const DEFAULT_EXPIRATION = 60000 * 60 * 24 // One Day
+  // const DEFAULT_EXPIRATION = 60000 * 60 * 24 * 30 // Thirty Days
 
   try {
     // console.log('register() called.')
@@ -106,7 +106,7 @@ async function register (ctx, next) {
     await device.save()
     console.log(`device data saved.`)
 
-    //const retObj = Object.assign({}, device)
+    // const retObj = Object.assign({}, device)
     const retObj = getDeviceProperties(device)
     retObj.username = loginData.username
     retObj.password = loginData.password
@@ -223,7 +223,7 @@ module.exports = {
 }
 
 // Copy properties from the device model to a generic object.
-function getDeviceProperties(device) {
+function getDeviceProperties (device) {
   const {
     ownerUser,
     renterUser,
@@ -242,7 +242,7 @@ function getDeviceProperties(device) {
     processor,
     internetSpeed,
     checkinTimeStamp
-  } = device;
+  } = device
 
   const retObj = {
     ownerUser,
@@ -264,5 +264,5 @@ function getDeviceProperties(device) {
     checkinTimeStamp
   }
 
-  return retObj;
+  return retObj
 }
