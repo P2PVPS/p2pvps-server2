@@ -51,12 +51,14 @@ async function startServer () {
     modules(app)
 
     // Enable CORS for testing
-    app.use(cors({origin: '*'}))
+    if (process.env.P2PVPS_ENV === 'local') {
+      app.use(cors({origin: '*'}))
+    }
 
   // MIDDLEWARE END
 
   // Ensure the environment variable is set
-    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
+    process.env.P2PVPS_ENV = process.env.P2PVPS_ENV || 'dev'
 
   // app.listen(config.port, () => {
   //  console.log(`Server started on ${config.port}`)
@@ -73,8 +75,8 @@ async function startServer () {
 
     return app
   } catch (err) {
-    console.log(`Error trying to start the P2P VPS Server! `, err);
-    process.exit(1);
+    console.log(`Error trying to start the P2P VPS Server! `, err)
+    process.exit(1)
   }
 }
 
