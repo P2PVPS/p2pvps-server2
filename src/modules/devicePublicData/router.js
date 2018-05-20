@@ -16,7 +16,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/',
     handlers: [
-      ensureUser,
+      //ensureUser,
       devicePublicData.getDevices
     ]
   },
