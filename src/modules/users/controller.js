@@ -2,8 +2,8 @@ const User = require('../../models/users')
 
 /**
  * @api {post} /api/users Create a new user
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission none
+ * @apiVersion 1.0.1
  * @apiName CreateUser
  * @apiGroup Users
  *
@@ -42,6 +42,7 @@ const User = require('../../models/users')
  *       "error": "Unprocessable Entity"
  *     }
  */
+
 async function createUser (ctx) {
   const user = new User(ctx.request.body.user)
 
@@ -72,7 +73,7 @@ async function createUser (ctx) {
 /**
  * @api {get} /api/users Get all users
  * @apiPermission user
- * @apiVersion 1.0.0
+ * @apiVersion 1.0.1
  * @apiName GetUsers
  * @apiGroup Users
  *
@@ -98,6 +99,7 @@ async function createUser (ctx) {
  *
  * @apiUse TokenError
  */
+
 async function getUsers (ctx) {
   const users = await User.find({}, '-password')
   ctx.body = { users }
@@ -106,7 +108,7 @@ async function getUsers (ctx) {
 /**
  * @api {get} /api/users/:id Get user by id
  * @apiPermission user
- * @apiVersion 1.0.0
+ * @apiVersion 1.0.1
  * @apiName GetUser
  * @apiGroup Users
  *
@@ -154,8 +156,8 @@ async function getUser (ctx, next) {
 
 /**
  * @api {put} /api/users/:id Update a user
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission user
+ * @apiVersion 1.0.1
  * @apiName UpdateUser
  * @apiGroup Users
  *
@@ -166,16 +168,18 @@ async function getUser (ctx, next) {
  * @apiParam {String} user.name     Name.
  * @apiParam {String} user.username Username.
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      Updated name
- * @apiSuccess {String}   users.username  Updated username
+ * @apiSuccess {Object}   user           User object
+ * @apiSuccess {ObjectId} user._id       User id
+ * @apiSuccess {String}   user.name      Updated name
+ * @apiSuccess {String}   user.type      User type (admin or user)
+ * @apiSuccess {String}   user.username  Updated username
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "user": {
  *          "_id": "56bd1da600a526986cf65c80"
+ *          "type": "user"
  *          "name": "Cool new name"
  *          "username": "johndoe"
  *       }
@@ -214,8 +218,8 @@ async function updateUser (ctx) {
 
 /**
  * @api {delete} /api/users/:id Delete a user
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission user
+ * @apiVersion 1.0.1
  * @apiName DeleteUser
  * @apiGroup Users
  *
