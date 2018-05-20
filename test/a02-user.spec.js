@@ -3,6 +3,7 @@ const cleanDb = require('./utils').cleanDb
 const serverUtil = require('../bin/util')
 const rp = require('request-promise')
 const assert = require('chai').assert
+const utils = require('./utils')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -15,6 +16,15 @@ describe('Users', () => {
     // await app.startServer()
 
     cleanDb()
+
+    const userObj = {
+      username: 'test2',
+      password: 'pass2'
+    }
+    const testUser = await utils.createUser(userObj)
+
+    context.user2 = testUser.user
+    context.token2 = testUser.token
   })
 
   after(async () => {
@@ -356,8 +366,8 @@ describe('Users', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        if (err.statusCode === 404) {
-          assert(err.statusCode === 404, 'Error code 404 expected.')
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
         } else {
           console.error('Error: ', err)
           console.log('Error stringified: ' + JSON.stringify(err, null, 2))
@@ -394,6 +404,69 @@ describe('Users', () => {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err
+      }
+    })
+
+    it('should not be able to update user type', async () => {
+      try {
+        const options = {
+          method: 'PUT',
+          uri: `${LOCALHOST}/api/users/${context.user._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          },
+          body: {
+            user: {
+              name: 'new name',
+              type: 'test'
+            }
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(result.body.user.type === 'user', 'Type should be unchanged.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+    it('should not be able to update other user', async () => {
+      try {
+        const options = {
+          method: 'PUT',
+          uri: `${LOCALHOST}/api/users/${context.user2._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          },
+          body: {
+            user: {
+              name: 'This should not work'
+            }
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
       }
     })
   })
@@ -443,8 +516,35 @@ describe('Users', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        if (err.statusCode === 404) {
-          assert(err.statusCode === 404, 'Error code 404 expected.')
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should not be able to delete other users unless admin', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/users/${context.user2._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
         } else {
           console.error('Error: ', err)
           console.log('Error stringified: ' + JSON.stringify(err, null, 2))

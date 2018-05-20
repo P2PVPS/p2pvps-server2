@@ -1,4 +1,5 @@
-const ensureUser = require('../../middleware/validators').ensureUser
+// const ensureUser = require('../../middleware/validators').ensureUser
+const validator = require('../../middleware/validators')
 const devicePublicData = require('./controller')
 
 module.exports.baseUrl = '/api/devices'
@@ -8,7 +9,7 @@ module.exports.routes = [
     method: 'POST',
     route: '/',
     handlers: [
-      ensureUser,
+      validator.ensureUser,
       devicePublicData.createDevice
     ]
   },
@@ -16,7 +17,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/',
     handlers: [
-      //ensureUser,
+      // ensureUser,
       devicePublicData.getDevices
     ]
   },
@@ -24,7 +25,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/listbyid',
     handlers: [
-      ensureUser,
+      validator.ensureUser,
       devicePublicData.listById
     ]
   },
@@ -40,7 +41,8 @@ module.exports.routes = [
     method: 'PUT',
     route: '/:id',
     handlers: [
-      ensureUser,
+      // ensureUser,
+      validator.ensureUser,
       devicePublicData.getDevice,
       devicePublicData.updateDevice
     ]
@@ -49,7 +51,8 @@ module.exports.routes = [
     method: 'DELETE',
     route: '/:id',
     handlers: [
-      ensureUser,
+      // ensureUser,
+      validator.ensureUser,
       devicePublicData.getDevice,
       devicePublicData.deleteDevice
     ]

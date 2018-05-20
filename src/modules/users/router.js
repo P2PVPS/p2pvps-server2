@@ -1,4 +1,5 @@
-const ensureUser = require('../../middleware/validators').ensureUser
+// const ensureUser = require('../../middleware/validators').ensureUser
+const validator = require('../../middleware/validators')
 const user = require('./controller')
 
 // export const baseUrl = '/users'
@@ -16,7 +17,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/',
     handlers: [
-      ensureUser,
+      validator.ensureUser,
       user.getUsers
     ]
   },
@@ -24,7 +25,7 @@ module.exports.routes = [
     method: 'GET',
     route: '/:id',
     handlers: [
-      ensureUser,
+      validator.ensureUser,
       user.getUser
     ]
   },
@@ -32,7 +33,7 @@ module.exports.routes = [
     method: 'PUT',
     route: '/:id',
     handlers: [
-      ensureUser,
+      validator.ensureTargetUserOrAdmin,
       user.getUser,
       user.updateUser
     ]
@@ -41,7 +42,7 @@ module.exports.routes = [
     method: 'DELETE',
     route: '/:id',
     handlers: [
-      ensureUser,
+      validator.ensureTargetUserOrAdmin,
       user.getUser,
       user.deleteUser
     ]

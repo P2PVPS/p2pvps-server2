@@ -192,16 +192,18 @@ async function getUser (ctx, next) {
  *
  * @apiUse TokenError
  */
-
-/*
-  TODO:
-  -Ensure user A can not change details of user B, unless they are of type===admin.
-  -Ensure a user can not change their type.
-*/
 async function updateUser (ctx) {
   const user = ctx.body.user
 
+  // Save a copy of the original user type.
+  const userType = user.type
+
   Object.assign(user, ctx.request.body.user)
+
+  // Unless the calling user is an admin, they can not change the user type.
+  if (userType !== 'admin') {
+    user.type = userType
+  }
 
   await user.save()
 
@@ -230,10 +232,6 @@ async function updateUser (ctx) {
  *
  * @apiUse TokenError
  */
-/*
-TODO
--Ensure user A can not delete user B, unless they are of type===admin.
-*/
 async function deleteUser (ctx) {
   const user = ctx.body.user
 
