@@ -291,6 +291,8 @@ describe('Devices', () => {
       }
     })
 
+    /*
+    // Deprecated. The market listing app needs this API endpoint to be open.
     it('should not fetch devices if the authorization header is missing the scheme', async () => {
       try {
         const options = {
@@ -320,7 +322,10 @@ describe('Devices', () => {
         }
       }
     })
+    */
 
+    /*
+    // Deprecated. The market listing app needs this API endpoint to be open.
     it('should not fetch devices if the authorization header has invalid scheme', async () => {
       try {
         const options = {
@@ -347,7 +352,10 @@ describe('Devices', () => {
         }
       }
     })
+    */
 
+    /*
+    // Deprecated. The market listing app needs this API endpoint to be open.
     it('should not fetch devices if token is invalid', async () => {
       try {
         const options = {
@@ -377,7 +385,8 @@ describe('Devices', () => {
         }
       }
     })
-
+    */
+    
     it('should fetch all devices', async () => {
       const { token } = context
 

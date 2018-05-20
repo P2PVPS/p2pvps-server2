@@ -1,32 +1,36 @@
 const User = require('../../models/users')
 
 /**
- * @api {post} /users Create a new user
+ * @api {post} /api/users Create a new user
  * @apiPermission
  * @apiVersion 1.0.0
  * @apiName CreateUser
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "testuser", "password": "testpass" } }' localhost:5000/api/users
  *
  * @apiParam {Object} user          User object (required)
  * @apiParam {String} user.username Username.
  * @apiParam {String} user.password Password.
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   user           User object
+ * @apiSuccess {ObjectId} user._id       User id
+ * @apiSuccess {String}   user.type      User type (admin or user)
+ * @apiSuccess {String}   user.name      User name
+ * @apiSuccess {String}   user.username  User name
+ * @apiSuccess {Object}   token          Auth token
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "user": {
  *          "_id": "56bd1da600a526986cf65c80"
+ *          "type": "user"
  *          "name": "John Doe"
  *          "username": "johndoe"
- *       }
+ *       },
+ *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViMDE5ZjgwMjUzZWIxMGM3YzQ5ZDE1NiIsImlhdCI6MTUyNjgzMzAyNH0.ce39pJwFXSTsFv1KLQ5_oB0NGmxutsb3HrAd2rxgpl0"
  *     }
  *
  * @apiError UnprocessableEntity Missing required parameters
@@ -66,17 +70,18 @@ async function createUser (ctx) {
 }
 
 /**
- * @api {get} /users Get all users
+ * @api {get} /api/users Get all users
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName GetUsers
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X GET localhost:5000/api/users
  *
  * @apiSuccess {Object[]} users           Array of user objects
  * @apiSuccess {ObjectId} users._id       User id
+ * @apiSuccess {String}   users.type      User type (admin or user)
  * @apiSuccess {String}   users.name      User name
  * @apiSuccess {String}   users.username  User username
  *
@@ -85,6 +90,7 @@ async function createUser (ctx) {
  *     {
  *       "users": [{
  *          "_id": "56bd1da600a526986cf65c80"
+ *          "type": "user"
  *          "name": "John Doe"
  *          "username": "johndoe"
  *       }]
@@ -98,19 +104,20 @@ async function getUsers (ctx) {
 }
 
 /**
- * @api {get} /users/:id Get user by id
+ * @api {get} /api/users/:id Get user by id
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName GetUser
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X GET localhost:5000/api/users/56bd1da600a526986cf65c80
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   user           User object
+ * @apiSuccess {ObjectId} user._id       User id
+ * @apiSuccess {String}   user.type      User type (admin or user)
+ * @apiSuccess {String}   user.name      User name
+ * @apiSuccess {String}   user.username  User username
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -146,14 +153,14 @@ async function getUser (ctx, next) {
 }
 
 /**
- * @api {put} /users/:id Update a user
+ * @api {put} /api/users/:id Update a user
  * @apiPermission
  * @apiVersion 1.0.0
  * @apiName UpdateUser
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/api/users/56bd1da600a526986cf65c80
  *
  * @apiParam {Object} user          User object (required)
  * @apiParam {String} user.name     Name.
@@ -185,6 +192,12 @@ async function getUser (ctx, next) {
  *
  * @apiUse TokenError
  */
+
+/*
+  TODO:
+  -Ensure user A can not change details of user B, unless they are of type===admin.
+  -Ensure a user can not change their type.
+*/
 async function updateUser (ctx) {
   const user = ctx.body.user
 
@@ -198,14 +211,14 @@ async function updateUser (ctx) {
 }
 
 /**
- * @api {delete} /users/:id Delete a user
+ * @api {delete} /api/users/:id Delete a user
  * @apiPermission
  * @apiVersion 1.0.0
  * @apiName DeleteUser
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X DELETE localhost:5000/api/users/5b019f80253eb10c7c49d156
  *
  * @apiSuccess {StatusCode} 200
  *
@@ -217,7 +230,10 @@ async function updateUser (ctx) {
  *
  * @apiUse TokenError
  */
-
+/*
+TODO
+-Ensure user A can not delete user B, unless they are of type===admin.
+*/
 async function deleteUser (ctx) {
   const user = ctx.body.user
 

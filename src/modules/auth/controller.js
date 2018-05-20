@@ -22,7 +22,7 @@ const passport = require('koa-passport')
  * @apiParam {String} password  User password.
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "username": "johndoe@gmail.com", "password": "foo" }' localhost:5000/auth
+ * curl -H "Content-Type: application/json" -X POST -d '{ "username": "testuser", "password": "testpass" }' localhost:5000/api/auth
  *
  * @apiSuccess {Object}   user           User object
  * @apiSuccess {ObjectId} user._id       User id
