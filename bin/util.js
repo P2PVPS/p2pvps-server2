@@ -10,8 +10,8 @@ const LOCALHOST = 'http://localhost:5000'
 const context = {}
 
 // Ensure the environment variable is set
-process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
-const env = process.env.NODE_ENV
+process.env.P2PVPS_ENV = process.env.P2PVPS_ENV || 'dev'
+const env = process.env.P2PVPS_ENV
 const JSON_FILE = `system-user-${env}.json`
 
 // Create the first user in the system. A 'admin' level system user that is

@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "./node_modules/.bin/nodemon index.js",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha -t 10000",
+    "test": "P2PVPS_ENV=test ./node_modules/.bin/mocha -t 10000",
     "lint": "eslint src/**/*.js",
     "docs": "./node_modules/.bin/apidoc -i src/ -o docs",
-    "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec -t 10000 ./test/a*.js"
+    "test-travis": "P2PVPS_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec -t 10000 ./test/a*.js"
   },
   "keywords": [
     "koa2-api-boilerplate",
