@@ -32,8 +32,10 @@ const util = require('../../lib/util')
  *       "port": 6234
  *     }
  *
+ * @apiDescription This endpoint is called by Client device to register itself
+ * into the marketplace.
  */
-// This API is called by Client device to register itself into the marketplace.
+
 async function register (ctx, next) {
   // const DEFAULT_EXPIRATION = 60000 * 8 // Testing
   // const DEFAULT_EXPIRATION = 60000 * 60 // One Hour
@@ -150,11 +152,11 @@ async function register (ctx, next) {
  *       "success": true
  *     }
  *
+ * @apiDescription This function allows Clients to check-in and notify the
+ * server they are still actively connected to the internet. This should happen
+ * every 2 minutes. It updates the checkinTimeStamp of the device
  */
 
-// This function allows Clients to check-in and notify the server they are still
-// actively connected to the internet. This should happen every 2 minutes. It
-// updates the checkinTimeStamp of the device
 async function checkIn (ctx, next) {
   // console.log('Entering devicePublicData.js/checkIn().')
 
@@ -209,12 +211,12 @@ async function checkIn (ctx, next) {
  *       "expiration": "2018-05-21T04:33:28.389Z",
  *     }
  *
+ * @apiDescription This function allows the p2p-vps-client.js application
+ * running on the Client to download the expiration for the current Client.
+ * When the expiration is hit, it resets the device and wipes the old Docker
+ * container and persistant storage.
  */
 
-// This function allows the p2p-vps-client.js application running on the Client
-// to download the expiration for the current Client. When the expiration is
-// hit, it resets the device and wipes the old Docker container and persistant
-// storage.
 async function getExpiration (ctx, next) {
   try {
     // let devicePublicModel = await util.getDevicePublicModel(req.params.id);
