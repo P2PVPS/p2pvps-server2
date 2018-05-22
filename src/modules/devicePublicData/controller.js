@@ -6,7 +6,7 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName CreateDevice
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X POST -d '{ "device": {} }' localhost:5000/api/devices
@@ -88,7 +88,7 @@ async function createDevice (ctx) {
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName GetDevices
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X GET localhost:5000/api/devices
@@ -119,7 +119,7 @@ async function getDevices (ctx) {
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName ListById
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiDescription List all devices associated with the calling user.
  *
@@ -167,7 +167,7 @@ async function listById (ctx) {
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName GetDevice
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X GET localhost:5000/api/devices/56bd1da600a526986cf65c80
@@ -214,7 +214,7 @@ async function getDevice (ctx, next) {
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName UpdateDevice
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X PUT -d '{ "device": { "deviceName": "My Device" } }' localhost:5000/api/devices/56bd1da600a526986cf65c80
@@ -307,7 +307,7 @@ async function updateDevice (ctx) {
  * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName DeleteDevice
- * @apiGroup DevicePublic
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X DELETE localhost:5000/api/devices/56bd1da600a526986cf65c80

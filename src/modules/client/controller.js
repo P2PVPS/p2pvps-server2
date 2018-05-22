@@ -11,7 +11,7 @@ const util = require('../../lib/util')
  * @apiGroup Client
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST localhost:5000/client/register/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X POST localhost:5000/api/client/register/56bd1da600a526986cf65c80
  *
  * @apiParam {Object} userData         Device data object (required)
  * @apiParam {String} userData.memory Memory
@@ -142,7 +142,7 @@ async function register (ctx, next) {
  * @apiGroup Client
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/client/checkin/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/client/checkin/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *
@@ -193,14 +193,14 @@ async function checkIn (ctx, next) {
 }
 
 /**
- * @api {get} /api/client/expiration/:id Client expiration
+ * @api {get} /api/client/expiration/:id Check client expiration
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName Expiration
  * @apiGroup Client
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/client/expiration/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/client/expiration/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  * @apiSuccess {String}   expiration  ISO Date String
