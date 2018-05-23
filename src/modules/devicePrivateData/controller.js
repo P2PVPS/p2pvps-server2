@@ -1,29 +1,35 @@
 const DevicePrivateData = require('../../models/deviceprivatedata')
 
 /**
- * @api {get} /users/:id Get user by id
- * @apiPermission user
+ * @api {get} /api/deviceprivatedata/:id Get device by id
+ * @apiPermission admin
  * @apiVersion 1.0.0
- * @apiName GetUser
- * @apiGroup Users
+ * @apiName GetDevice
+ * @apiGroup Device-Private
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X GET localhost:5000/api/deviceprivatedata/56bd1da600a526986cf65c80
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   devicePrivateData               Device Private Data object
+ * @apiSuccess {ObjectId} devicePrivateData._id           Device Private Data id
+ * @apiSuccess {ObjectId} devicePrivateData.ownerUser     Owner id
+ * @apiSuccess {ObjectId} devicePrivateData.publicData    Device Public Data id
+ * @apiSuccess {String} devicePrivateData.deviceUserName  SSH Login
+ * @apiSuccess {String} devicePrivateData.devicePassword  SSH Password
+ * @apiSuccess {String} devicePrivateData.serverSSHPort   SSH Port
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     {
- *       "user": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
- *       }
- *     }
+ *    {
+ *      "devicePrivateData":{
+ *        "_id":"5b038287eb56080a3d1b31b6",
+ *        "ownerUser":"5b038000eb56080a3d1b31b4",
+ *        "publicData":"5b038287eb56080a3d1b31b5",
+ *        "devicePassword":"IQGG79CTOH",
+ *        "deviceUserName":"CGG4fTAD30",
+ *        "serverSSHPort":"6000"
+ *      }
+ *    }
  *
  * @apiUse TokenError
  */
@@ -34,7 +40,7 @@ async function getModel (ctx, next) {
       ctx.throw(404)
     }
 
-    //console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
+    // console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
 
     ctx.body = {
       devicePrivateData
@@ -52,32 +58,41 @@ async function getModel (ctx, next) {
 }
 
 /**
- * @api {put} /users/:id Update a user
- * @apiPermission
+ * @api {put} /api/deviceprivatedata/:id Update a device
+ * @apiPermission admin
  * @apiVersion 1.0.0
- * @apiName UpdateUser
- * @apiGroup Users
+ * @apiName UpdateDevice
+ * @apiGroup Device-Private
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X PUT -d '{ "devicePrivateData": { "deviceUserName": "ABCD1234" } }' localhost:5000/api/deviceprivatedata/56bd1da600a526986cf65c80
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.name     Name.
- * @apiParam {String} user.username Username.
+ * @apiParam {Object}   devicePrivateData               Device Private Data object
+ * @apiParam {ObjectId} devicePrivateData.ownerUser     Owner id
+ * @apiParam {ObjectId} devicePrivateData.publicData    Device Public Data id
+ * @apiParam {String} devicePrivateData.deviceUserName  SSH Login
+ * @apiParam {String} devicePrivateData.devicePassword  SSH Password
+ * @apiParam {String} devicePrivateData.serverSSHPort   SSH Port
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      Updated name
- * @apiSuccess {String}   users.username  Updated username
+ * @apiSuccess {Object}   devicePrivateData               Device Private Data object
+ * @apiSuccess {ObjectId} devicePrivateData._id           Device Private Data id
+ * @apiSuccess {ObjectId} devicePrivateData.ownerUser     Owner id
+ * @apiSuccess {ObjectId} devicePrivateData.publicData    Device Public Data id
+ * @apiSuccess {String} devicePrivateData.deviceUserName  SSH Login
+ * @apiSuccess {String} devicePrivateData.devicePassword  SSH Password
+ * @apiSuccess {String} devicePrivateData.serverSSHPort   SSH Port
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "Cool new name"
- *          "username": "johndoe"
- *       }
+ *      "devicePrivateData":{
+ *        "_id":"5b038287eb56080a3d1b31b6",
+ *        "ownerUser":"5b038000eb56080a3d1b31b4",
+ *        "publicData":"5b038287eb56080a3d1b31b5",
+ *        "devicePassword":"IQGG79CTOH",
+ *        "deviceUserName":"CGG4fTAD30",
+ *        "serverSSHPort":"6000"
+ *      }
  *     }
  *
  * @apiError UnprocessableEntity Missing required parameters
