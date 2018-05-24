@@ -13,7 +13,7 @@ const passport = require('koa-passport')
  */
 
 /**
- * @api {post} /auth Authenticate user
+ * @api {post} /api/auth Authenticate user
  * @apiVersion 1.0.0
  * @apiName AuthUser
  * @apiGroup Auth
@@ -28,6 +28,7 @@ const passport = require('koa-passport')
  * @apiSuccess {ObjectId} user._id       User id
  * @apiSuccess {String}   user.name      User name
  * @apiSuccess {String}   user.username  User username
+ * @apiSuccess {String}   user.type      User type (admin or user)
  * @apiSuccess {String}   token          Encoded JWT
  *
  * @apiSuccessExample {json} Success-Response:

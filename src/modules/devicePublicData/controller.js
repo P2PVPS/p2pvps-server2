@@ -2,28 +2,28 @@ const DevicePublicData = require('../../models/devicepublicdata')
 const DevicePrivateData = require('../../models/deviceprivatedata')
 
 /**
- * @api {post} /devicePublicData Create a devicePublicData model
- * @apiPermission
+ * @api {post} /api/devices Create a new device
+ * @apiPermission user
  * @apiVersion 1.0.0
  * @apiName CreateDevice
- * @apiGroup Devices
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "device": { "ownerUser": "user._id", ... } }' localhost:5000/devices
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X POST -d '{ "device": {} }' localhost:5000/api/devices
  *
- * @apiParam {Object} device          Device object (required)
- * @apiParam {String} device.ownerUser GUID of the User who owns this device.
- * @apiParam {String} device.renterUser GUID of the User who rents this device.
- * @apiParam {String} device.privateData GUID of the devicePrivateData model associated with this device.
- * @apiParam {String} device.obContract GUID of the obContract model associated with this device.
- * @apiParam {String} device.rentStartDate An ISO date string of when the rental started.
- * @apiParam {String} device.expiration An ISO date string of when the device should reset.
- * @apiParam {String} device.deviceName Name displayed in the GUI.
+ * @apiParam {Object} device                Device object (required)
+ * @apiParam {ObjectId} device.ownerUser      GUID of the User who owns this device.
+ * @apiParam {ObjectId} device.renterUser     GUID of the User who rents this device.
+ * @apiParam {ObjectId} device.privateData    GUID of the devicePrivateData model associated with this device.
+ * @apiParam {ObjectId} device.obContract     GUID of the obContract model associated with this device.
+ * @apiParam {String} device.rentStartDate  An ISO date string of when the rental started.
+ * @apiParam {String} device.expiration     An ISO date string of when the device should reset.
+ * @apiParam {String} device.deviceName     Name displayed in the GUI.
  *
- * @apiSuccess {Object}   device          Device object
- * @apiSuccess {ObjectId} device._id      Device GUID
- * @apiSuccess {String}   device.ownerUser GUID of the User who owns this device.
- * @apiSuccess {String}   device.renterUser GUID of the User who rents this device.
+ * @apiSuccess {Object}   device              Device object
+ * @apiSuccess {ObjectId} device._id          Device GUID
+ * @apiSuccess {ObjectId} device.ownerUser    GUID of the User who owns this device.
+ * @apiSuccess {ObjectId} device.privateData  GUID of the Private device model.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -31,7 +31,7 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  *       "device": {
  *          "_id": "56bd1da600a526986cf65c80"
  *          "ownerUser": "56bd1da600a526986cf65c81"
- *          "renterUser": ""
+ *          "privateData": "5b0382a5eb56080a3d1b31b8"
  *       }
  *     }
  *
@@ -84,31 +84,30 @@ async function createDevice (ctx) {
 }
 
 /**
- * @api {get} /users Get all users
- * @apiPermission user
+ * @api {get} /api/devices Get all public device models
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName GetUsers
- * @apiGroup Users
+ * @apiName GetDevices
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/devices
  *
- * @apiSuccess {Object[]} users           Array of user objects
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object[]} devices               Array of device objects
+ * @apiSuccess {ObjectId} devices._id           User id
+ * @apiSuccess {ObjectId} devices.ownerUser     GUID of the User who owns this device.
+ * @apiSuccess {ObjectId} devices.privateData   GUID of the Private device model.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "users": [{
+ *       "devices": [{
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "ownerUser": "5b038000eb56080a3d1b31b4"
+ *          "privateData": "5b038287eb56080a3d1b31b6"
  *       }]
  *     }
  *
- * @apiUse TokenError
  */
 async function getDevices (ctx) {
   const devices = await DevicePublicData.find({})
@@ -116,27 +115,29 @@ async function getDevices (ctx) {
 }
 
 /**
- * @api {get} /users Get all users
+ * @api {get} /api/devices/listbyid List devices by user
  * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName GetUsers
- * @apiGroup Users
+ * @apiName ListById
+ * @apiGroup Device-Public
+ *
+ * @apiDescription List all devices associated with the calling user.
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X GET localhost:5000/api/devices/listbyid
  *
- * @apiSuccess {Object[]} users           Array of user objects
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object[]} devices              Array of device objects
+ * @apiSuccess {ObjectId} devices._id          User id
+ * @apiSuccess {ObjectId}   devices.ownerUser    User name
+ * @apiSuccess {ObjectId}   devices.privateData  User username
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "users": [{
+ *       "devices": [{
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "ownerUser": "5b038000eb56080a3d1b31b4"
+ *          "privateData": "5b038287eb56080a3d1b31b6"
  *       }]
  *     }
  *
@@ -162,31 +163,30 @@ async function listById (ctx) {
 }
 
 /**
- * @api {get} /users/:id Get user by id
- * @apiPermission user
+ * @api {get} /api/devices/:id Get single public device model
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName GetUser
- * @apiGroup Users
+ * @apiName GetDevice
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/devices/56bd1da600a526986cf65c80
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object[]} device                Public device object
+ * @apiSuccess {ObjectId} device._id            User id
+ * @apiSuccess {ObjectId} device.ownerUser      GUID of the User who owns this device.
+ * @apiSuccess {ObjectId} device.privateData    GUID of the Private device model.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "device": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "ownerUser": "5b038000eb56080a3d1b31b4"
+ *          "privateData": "5b038287eb56080a3d1b31b6"
  *       }
  *     }
  *
- * @apiUse TokenError
  */
 async function getDevice (ctx, next) {
   try {
@@ -210,31 +210,37 @@ async function getDevice (ctx, next) {
 }
 
 /**
- * @api {put} /users/:id Update a user
- * @apiPermission
+ * @api {put} /api/devices/:id Update a device
+ * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName UpdateUser
- * @apiGroup Users
+ * @apiName UpdateDevice
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X PUT -d '{ "device": { "deviceName": "My Device" } }' localhost:5000/api/devices/56bd1da600a526986cf65c80
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.name     Name.
- * @apiParam {String} user.username Username.
+ * @apiParam {Object}   device                Device object (required)
+ * @apiParam {ObjectId} device.ownerUser      GUID of the User who owns this device.
+ * @apiParam {ObjectId} device.renterUser     GUID of the User who rents this device.
+ * @apiParam {ObjectId} device.privateData    GUID of the devicePrivateData model associated with this device.
+ * @apiParam {ObjectId} device.obContract     GUID of the obContract model associated with this device.
+ * @apiParam {String}   device.rentStartDate  An ISO date string of when the rental started.
+ * @apiParam {String}   device.expiration     An ISO date string of when the device should reset.
+ * @apiParam {String}   device.deviceName     Name displayed in the GUI.
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      Updated name
- * @apiSuccess {String}   users.username  Updated username
+ * @apiSuccess {Object}   device              Device object
+ * @apiSuccess {ObjectId} device._id          Device GUID
+ * @apiSuccess {ObjectId} device.ownerUser    GUID of the User who owns this device.
+ * @apiSuccess {ObjectId} device.privateData  GUID of the Private device model.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "device": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "Cool new name"
- *          "username": "johndoe"
+ *          "ownerUser": "5b038000eb56080a3d1b31b4"
+ *          "privateData": "5b038287eb56080a3d1b31b6"
+ *          "deviceName": "My Device"
  *       }
  *     }
  *
@@ -264,8 +270,8 @@ async function updateDevice (ctx) {
     ctx.throw(401, 'Only device owners can edit device details.')
   }
 
-  //console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
-  //console.log(`device: ${JSON.stringify(device, null, 2)}`)
+  // console.log(`ctx.request.body: ${JSON.stringify(ctx.request.body, null, 2)}`)
+  // console.log(`device: ${JSON.stringify(device, null, 2)}`)
 
   // The user creating the model is automatically assigned as the owner.
   // Override any user-assigned value.
@@ -282,14 +288,14 @@ async function updateDevice (ctx) {
 
   // Clear obContract ID if passed value is blank.
   if (ctx.request.body.device.obContract === '') {
-    //console.log(`removing obContract from device.`)
+    // console.log(`removing obContract from device.`)
     device.obContract = ''
   }
-  //console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
+  // console.log(`device before save: ${JSON.stringify(device, null, 2)}`)
 
   await device.save()
 
-  //console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
+  // console.log(`device after save: ${JSON.stringify(device, null, 2)}`)
 
   ctx.body = {
     device
@@ -297,14 +303,14 @@ async function updateDevice (ctx) {
 }
 
 /**
- * @api {delete} /users/:id Delete a user
- * @apiPermission
+ * @api {delete} /api/devices/:id Delete a device
+ * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName DeleteUser
- * @apiGroup Users
+ * @apiName DeleteDevice
+ * @apiGroup Device-Public
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X DELETE localhost:5000/api/devices/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *

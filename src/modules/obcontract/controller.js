@@ -1,31 +1,57 @@
 const OBContract = require('../../models/obcontract')
 
 /**
- * @api {post} /users Create a new user
- * @apiPermission
+ * @api {post} /api/obcontract Create an OB Contract
+ * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName CreateUser
- * @apiGroup Users
+ * @apiName CreateContract
+ * @apiGroup OB-Contract
+ *
+ * @apiDescription This creates an obContract model in the database as well as
+ * a new listing in the OpenBazaar store. The database model is used to generate
+ * and regenerate the store listing.
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X POST -d '{ "obContract": { "clientDevice": "<GUID>", "ownerUser": "<GUID>" } }' localhost:5000/api/obcontract
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.username Username.
- * @apiParam {String} user.password Password.
+ * @apiParam {Object} obContract                OB Contract object (required)
+ * @apiParam {ObjectId} obContract.clientDevice Device Public ID (required)
+ * @apiParam {ObjectId} obContract.ownerUser    Device Owner ID (required)
+ * @apiParam {ObjectId} obContract.renterUser   Renter ID
+ * @apiParam {String} obContract.price          Price per hour
+ * @apiParam {String} obContract.experation     Experation of the listing
+ * @apiParam {String} obContract.title          Listing title
+ * @apiParam {String} obContract.description    Listing description
+ * @apiParam {String} obContract.listingUri     OB URL
+ * @apiParam {String} obContract.imageHash      OB/IPFS image hash
+ * @apiParam {String} obContract.listingSlug    OB listing slug
+ * @apiParam {String} obContract.listingState   State of listing
+ * @apiParam {String} obContract.createdAt      ISO Date contract was created
+ * @apiParam {String} obContract.updatedAt      ISO Date contract was updated
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   obContract              User object
+ * @apiSuccess {ObjectId} obContract._id          User id
+ * @apiSuccess {ObjectId} obContract.clientDevice Device Public ID
+ * @apiSuccess {ObjectId} obContract.ownerUser    Device Owner ID
+ * @apiSuccess {ObjectId} obContract.renterUser   Renter ID
+ * @apiSuccess {String} obContract.price          Price per hour
+ * @apiSuccess {String} obContract.experation     Experation of the listing
+ * @apiSuccess {String} obContract.title          Listing title
+ * @apiSuccess {String} obContract.description    Listing description
+ * @apiSuccess {String} obContract.listingUri     OB URL
+ * @apiSuccess {String} obContract.imageHash      OB/IPFS image hash
+ * @apiSuccess {String} obContract.listingSlug    OB listing slug
+ * @apiSuccess {String} obContract.listingState   State of listing
+ * @apiSuccess {String} obContract.createdAt      ISO Date contract was created
+ * @apiSuccess {String} obContract.updatedAt      ISO Date contract was updated
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "obContract": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "clientDevice": "5b038287eb56080a3d1b31b6"
+ *          "ownerUser": "5b038000eb56080a3d1b31b4"
  *       }
  *     }
  *
@@ -53,27 +79,27 @@ async function createContract (ctx) {
 }
 
 /**
- * @api {get} /users Get all users
- * @apiPermission user
+ * @api {get} /api/obcontract Get all OB Contracts
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName GetUsers
- * @apiGroup Users
+ * @apiName GetContracts
+ * @apiGroup OB-Contract
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/obcontract
  *
- * @apiSuccess {Object[]} users           Array of user objects
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object[]} obContracts             Array of obContract objects
+ * @apiSuccess {ObjectId} obContracts._id          User id
+ * @apiSuccess {ObjectId} obContracts.clientDevice Device Public ID
+ * @apiSuccess {ObjectId} obContracts.ownerUser    Device Owner ID
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "users": [{
+ *       "obContracts": [{
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "clientDevice": "56bd1da600a526986cf65c81"
+ *          "ownerUser": "56bd1da600a526986cf65c82"
  *       }]
  *     }
  *
@@ -85,27 +111,27 @@ async function getContracts (ctx) {
 }
 
 /**
- * @api {get} /users/:id Get user by id
- * @apiPermission user
+ * @api {get} /api/obcontract/:id Get contract by id
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName GetUser
- * @apiGroup Users
+ * @apiName GetContract
+ * @apiGroup OB-Contract
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/obcontract/5b04db9efdcdc90aba9228ad
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   obContract              obContract object
+ * @apiSuccess {ObjectId} obContract._id          obContract id
+ * @apiSuccess {ObjectId} obContract.clientDevice Device Public ID
+ * @apiSuccess {ObjectId} obContract.ownerUser    Device Owner ID
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "obContract": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *          "clientDevice": "56bd1da600a526986cf65c81"
+ *          "ownerUser": "56bd1da600a526986cf65c82"
  *       }
  *     }
  *
@@ -134,31 +160,32 @@ async function getContract (ctx, next) {
 }
 
 /**
- * @api {put} /users/:id Update a user
- * @apiPermission
+ * @api {put} /api/obcontract/:id Update contract by id
+ * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName UpdateUser
- * @apiGroup Users
+ * @apiName UpdateContract
+ * @apiGroup OB-Contract
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X PUT -d '{ "obContract": { "price": "10" } }' localhost:5000/api/obcontract/56bd1da600a526986cf65c80
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.name     Name.
- * @apiParam {String} user.username Username.
+ * @apiParam {Object} obContract        obContract object (required)
+ * @apiParam {Number} obContract.price  Price property, for example
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      Updated name
- * @apiSuccess {String}   users.username  Updated username
+ * @apiSuccess {Object}   obContract              obContract object
+ * @apiSuccess {ObjectId} obContract._id          obContract id
+ * @apiSuccess {ObjectId} obContract.clientDevice Device Public ID
+ * @apiSuccess {ObjectId} obContract.ownerUser    Device Owner ID
+ * @apiSuccess {Number}   obContract.price        Price is cents (USD)
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
+ *       "obContract": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "Cool new name"
- *          "username": "johndoe"
+ *          "clientDevice": "56bd1da600a526986cf65c81"
+ *          "ownerUser": "56bd1da600a526986cf65c82"
+ *          "price": 10
  *       }
  *     }
  *
@@ -186,14 +213,14 @@ async function updateContract (ctx) {
 }
 
 /**
- * @api {delete} /users/:id Delete a user
- * @apiPermission
+ * @api {delete} /api/obcontract/:id Delete contract by id
+ * @apiPermission user
  * @apiVersion 1.0.0
- * @apiName DeleteUser
- * @apiGroup Users
+ * @apiName DeleteContract
+ * @apiGroup OB-Contract
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X DELETE localhost:5000/api/obcontract/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *

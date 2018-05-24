@@ -4,33 +4,38 @@ const sshPort = require('../sshport')
 const util = require('../../lib/util')
 
 /**
- * @api {get} /client/register/:id Register a client device on the marketplace
- * @apiPermission client
+ * @api {post} /api/client/register/:id Register client
+ * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName Register
  * @apiGroup Client
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/client/register/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X POST localhost:5000/api/client/register/56bd1da600a526986cf65c80
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiParam {Object} userData         Device data object (required)
+ * @apiParam {String} userData.memory Memory
+ * @apiParam {String} userData.processor Processor
+ * @apiParam {String} userData.diskSpace Disk Space
+ * @apiParam {String} userData.internetSpeed Internet Speed
+ *
+ * @apiSuccess {Object}   client         Client object
+ * @apiSuccess {String}   client.username   SSH Login
+ * @apiSuccess {String}   client.password   SSH Password
+ * @apiSuccess {String}   client.Port       SSH Port
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
- *       }
+ *       "username": "abcdefg",
+ *       "password": "xyz1234",
+ *       "port": 6234
  *     }
  *
- * @apiUse TokenError
+ * @apiDescription This endpoint is called by Client device to register itself
+ * into the marketplace.
  */
-// This API is called by Client device to register itself into the marketplace.
+
 async function register (ctx, next) {
   // const DEFAULT_EXPIRATION = 60000 * 8 // Testing
   // const DEFAULT_EXPIRATION = 60000 * 60 // One Hour
@@ -129,9 +134,29 @@ async function register (ctx, next) {
   }
 }
 
-// This function allows Clients to check-in and notify the server they are still
-// actively connected to the internet. This should happen every 2 minutes. It
-// updates the checkinTimeStamp of the device
+/**
+ * @api {get} /api/client/checkin/:id Client Check In
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ * @apiName CheckIn
+ * @apiGroup Client
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/client/checkin/56bd1da600a526986cf65c80
+ *
+ * @apiSuccess {StatusCode} 200
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "success": true
+ *     }
+ *
+ * @apiDescription This function allows Clients to check-in and notify the
+ * server they are still actively connected to the internet. This should happen
+ * every 2 minutes. It updates the checkinTimeStamp of the device
+ */
+
 async function checkIn (ctx, next) {
   // console.log('Entering devicePublicData.js/checkIn().')
 
@@ -167,10 +192,31 @@ async function checkIn (ctx, next) {
   if (next) { return next() }
 }
 
-// This function allows the p2p-vps-client.js application running on the Client
-// to download the expiration for the current Client. When the expiration is
-// hit, it resets the device and wipes the old Docker container and persistant
-// storage.
+/**
+ * @api {get} /api/client/expiration/:id Check client expiration
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ * @apiName Expiration
+ * @apiGroup Client
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/client/expiration/56bd1da600a526986cf65c80
+ *
+ * @apiSuccess {StatusCode} 200
+ * @apiSuccess {String}   expiration  ISO Date String
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "expiration": "2018-05-21T04:33:28.389Z",
+ *     }
+ *
+ * @apiDescription This function allows the p2p-vps-client.js application
+ * running on the Client to download the expiration for the current Client.
+ * When the expiration is hit, it resets the device and wipes the old Docker
+ * container and persistant storage.
+ */
+
 async function getExpiration (ctx, next) {
   try {
     // let devicePublicModel = await util.getDevicePublicModel(req.params.id);
