@@ -5,32 +5,23 @@
 const RentedDevices = require('../../models/renteddevice')
 
 /**
- * @api {post} /users Create a new user
- * @apiPermission
+ * @api {post} /api/renteddevices Add to the Rented Devices list
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName CreateUser
- * @apiGroup Users
+ * @apiName AddDevice
+ * @apiGroup RentedDevices
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -X POST -d '{ "deviceId": "<device ID>" }' localhost:5000/api/renteddevices
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.username Username.
- * @apiParam {String} user.password Password.
+ * @apiParam {ObjectId} deviceId  Public Device ID (required)
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {StatusCode} 200
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
- *       }
+ *       "success": true
  *     }
  *
  * @apiError UnprocessableEntity Missing required parameters
@@ -95,31 +86,34 @@ async function addDevice (ctx) {
 }
 
 /**
- * @api {get} /users Get all users
- * @apiPermission user
+ * @api {get} /api/renteddevices Get list of rented devices
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName GetUsers
- * @apiGroup Users
+ * @apiName GetDevices
+ * @apiGroup RentedDevices
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/renteddevices
  *
- * @apiSuccess {Object[]} users           Array of user objects
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object[]} devices   Array of device IDs
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "users": [{
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
- *       }]
+ *       "devices": [
+ *          "56bd1da600a526986cf65c80",
+ *          "56bd1da600a526986cf65c81"
+ *       ]
  *     }
  *
- * @apiUse TokenError
+ * @apiError UnprocessableEntity Missing required parameters
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 422 Unprocessable Entity
+ *     {
+ *       "status": 422,
+ *       "error": "Unprocessable Entity"
+ *     }
  */
 // Get a list of all the devices currently rented.
 async function getDevices (ctx) {
@@ -146,14 +140,14 @@ async function getDevices (ctx) {
 }
 
 /**
- * @api {delete} /users/:id Delete a user
- * @apiPermission
+ * @api {delete} /api/renteddevices/:id Delete devices from list
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName DeleteUser
- * @apiGroup Users
+ * @apiName DeleteDevice
+ * @apiGroup RentedDevices
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X DELETE localhost:5000/api/renteddevices/:id
  *
  * @apiSuccess {StatusCode} 200
  *
@@ -163,7 +157,14 @@ async function getDevices (ctx) {
  *       "success": true
  *     }
  *
- * @apiUse TokenError
+ * @apiError UnprocessableEntity Missing required parameters
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 422 Unprocessable Entity
+ *     {
+ *       "status": 422,
+ *       "error": "Unprocessable Entity"
+ *     }
  */
 async function removeDevice (ctx) {
   try {
