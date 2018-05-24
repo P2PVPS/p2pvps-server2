@@ -9,7 +9,7 @@ const RentedDevices = require('../../models/renteddevice')
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName AddDevice
- * @apiGroup RentedDevices
+ * @apiGroup Rented-Devices
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X POST -d '{ "deviceId": "<device ID>" }' localhost:5000/api/renteddevices
@@ -90,7 +90,7 @@ async function addDevice (ctx) {
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName GetDevices
- * @apiGroup RentedDevices
+ * @apiGroup Rented-Devices
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X GET localhost:5000/api/renteddevices
@@ -144,7 +144,7 @@ async function getDevices (ctx) {
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName DeleteDevice
- * @apiGroup RentedDevices
+ * @apiGroup Rented-Devices
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X DELETE localhost:5000/api/renteddevices/:id

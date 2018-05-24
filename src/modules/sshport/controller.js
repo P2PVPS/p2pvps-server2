@@ -8,31 +8,28 @@
 const SSHPort = require('../../models/sshport')
 
 /**
- * @api {post} /users Create a new user
- * @apiPermission
+ * @api {post} /sshport/requestPort Request SSH Port
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName CreateUser
- * @apiGroup Users
+ * @apiName RequestPort
+ * @apiGroup SSH-Port
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -X POST localhost:5000/api/sshport
  *
- * @apiParam {Object} user          User object (required)
- * @apiParam {String} user.username Username.
- * @apiParam {String} user.password Password.
  *
- * @apiSuccess {Object}   users           User object
- * @apiSuccess {ObjectId} users._id       User id
- * @apiSuccess {String}   users.name      User name
- * @apiSuccess {String}   users.username  User username
+ * @apiSuccess {Object}   sshPort           sshPort object
+ * @apiSuccess {String}   sshPort.username  SSH Username
+ * @apiSuccess {String}   sshPort.password  SSH Password
+ * @apiSuccess {String}   sshPort.port      SSH Port
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "user": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "username": "johndoe"
+ *       "sshPort": {
+ *          "username": "IVyJMFcIUA"
+ *          "password": "UyrpfQyrPx"
+ *          "port": 6001
  *       }
  *     }
  *
@@ -112,14 +109,14 @@ async function requestPort (ctx) {
 }
 
 /**
- * @api {delete} /users/:id Delete a user
- * @apiPermission
+ * @api {delete} /sshport/requestport/:port Release SSH Port
+ * @apiPermission none
  * @apiVersion 1.0.0
- * @apiName DeleteUser
- * @apiGroup Users
+ * @apiName ReleasePort
+ * @apiGroup SSH-Port
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X DELETE localhost:5000/api/sshport/:port
  *
  * @apiSuccess {StatusCode} 200
  *
@@ -129,7 +126,6 @@ async function requestPort (ctx) {
  *       "success": true
  *     }
  *
- * @apiUse TokenError
  */
 async function releasePort (ctx) {
   try {
