@@ -8,7 +8,7 @@
 const SSHPort = require('../../models/sshport')
 
 /**
- * @api {post} /sshport/requestPort Request SSH Port
+ * @api {post} /api/sshport Request SSH Port
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName RequestPort
@@ -109,7 +109,7 @@ async function requestPort (ctx) {
 }
 
 /**
- * @api {delete} /sshport/requestport/:port Release SSH Port
+ * @api {delete} /api/sshport/:port Release SSH Port
  * @apiPermission none
  * @apiVersion 1.0.0
  * @apiName ReleasePort
