@@ -136,8 +136,8 @@ async function removeOBListing (deviceData) {
     // Remove the obContract model from the DB.
     await obContractApi.removeContract(token, obContract)
   } catch (err) {
-    if(err.statusCode === 404) return;
-    
+    if (err.statusCode === 404) return
+
     console.error(`Error in src/lib/util.js in removeOBListing().`)
     throw err
   }
@@ -159,7 +159,7 @@ function createNewMarketListing (device) {
     clientDevice: device._id.toString(),
     ownerUser: device.ownerUser.toString(),
     renterUser: '',
-    price: 30,
+    price: 10,
     experation: oneMonthFromNow.toISOString(),
     title: device.deviceName,
     description: device.deviceDesc,

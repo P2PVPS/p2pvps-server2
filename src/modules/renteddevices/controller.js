@@ -1,5 +1,5 @@
 /*
-
+  This API handles maintenance calls for rented devices.
 */
 
 const RentedDevices = require('../../models/renteddevice')
@@ -140,6 +140,68 @@ async function getDevices (ctx) {
 }
 
 /**
+ * @api {get} /api/renteddevices/renew/:id Renew a device in the rented devices list
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ * @apiName RenewDevice
+ * @apiGroup Rented-Devices
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/renteddevice/renew/<id>
+ *
+ * @apiSuccess {StatusCode} 200
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "success": true
+ *     }
+ *
+ * @apiError UnprocessableEntity Missing required parameters
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 422 Unprocessable Entity
+ *     {
+ *       "status": 422,
+ *       "error": "Unprocessable Entity"
+ *     }
+ */
+// Renew a device from the renteddevices list
+async function renewDevice (ctx) {
+  try {
+    // Get the rentedDevices model from the DB.
+    const rentedDevices = await RentedDevices.find({})
+
+    // Handle Empty DB.
+    if (!rentedDevices || rentedDevices.length === 0) {
+      ctx.throw(422, `Rentded device list is empty.`)
+      return
+    }
+
+    // Ensure the device is in the rentedDevices list.
+    const devices = rentedDevices[0].deviceList
+    const deviceId = ctx.params.id
+    const isInList = devices.find(thisId => thisId === deviceId)
+    if (!isInList) {
+      ctx.throw(422, `Device is not in rented device list.`)
+      return
+    }
+
+    // Create a new obContract and store listing.
+
+    // Update public device model with obConract GUID.
+
+    ctx.status = 200
+    ctx.body = {
+      success: true
+    }
+  } catch (err) {
+    console.error(`Error in /api/renteddevices/getDevices(): `, err)
+    ctx.throw(503, err.message)
+  }
+}
+
+/**
  * @api {delete} /api/renteddevices/:id Delete devices from list
  * @apiPermission none
  * @apiVersion 1.0.0
@@ -212,5 +274,6 @@ async function removeDevice (ctx) {
 module.exports = {
   addDevice,
   getDevices,
+  renewDevice,
   removeDevice
 }

@@ -25,6 +25,14 @@ module.exports.routes = [
     ]
   },
   {
+    method: 'GET',
+    route: '/renew/:id',
+    handlers: [
+      // ensureUser,
+      renteddevices.renewDevice
+    ]
+  },
+  {
     method: 'DELETE',
     route: '/:id',
     handlers: [
