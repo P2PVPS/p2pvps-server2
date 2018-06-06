@@ -3,6 +3,7 @@
 */
 
 const RentedDevices = require('../../models/renteddevice')
+const util = require('../../lib/util')
 
 /**
  * @api {post} /api/renteddevices Add to the Rented Devices list
@@ -154,7 +155,8 @@ async function getDevices (ctx) {
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "success": true
+ *       "success": true,
+ *       "obContract": <GUID>
  *     }
  *
  * @apiError UnprocessableEntity Missing required parameters
@@ -187,13 +189,28 @@ async function renewDevice (ctx) {
       return
     }
 
-    // Create a new obContract and store listing.
+    // Access the public device models.
+    const DevicePublicData = require('../../models/devicepublicdata')
 
-    // Update public device model with obConract GUID.
+    // Retrieve the device model from the database.
+    const device = await DevicePublicData.findById(deviceId)
+    if (!device) {
+      ctx.throw(404, 'Could not find that device.')
+    }
+
+    // Create an OB store listing for this device.
+    // Note: the utility function will automaticaly remove old listings if they exist.
+    const obContractId = await util.createNewMarketListing(device)
+    console.log(`renewal generated, obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+
+    // Update the device with the newly created obContract model GUID.
+    device.obContract = obContractId.toString()
+    await device.save()
 
     ctx.status = 200
     ctx.body = {
-      success: true
+      success: true,
+      obContract: obContractId
     }
   } catch (err) {
     console.error(`Error in /api/renteddevices/getDevices(): `, err)
