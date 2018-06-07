@@ -18,7 +18,6 @@
 const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
-const serverUtil = require('../bin/util')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -39,9 +38,65 @@ describe('Rented Devices', () => {
     const device = await utils.createDevice({token: context.userToken})
     context.device = device
 
-    console.log(`context: ${JSON.stringify(context, null, 2)}`)
+    //console.log(`context: ${JSON.stringify(context, null, 2)}`)
   })
 
+  describe('POST /renteddevices', () => {
+    /*
+    it('should reject if device ID does not match a public device in the DB', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/api/devices`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            deviceId: '123'
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else if (err.statusCode === 401) {
+          assert(err.statusCode === 401, 'Error code 401 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+    */
+
+    it('should add device ID to the rentedDevices list', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/api/renteddevices`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            deviceId: context.device._id
+          }
+        }
+
+        let result = await rp(options)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(result.body.success === true, 'Success exected.')
+      } catch (err) {
+        console.error(err)
+        assert(false, 'Unexpected result')
+      }
+    })
+  })
+
+/*
   describe('GET /api/renteddevices/renew/:id', () => {
     it('If the rentedDevices list is empty, returns 422', async () => {
       try {
@@ -57,17 +112,13 @@ describe('Rented Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        assert(true, 'Done!')
-        /*
-        if (err.statusCode === 422) {
-          assert(err.statusCode === 404, 'Error code 422 expected.')
-        } else {
-          console.error('Error: ', err)
-          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
-          throw err
-        }
-        */
+        assert(err.statusCode === 422, 'Returns HTTP status 422.')
+
+        console.log(`This continues to log`)
+
+        // TODO Add nome non-existant device ID to the list, so that it's not empty.
       }
     })
   })
+  */
 })

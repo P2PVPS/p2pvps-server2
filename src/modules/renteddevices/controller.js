@@ -173,11 +173,11 @@ async function renewDevice (ctx, next) {
   try {
     // Get the rentedDevices model from the DB.
     const rentedDevices = await RentedDevices.find({})
-    console.log(`rentedDevices: ${JSON.stringify(rentedDevices, null, 2)}`)
-
+    
     // Handle Empty DB.
     if (!rentedDevices || rentedDevices.length === 0) {
       ctx.throw(422, 'Rented device list is empty')
+      // ctx.throw(422)
     }
 
     // Ensure the device is in the rentedDevices list.
@@ -212,10 +212,8 @@ async function renewDevice (ctx, next) {
       obContract: obContractId
     }
 
-
     if (next) { return next() }
   } catch (err) {
-    console.error(`Error in /api/renteddevices/renewDevice(): `, err)
     ctx.throw(422, err.message)
   }
 }
