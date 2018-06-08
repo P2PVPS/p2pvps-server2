@@ -42,12 +42,11 @@ describe('Rented Devices', () => {
   })
 
   describe('POST /renteddevices', () => {
-    /*
     it('should reject if device ID does not match a public device in the DB', async () => {
       try {
         const options = {
           method: 'POST',
-          uri: `${LOCALHOST}/api/devices`,
+          uri: `${LOCALHOST}/api/renteddevices`,
           resolveWithFullResponse: true,
           json: true,
           body: {
@@ -60,18 +59,10 @@ describe('Rented Devices', () => {
         console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
         assert(false, 'Unexpected result')
       } catch (err) {
-        if (err.statusCode === 422) {
-          assert(err.statusCode === 422, 'Error code 422 expected.')
-        } else if (err.statusCode === 401) {
-          assert(err.statusCode === 401, 'Error code 401 expected.')
-        } else {
-          console.error('Error: ', err)
-          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
-          throw err
-        }
+        // console.log(`err: ${JSON.stringify(err, null, 2)}`)
+        assert(err.statusCode === 404, 'Error code 404 expected.')
       }
     })
-    */
 
     it('should add device ID to the rentedDevices list', async () => {
       try {
@@ -239,7 +230,7 @@ describe('Rented Devices', () => {
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert(result.body.success === true, 'Success exected.')
       } catch (err) {
-        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        console.log(`err stringified: ${JSON.stringify(err, null, 2)}`)
         assert(false, 'Unexpected result')
       }
     })

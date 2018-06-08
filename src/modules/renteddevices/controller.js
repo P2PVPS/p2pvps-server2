@@ -5,6 +5,8 @@
 const RentedDevices = require('../../models/renteddevice')
 const util = require('../../lib/util')
 
+const DevicePublicData = require('../../models/devicepublicdata')
+
 /**
  * @api {post} /api/renteddevices Add to the Rented Devices list
  * @apiPermission none
@@ -41,6 +43,11 @@ async function addDevice (ctx) {
   try {
     // deviceId should be passed in Post.
     const deviceId = ctx.request.body.deviceId
+
+    const isKnownDevice = await verifyDeviceExists(deviceId)
+    if (!isKnownDevice) {
+      ctx.throw(404, 'Device not found')
+    }
 
     // Retrieve the Rented Devices array.
     let rentedDevices = await RentedDevices.find({})
@@ -81,8 +88,8 @@ async function addDevice (ctx) {
       success: true
     }
   } catch (err) {
-    console.error(`Error in API sshport.requestPort: ${err}`)
-    throw err
+    // console.error(`Error in API renteddevics.addDevice: ${err}`)
+    ctx.throw(err)
   }
 }
 
@@ -173,7 +180,7 @@ async function renewDevice (ctx, next) {
   try {
     // Get the rentedDevices model from the DB.
     const rentedDevices = await RentedDevices.find({})
-    
+
     // Handle Empty DB.
     if (!rentedDevices || rentedDevices.length === 0) {
       ctx.throw(422, 'Rented device list is empty')
@@ -285,6 +292,20 @@ async function removeDevice (ctx) {
       // console.error(`err stringified: ${JSON.stringify(err, null, 2)}`)
       throw err
     }
+  }
+}
+
+async function verifyDeviceExists (deviceId) {
+  try {
+    const devices = await DevicePublicData.find({})
+
+    const foundDevice = devices.find(thisDevice => thisDevice._id.toString() === deviceId)
+    
+    if (!foundDevice) { return false }
+
+    return true
+  } catch (err) {
+    throw err
   }
 }
 
