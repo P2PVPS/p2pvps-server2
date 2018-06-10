@@ -161,8 +161,14 @@ async function checkIn (ctx, next) {
   // console.log('Entering devicePublicData.js/checkIn().')
 
   try {
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
     // Retrieve the device model from the database.
-    const device = await DevicePublicData.findById(ctx.params.id)
+    const device = await DevicePublicData.findById(deviceId)
     if (!device) {
       ctx.throw(404, 'Could not find that device.')
     }

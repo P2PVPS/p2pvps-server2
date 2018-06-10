@@ -161,11 +161,35 @@ describe('Client', () => {
   })
 
   describe('GET /api/checkin/:id', () => {
-    it('should reject with 404 if device can not be found', async () => {
+    it('should reject with 422 if device can not be found', async () => {
       try {
         const options = {
           method: 'GET',
           uri: `${LOCALHOST}/api/client/checkin/1`,
+          resolveWithFullResponse: true,
+          json: true
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should reject with 404 if device can not be found', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/client/checkin/5b144dc913ba390019291dc6`,
           resolveWithFullResponse: true,
           json: true
         }
