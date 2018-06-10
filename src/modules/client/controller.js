@@ -187,15 +187,10 @@ async function checkIn (ctx, next) {
       success: true
     }
   } catch (err) {
-    /*
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404, err.message)
-      return
+    if (err === 500) {
+      console.error(`Error in modules/client/controller.js/checkIn(): `, err)
     }
 
-    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
-    ctx.throw(500)
-    */
     ctx.throw(err)
   }
 
