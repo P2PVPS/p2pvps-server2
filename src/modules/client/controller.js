@@ -161,8 +161,14 @@ async function checkIn (ctx, next) {
   // console.log('Entering devicePublicData.js/checkIn().')
 
   try {
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
     // Retrieve the device model from the database.
-    const device = await DevicePublicData.findById(ctx.params.id)
+    const device = await DevicePublicData.findById(deviceId)
     if (!device) {
       ctx.throw(404, 'Could not find that device.')
     }
@@ -181,12 +187,11 @@ async function checkIn (ctx, next) {
       success: true
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in modules/client/controller.js/checkIn(): `, err)
     }
 
-    console.error(`Error in modules/client/controller.js/checkIn(): `, err)
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }

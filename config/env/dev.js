@@ -11,5 +11,5 @@ module.exports = {
   token: 'secret-jwt-token',
 
   // Used for connecting to MongoDB in a Docker container.
-  database: 'mongodb://172.17.0.1:3500/p2pvps-server-dev'
+  database: 'mongodb://serverdeployment2_mongodb_1:3500/p2pvps-server-dev'
 }

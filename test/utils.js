@@ -174,11 +174,32 @@ async function createDevice (config) {
   }
 }
 
+async function addDeviceToRentedList (config) {
+  try {
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/api/renteddevices`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        deviceId: config
+      }
+    }
+
+    return await rp(options)
+  } catch (err) {
+    console.error('Error in utils.js/addDeviceToRentedList()!')
+    console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 module.exports = {
   cleanDb,
   authUser,
   createDevice,
   loginTestUser,
   loginAdminUser,
-  createUser
+  createUser,
+  addDeviceToRentedList
 }

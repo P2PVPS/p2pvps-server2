@@ -1,8 +1,11 @@
 /*
-
+  This API handles maintenance calls for rented devices.
 */
 
 const RentedDevices = require('../../models/renteddevice')
+const util = require('../../lib/util')
+
+const DevicePublicData = require('../../models/devicepublicdata')
 
 /**
  * @api {post} /api/renteddevices Add to the Rented Devices list
@@ -40,6 +43,11 @@ async function addDevice (ctx) {
   try {
     // deviceId should be passed in Post.
     const deviceId = ctx.request.body.deviceId
+
+    const isKnownDevice = await verifyDeviceExists(deviceId)
+    if (!isKnownDevice) {
+      ctx.throw(404, 'Device not found')
+    }
 
     // Retrieve the Rented Devices array.
     let rentedDevices = await RentedDevices.find({})
@@ -80,8 +88,8 @@ async function addDevice (ctx) {
       success: true
     }
   } catch (err) {
-    console.error(`Error in API sshport.requestPort: ${err}`)
-    throw err
+    // console.error(`Error in API renteddevics.addDevice: ${err}`)
+    ctx.throw(err)
   }
 }
 
@@ -136,6 +144,84 @@ async function getDevices (ctx) {
   } catch (err) {
     console.error(`Error in /api/renteddevices/getDevices(): `, err)
     ctx.throw(503, err.message)
+  }
+}
+
+/**
+ * @api {get} /api/renteddevices/renew/:id Renew a device in the rented devices list
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ * @apiName RenewDevice
+ * @apiGroup Rented-Devices
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5000/api/renteddevice/renew/<id>
+ *
+ * @apiSuccess {StatusCode} 200
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "success": true,
+ *       "obContract": <GUID>
+ *     }
+ *
+ * @apiError UnprocessableEntity Missing required parameters
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 422 Unprocessable Entity
+ *     {
+ *       "status": 422,
+ *       "error": "Unprocessable Entity"
+ *     }
+ */
+// Renew a device from the renteddevices list
+async function renewDevice (ctx, next) {
+  try {
+    // Get the rentedDevices model from the DB.
+    const rentedDevices = await RentedDevices.find({})
+
+    // Handle Empty DB.
+    if (!rentedDevices || rentedDevices.length === 0) {
+      ctx.throw(422, 'Rented device list is empty')
+      // ctx.throw(422)
+    }
+
+    // Ensure the device is in the rentedDevices list.
+    const devices = rentedDevices[0].deviceList
+    const deviceId = ctx.params.id
+    const isInList = devices.find(thisId => thisId === deviceId)
+    if (!isInList) {
+      ctx.throw(422, `Device is not in rented device list.`)
+    }
+
+    // Access the public device models.
+    const DevicePublicData = require('../../models/devicepublicdata')
+
+    // Retrieve the device model from the database.
+    const device = await DevicePublicData.findById(deviceId)
+    if (!device) {
+      ctx.throw(404, 'Could not find that device.')
+    }
+
+    // Create an OB store listing for this device.
+    // Note: the utility function will automaticaly remove old listings if they exist.
+    const obContractId = await util.createNewMarketListing(device)
+    console.log(`renewal generated, obContractId: ${JSON.stringify(obContractId, null, 2)}`)
+
+    // Update the device with the newly created obContract model GUID.
+    device.obContract = obContractId.toString()
+    await device.save()
+
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      obContract: obContractId
+    }
+
+    if (next) { return next() }
+  } catch (err) {
+    ctx.throw(422, err.message)
   }
 }
 
@@ -209,8 +295,23 @@ async function removeDevice (ctx) {
   }
 }
 
+async function verifyDeviceExists (deviceId) {
+  try {
+    const devices = await DevicePublicData.find({})
+
+    const foundDevice = devices.find(thisDevice => thisDevice._id.toString() === deviceId)
+    
+    if (!foundDevice) { return false }
+
+    return true
+  } catch (err) {
+    throw err
+  }
+}
+
 module.exports = {
   addDevice,
   getDevices,
+  renewDevice,
   removeDevice
 }
