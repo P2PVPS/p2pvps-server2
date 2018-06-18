@@ -18,7 +18,7 @@ const OB_PASSWORD = 'yourPassword'
 const obConfig = {
   clientId: OB_USERNAME,
   clientSecret: OB_PASSWORD,
-  server: OB_URL,
+  obServer: OB_URL,
   obPort: OB_PORT
 }
 
@@ -37,7 +37,7 @@ async function createStoreListing (obContractModel) {
         {
           discountCode: 'TESTING',
           title: 'TESTING',
-          priceDiscount: 29
+          percentDiscount: 99
         }
       ],
       refundPolicy: '',
