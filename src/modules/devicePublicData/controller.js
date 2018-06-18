@@ -7,7 +7,7 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  * @apiVersion 1.0.0
  * @apiName CreateDevice
  * @apiGroup Device-Public
- *
+ * TODO remove this line
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X POST -d '{ "device": {} }' localhost:5000/api/devices
  *
