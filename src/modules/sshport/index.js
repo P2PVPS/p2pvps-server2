@@ -25,7 +25,7 @@ async function requestPort () {
 
     return result.body.sshPort
   } catch (err) {
-    console.error(`Error in modules/sshport/index.js/requestPort(): `, err)
+    console.error(`Error in modules/sshport/index.js/requestPort()`)
     throw err
   }
 }
@@ -48,7 +48,7 @@ async function releasePort (port) {
     // return result.body.sshPort
     return true
   } catch (err) {
-    console.error(`Error in modules/sshport/index.js/releasePort(): `, err)
+    console.error(`Error in modules/sshport/index.js/releasePort()`)
     throw err
   }
 }

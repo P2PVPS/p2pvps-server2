@@ -13,6 +13,9 @@ const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
 const nock = require('nock')
+const DevicePrivateData = require('../src/modules/devicePrivateData')
+const serverUtil = require('../bin/util')
+const ObContract = require('../src/modules/obcontract')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -51,6 +54,13 @@ describe('Devices', () => {
       console.log('Error creating "bad" test user: ' + JSON.stringify(err, null, 2))
       throw err
     }
+
+    // Create and system admin user
+    const adminUser = await serverUtil.createSystemUser()
+    // console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
+    context.adminToken = adminUser.token
+    context.adminUsername = adminUser.username
+    context.adminId = adminUser.id
 
     // Mock out the URLs.
     nock(`http://serverdeployment2_openbazaar_1:4002`)
@@ -801,12 +811,12 @@ describe('Devices', () => {
         config.deviceId = device._id
         const fullDevice = await utils.registerDevice(config)
 
-        console.log(`device: ${JSON.stringify(device, null, 2)}`)
-        console.log(`fullDevice: ${JSON.stringify(fullDevice, null, 2)}`)
+        // console.log(`device: ${JSON.stringify(device, null, 2)}`)
+        // console.log(`fullDevice: ${JSON.stringify(fullDevice, null, 2)}`)
 
         // Save info for later comparison.
         const obContract = fullDevice.obContract
-        const port = fullDevice.port
+        // const port = fullDevice.port
         const privateId = fullDevice.privateData
 
         // Delete the device.
@@ -822,11 +832,24 @@ describe('Devices', () => {
         let result = await rp(options)
 
         // Try to get the private data model.
-
+        try {
+          config.adminToken = context.adminToken
+          config.id = privateId
+          const devicePrivateData = await DevicePrivateData.getPrivateModel(config)
+          console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
+          throw ({message: `This line of code should not be executed`})
+        } catch (err) {
+          // console.log(`err object: ${JSON.stringify(err, null, 2)}`)
+          assert(err.statusCode === 404, `Private model should not be found.`)
+        }
+/*
         // Try to get the obContract model.
+        try {
 
-        // Ensure SSH port has been released
+        } catch (err) {
 
+        }
+*/
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')

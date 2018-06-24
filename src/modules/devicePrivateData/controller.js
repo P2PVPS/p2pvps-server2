@@ -46,12 +46,11 @@ async function getModel (ctx, next) {
       devicePrivateData
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in devicePricateData.getModel: `, err)
     }
 
-    console.log(`Error in obcontract.getContract: ${JSON.stringify(err, null, 2)}`)
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }
