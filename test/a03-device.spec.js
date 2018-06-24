@@ -836,20 +836,31 @@ describe('Devices', () => {
           config.adminToken = context.adminToken
           config.id = privateId
           const devicePrivateData = await DevicePrivateData.getPrivateModel(config)
-          console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
-          throw ({message: `This line of code should not be executed`})
+
+          // Exception expected. Throw an error if this code gets executed.
+          const err = {}
+          err.message = `This line should not be executed!`
+          err.devicePrivateData = devicePrivateData
+          throw err
         } catch (err) {
-          // console.log(`err object: ${JSON.stringify(err, null, 2)}`)
+          console.log(`Ignore the above error ^^^`)
           assert(err.statusCode === 404, `Private model should not be found.`)
         }
-/*
+
         // Try to get the obContract model.
         try {
+          const obContractModel = await ObContract.getContract(obContract)
 
+          // Exception expected. Throw an error if this code gets executed.
+          const err = {}
+          err.message = `This line should not be executed!`
+          err.obContractModel = obContractModel
+          throw err
         } catch (err) {
-
+          console.log(`Ignore the above error ^^^`)
+          assert(err.statusCode === 404, `Private model should not be found.`)
         }
-*/
+
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')

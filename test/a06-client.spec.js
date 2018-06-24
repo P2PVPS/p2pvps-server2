@@ -58,11 +58,42 @@ describe('Client', () => {
   })
 
   describe('POST /api/register/:id', () => {
-    it('should reject with 404 if device can not be found', async () => {
+
+    it('should reject with 422 if GUID is invalid', async () => {
       try {
         const options = {
           method: 'POST',
           uri: `${LOCALHOST}/api/client/register/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            memory: 'Fake Test Data',
+            diskSpace: 'Fake Test Data',
+            processor: 'Fake Test Data',
+            internetSpeed: 'Fake Test Data'
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should reject with 404 if device can not be found', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/api/client/register/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           body: {

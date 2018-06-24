@@ -127,7 +127,7 @@ describe('obContract', () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/api/obcontract/1`,
+          uri: `${LOCALHOST}/api/obcontract/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -142,6 +142,33 @@ describe('obContract', () => {
       } catch (err) {
         if (err.statusCode === 404) {
           assert(err.statusCode === 404, 'Error code 404 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should throw 422 if given invalid GUID', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/obcontract/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
         } else {
           console.error('Error: ', err)
           console.log('Error stringified: ' + JSON.stringify(err, null, 2))
@@ -209,11 +236,38 @@ describe('obContract', () => {
       }
     })
 
-    it('should throw 404 if contract doesn\'t exist', async () => {
+    it('should throw 422 if GUID is invalid', async () => {
       try {
         const options = {
           method: 'PUT',
           uri: `${LOCALHOST}/api/obcontract/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should throw 404 if contract doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'PUT',
+          uri: `${LOCALHOST}/api/obcontract/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -293,11 +347,38 @@ describe('obContract', () => {
       }
     })
 
-    it('should throw 404 if contract doesn\'t exist', async () => {
+    it('should throw 422 if the GUID is invalid', async () => {
       try {
         const options = {
           method: 'DELETE',
           uri: `${LOCALHOST}/api/obcontract/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should throw 404 if contract doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/obcontract/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {

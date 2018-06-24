@@ -88,20 +88,15 @@ async function getContract (contractId) {
 }
 
 // Remove an obContract model from the database.
-async function removeContract(token, obContract) {
+async function removeContract (config) {
   try {
-    // console.log(`contractObj: ${JSON.stringify(contractObj, null, 2)}`)
-
     const options = {
-      method: 'PUT',
-      uri: `${LOCALHOST}/api/obcontract/${obContract._id.toString()}`,
+      method: 'DELETE',
+      uri: `${LOCALHOST}/api/obcontract/${config.obContractId}`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: {
-        obContract
+        Authorization: `Bearer ${config.token}`
       }
     }
 
@@ -109,12 +104,11 @@ async function removeContract(token, obContract) {
 
     // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
 
-    return result.body.obContract
+    return result.body.success
   } catch (err) {
-    console.error(`Error in modules/obcontract/index.js/updateContract(): `, err)
+    console.error(`Error in modules/obcontract/index.js/removeContract(): `)
     throw err
   }
-
 }
 
 module.exports = {

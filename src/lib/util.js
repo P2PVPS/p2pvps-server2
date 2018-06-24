@@ -27,7 +27,6 @@ const openbazaar = require(`./openbazaar.js`)
 const serverUtil = require('../../bin/util')
 const DevicePublicModel = require('../models/devicepublicdata.js')
 
-
 const LOCALHOST = 'http://localhost:5000'
 
 // Return a promise that resolves to the devicePublicModel.
@@ -130,7 +129,10 @@ async function removeOBListing (deviceData) {
     const token = admin.body.token
 
     // Remove the obContract model from the DB.
-    await obContractApi.removeContract(token, obContract)
+    const config = {}
+    config.token = token
+    config.obContractId = obContract._id
+    await obContractApi.removeContract(config)
   } catch (err) {
     if (err.statusCode === 404) return
 
