@@ -206,8 +206,8 @@ async function renewDevice (ctx, next) {
 
     // Edit the information that will generate the listing, to make it clear this
     // is a renewal listing.
-    device.description = `This is a renewal listing for ${device.deviceName}`;
-    device.deviceName = 'Renewal - '+device.deviceName;
+    device.deviceDesc = `This is a renewal listing for ${device.deviceName}`
+    device.deviceName = 'Renewal - ' + device.deviceName
 
     // Create an OB store listing for this device.
     // Note: the utility function will automaticaly remove old listings if they exist.

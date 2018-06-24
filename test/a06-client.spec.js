@@ -4,6 +4,7 @@
   TODO:
   Tests for register():
   -A new obContract model is created.
+  -Ensure any previous obContract model is deleted from the DB.
   -Returns username, password, and port for newly created shell.
 
   -Test code path for /client/expiration/:id when expiration has passed.
