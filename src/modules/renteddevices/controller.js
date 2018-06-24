@@ -204,14 +204,9 @@ async function renewDevice (ctx, next) {
       ctx.throw(404, 'Could not find that device.')
     }
 
-    // Edit the information that will generate the listing, to make it clear this
-    // is a renewal listing.
-    device.deviceDesc = `This is a renewal listing for ${device.deviceName}`
-    device.deviceName = 'Renewal - ' + device.deviceName
-
     // Create an OB store listing for this device.
     // Note: the utility function will automaticaly remove old listings if they exist.
-    const obContractId = await util.createNewMarketListing(device)
+    const obContractId = await util.createRenewalListing(device)
     console.log(`renewal generated, obContractId: ${JSON.stringify(obContractId, null, 2)}`)
 
     // Update the device with the newly created obContract model GUID.

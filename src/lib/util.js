@@ -174,6 +174,37 @@ function createNewMarketListing (device) {
   // return true
 }
 
+function createRenewalListing (device) {
+  // Generate an expiration date for the store listing.
+  let now = new Date()
+  const oneMonth = 1000 * 60 * 60 * 24 * 30
+  let temp = now.getTime() + oneMonth
+  let oneMonthFromNow = new Date(temp)
+
+  const newDesc = `This is a renewal listing for ${device.deviceName}.
+  Purchasing this listing will renew the contract for the existing renter. ` +
+  device.deviceDesc
+
+  // Create new obContract model
+  var obj = {
+    clientDevice: device._id.toString(),
+    ownerUser: device.ownerUser.toString(),
+    renterUser: '',
+    price: 10,
+    experation: oneMonthFromNow.toISOString(),
+    title: `Renewal - ${device.deviceName}`,
+    description: newDesc,
+    listingUri: '',
+    imageHash: '',
+    listingState: 'Listed',
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  }
+
+  return submitToMarket(device, obj)
+  // return true
+}
+
 // Generate an obContract model and use it to create a new listing on the OB
 // store.
 // device = devicePublicData Model
@@ -279,5 +310,6 @@ module.exports = {
   submitToMarket,
   removeOBListing,
   createNewMarketListing,
+  createRenewalListing,
   loginAdmin
 }
