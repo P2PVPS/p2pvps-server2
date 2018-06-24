@@ -194,6 +194,38 @@ async function addDeviceToRentedList (config) {
   }
 }
 
+async function createObContract (config) {
+  try {
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/api/obcontract`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        Authorization: `Bearer ${config.token}`
+      },
+      body: {
+        obContract: {
+          ownerUser: config.userId,
+          clientDevice: config.deviceId,
+          title: 'test',
+          description: 'test description'
+        }
+      }
+    }
+
+    let result = await rp(options)
+
+    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
+
+    return result.body.obContract._id.toString()
+  } catch (err) {
+    console.error('Error in utils.js/createObContract()!')
+    console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 module.exports = {
   cleanDb,
   authUser,
@@ -201,5 +233,6 @@ module.exports = {
   loginTestUser,
   loginAdminUser,
   createUser,
-  addDeviceToRentedList
+  addDeviceToRentedList,
+  createObContract
 }

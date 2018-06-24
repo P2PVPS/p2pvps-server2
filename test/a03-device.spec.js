@@ -2,7 +2,6 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
-  -A devicePublicData model is associated with a devicePrivateData model after creation.
   -Deleting a devicePublicData model also deletes the devicePrivateData model and the obContract model.
   -Create a device with the 'bad user', and ensure the device is not returned when
   the 'good' user calls listById().
@@ -778,6 +777,45 @@ describe('Devices', () => {
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+    it('should delete device, private model, and obContract', async () => {
+      try {
+        // Create a device
+        const device = await utils.createDevice({token: context.token})
+
+        const config = {}
+        config.token = context.token
+        config.userId = device.ownerUser
+        config.deviceId = device._id
+        const obContract = await utils.createObContract(config)
+
+        console.log(`device: ${JSON.stringify(device, null, 2)}`)
+        console.log(`obContract: ${obContract}`)
+
+        /*
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/${context.deviceId.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+        */
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        // assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(true)
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))

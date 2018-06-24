@@ -25,14 +25,10 @@ const rp = require('request-promise')
 const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
 const serverUtil = require('../../bin/util')
+const DevicePublicModel = require('../models/devicepublicdata.js')
+
 
 const LOCALHOST = 'http://localhost:5000'
-
-// Instantiate Keystone Models
-// const logr = keystone.get('logr'); // Logging system
-// const DevicePublicModel = keystone.list('DevicePublicModel');
-// const DevicePrivateModel = keystone.list('DevicePrivateModel');
-// const ObContractModel = keystone.list('obContractModel');
 
 // Return a promise that resolves to the devicePublicModel.
 function getDevicePublicModel (deviceId) {
