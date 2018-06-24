@@ -300,7 +300,7 @@ async function verifyDeviceExists (deviceId) {
     const devices = await DevicePublicData.find({})
 
     const foundDevice = devices.find(thisDevice => thisDevice._id.toString() === deviceId)
-    
+
     if (!foundDevice) { return false }
 
     return true
