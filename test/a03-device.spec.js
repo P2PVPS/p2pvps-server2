@@ -2,7 +2,11 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
-  -Deleting a devicePublicData model also deletes the devicePrivateData model and the obContract model.
+  -Ensure deleting device also removes it from the rentedDevices list.
+  -Ensure deleting device releases the SSH port.
+  --This test is implictly enforced, but it should be explicitly tested by
+    querying the rentededDevices list and verifying the port is not there.
+    Good context for a subfunction.
   -Create a device with the 'bad user', and ensure the device is not returned when
   the 'good' user calls listById().
 */

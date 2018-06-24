@@ -9,8 +9,6 @@
 
   -Test code path for /client/expiration/:id when expiration has passed.
 
-  These tests can not be implemented because there is no devicePrivateData API.
-  May be possible with additional API functionality.
   register():
   -devicePrivateModel is updated with login details
   -moneyPending and moneyOwed are updated
@@ -58,7 +56,6 @@ describe('Client', () => {
   })
 
   describe('POST /api/register/:id', () => {
-
     it('should reject with 422 if GUID is invalid', async () => {
       try {
         const options = {
