@@ -173,6 +173,7 @@ describe('Devices', () => {
 
         // A devicePrivateData model is associated with a devicePublidData model after creation.
         assert(result.body.device.privateData !== 'test', 'Should return a GUID to a devicePrivateData model.')
+        assert.match(result.body.device.privateData, /^[0-9a-fA-F]{24}$/, 'privateData is a valid GUID.')
 
         // ownerUser value should be ignored and autoassigned to the current user.
         assert(result.body.device.ownerUser === context.user._id, 'ownerUser should be assigned to current user.')

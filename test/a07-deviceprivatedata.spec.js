@@ -41,7 +41,7 @@ describe('Device Private Model', () => {
   })
 
   describe('GET /api/deviceprivatedata/:id', () => {
-    it('should throw 404 if contract doesn\'t exist', async () => {
+    it('should throw 404 if model doesn\'t exist', async () => {
       try {
         const options = {
           method: 'GET',
@@ -66,7 +66,6 @@ describe('Device Private Model', () => {
           throw err
         }
       }
-
     })
 
     it('should throw 401 for normal user', async () => {
@@ -90,7 +89,6 @@ describe('Device Private Model', () => {
           assert(err.statusCode === 401, 'Error code 401 expected.')
         }
       }
-
     })
 
     it('should fetch for admin user', async () => {
@@ -116,7 +114,6 @@ describe('Device Private Model', () => {
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err
       }
-
     })
   })
 
@@ -142,7 +139,6 @@ describe('Device Private Model', () => {
           assert(err.statusCode === 401, 'Error code 401 expected.')
         }
       }
-
     })
 
     it('should return 401 for normal user', async () => {
@@ -166,10 +162,9 @@ describe('Device Private Model', () => {
           assert(err.statusCode === 401, 'Error code 401 expected.')
         }
       }
-
     })
 
-    it('should throw 404 if contract doesn\'t exist', async () => {
+    it('should throw 404 if model doesn\'t exist', async () => {
       try {
         const options = {
           method: 'PUT',
@@ -190,7 +185,6 @@ describe('Device Private Model', () => {
           assert(err.statusCode === 404, 'Error code 404 expected.')
         }
       }
-
     })
 
     it('should update Device Private Data', async () => {
@@ -219,7 +213,6 @@ describe('Device Private Model', () => {
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
         throw err
       }
-
     })
   })
 })
