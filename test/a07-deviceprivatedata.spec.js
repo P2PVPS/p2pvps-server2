@@ -45,7 +45,7 @@ describe('Device Private Model', () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/api/deviceprivatedata/1`,
+          uri: `${LOCALHOST}/api/deviceprivatedata/5b300aae03c8ad14123286af`,
           resolveWithFullResponse: true,
           json: true,
           headers: {

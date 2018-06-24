@@ -35,7 +35,13 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  */
 async function getModel (ctx, next) {
   try {
-    const devicePrivateData = await DevicePrivateData.findById(ctx.params.id)
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
+    const devicePrivateData = await DevicePrivateData.findById(deviceId)
     if (!devicePrivateData) {
       ctx.throw(404)
     }
@@ -47,7 +53,7 @@ async function getModel (ctx, next) {
     }
   } catch (err) {
     if (err === 500) {
-      console.error(`Error in devicePricateData.getModel: `, err)
+      console.error(`Error in devicePricateData.getModel()`)
     }
 
     ctx.throw(err)
