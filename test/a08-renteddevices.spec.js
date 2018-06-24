@@ -2,10 +2,7 @@
   This file contains tests for the /api/renteddevices API.
 
   TODO:
-  -renewDevice tests
-  --If the device model/ID does not exist, returns 404.
-  --On success, a new obContract ID is returned.
-  --On success, an http status of 200 is returned.
+  -Import addition HTTP unit tests from the user tests to the CRUD APIs in this file.
 */
 
 'use strict'
