@@ -791,18 +791,25 @@ describe('Devices', () => {
       }
     })
 
-    it('should delete device, private model, and obContract', async () => {
+    it('should delete device from private model, ssh port, rented device list, and obContract', async () => {
       try {
         // Create a device
         const device = await utils.createDevice({token: context.token})
 
+        // Register the device
         const config = {}
         config.deviceId = device._id
-        const newDevice = await utils.registerDevice(config)
+        const fullDevice = await utils.registerDevice(config)
 
         console.log(`device: ${JSON.stringify(device, null, 2)}`)
-        console.log(`newDevice: ${JSON.stringify(newDevice, null, 2)}`)
+        console.log(`fullDevice: ${JSON.stringify(fullDevice, null, 2)}`)
 
+        // Save info for later comparison.
+        const obContract = fullDevice.obContract
+        const port = fullDevice.port
+        const privateId = fullDevice.privateData
+
+        // Delete the device.
         const options = {
           method: 'DELETE',
           uri: `${LOCALHOST}/api/devices/${device._id.toString()}`,
@@ -812,8 +819,13 @@ describe('Devices', () => {
             Authorization: `Bearer ${context.token}`
           }
         }
-
         let result = await rp(options)
+
+        // Try to get the private data model.
+
+        // Try to get the obContract model.
+
+        // Ensure SSH port has been released
 
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 

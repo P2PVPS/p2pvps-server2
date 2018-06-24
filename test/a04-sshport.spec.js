@@ -1,6 +1,7 @@
 const utils = require('./utils.js')
 const rp = require('request-promise')
 const assert = require('chai').assert
+const SSHPort = require('../src/models/sshport')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -8,6 +9,9 @@ const context = {}
 
 describe('SSH Ports', () => {
   before(async () => {
+    // Wipe the SSH collection.
+    await SSHPort.remove({})
+
     // Login as a test user and get a JWT.
     const config = await utils.loginTestUser()
 

@@ -1,5 +1,6 @@
 const DevicePublicData = require('../../models/devicepublicdata')
 const DevicePrivateData = require('../../models/deviceprivatedata')
+const SSH = require('../sshport')
 
 /**
  * @api {post} /api/devices Create a new device
@@ -324,31 +325,47 @@ async function updateDevice (ctx) {
  */
 
 async function deleteDevice (ctx) {
+  try {
   // console.log('Entered delteDevice()')
-  const device = ctx.body.device
+    const device = ctx.body.device
 
   // Reject if the request user is not the device owner.
-  if (device.ownerUser !== ctx.state.user._id.toString()) {
-    ctx.throw(401, 'Only device owners can delete devices.')
-  }
+    if (device.ownerUser !== ctx.state.user._id.toString()) {
+      ctx.throw(401, 'Only device owners can delete devices.')
+    }
 
   // Get the devicePrivateData model associated with this device.
-  const devicePrivateData = await DevicePrivateData.findById(device.privateData)
+    const devicePrivateData = await DevicePrivateData.findById(device.privateData)
 
-  if (!devicePrivateData) {
-    ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
-  }
+    if (!devicePrivateData) {
+      ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
+    }
 
   // TODO:
   // -Remove any obContracts (and store listings)
   // -Remove from rentedDevices list
+    console.log(`device: ${JSON.stringify(device, null, 2)}`)
+    console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
 
-  await device.remove()
-  await devicePrivateData.remove()
+  // Release the SSH port
+    const port = devicePrivateData.serverSSHPort
+    if (port) {
+     await SSH.releasePort(port)
+    }
 
-  ctx.status = 200
-  ctx.body = {
-    success: true
+    await device.remove()
+    await devicePrivateData.remove()
+
+    ctx.status = 200
+    ctx.body = {
+      success: true
+    }
+  } catch (err) {
+    if (err === 500) {
+      console.error(`Error in modules/devicePublicData/controller.js/deleteDevice(): `, err)
+    }
+
+    ctx.throw(err)
   }
 }
 
