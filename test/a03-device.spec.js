@@ -3,7 +3,7 @@
 
   TODO:
   -A devicePublicData model is associated with a devicePrivateData model after creation.
-  -Deleting a devicePublicData model also deletes the devicePrivateData model.
+  -Deleting a devicePublicData model also deletes the devicePrivateData model and the obContract model.
   -Create a device with the 'bad user', and ensure the device is not returned when
   the 'good' user calls listById().
 */
@@ -386,7 +386,7 @@ describe('Devices', () => {
       }
     })
     */
-    
+
     it('should fetch all devices', async () => {
       const { token } = context
 
