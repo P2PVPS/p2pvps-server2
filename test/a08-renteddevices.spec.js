@@ -2,15 +2,7 @@
   This file contains tests for the /api/renteddevices API.
 
   TODO:
-  -addDevice tests
-  -getDevices tests
-  -renewDevice tests
-  --If the rentedDevices list is empty, returns 422
-  --If the device supplied is not in the rentedDevices list, returns 422
-  --If the device model/ID does not exist, returns 404.
-  --On success, a new obContract ID is returned.
-  --On success, an http status of 200 is returned.
-  -removeDevice tests
+  -Import addition HTTP unit tests from the user tests to the CRUD APIs in this file.
 */
 
 'use strict'
@@ -38,7 +30,7 @@ describe('Rented Devices', () => {
     const device = await utils.createDevice({token: context.userToken})
     context.device = device
 
-    // console.log(`context: ${JSON.stringify(context, null, 2)}`)
+    // console.log(`context: ${JSON.stringify(context, null, 2)}`) 
   })
 
   describe('POST /renteddevices', () => {
@@ -88,7 +80,7 @@ describe('Rented Devices', () => {
   })
 
   describe('GET /renteddevices', () => {
-    it('should add device ID to the rentedDevices list', async () => {
+    it('should return contents of rentedDevices array', async () => {
       try {
         const options = {
           method: 'GET',
@@ -229,6 +221,7 @@ describe('Rented Devices', () => {
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert(result.body.success === true, 'Success exected.')
+        assert.match(result.body.obContract, /^[0-9a-fA-F]{24}$/, 'obContract is a valid GUID.')
       } catch (err) {
         console.log(`err stringified: ${JSON.stringify(err, null, 2)}`)
         assert(false, 'Unexpected result')

@@ -7,7 +7,7 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  * @apiVersion 1.0.0
  * @apiName CreateDevice
  * @apiGroup Device-Public
- * 
+ *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X POST -d '{ "device": {} }' localhost:5000/api/devices
  *
@@ -338,6 +338,10 @@ async function deleteDevice (ctx) {
   if (!devicePrivateData) {
     ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
   }
+
+  // TODO:
+  // -Remove any obContracts (and store listings)
+  // -Remove from rentedDevices list
 
   await device.remove()
   await devicePrivateData.remove()
