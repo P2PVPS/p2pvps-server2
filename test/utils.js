@@ -226,6 +226,32 @@ async function createObContract (config) {
   }
 }
 
+async function registerDevice (config) {
+  try {
+    const options = {
+      method: 'POST',
+      uri: `${LOCALHOST}/api/client/register/${config.deviceId}`,
+      resolveWithFullResponse: true,
+      json: true,
+      body: {
+        memory: 'Fake Test Data',
+        diskSpace: 'Fake Test Data',
+        processor: 'Fake Test Data',
+        internetSpeed: 'Fake Test Data'
+      }
+    }
+
+    let result = await rp(options)
+
+    // const expiration = new Date(result.body.device.expiration)
+    return result.body.device
+  } catch (err) {
+    console.error('Error in utils.js/createObContract()!')
+    console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 module.exports = {
   cleanDb,
   authUser,
@@ -234,5 +260,6 @@ module.exports = {
   loginAdminUser,
   createUser,
   addDeviceToRentedList,
-  createObContract
+  createObContract,
+  registerDevice
 }

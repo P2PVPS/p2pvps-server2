@@ -12,6 +12,7 @@ const should = require('chai').should
 const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
+const nock = require('nock')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -50,6 +51,12 @@ describe('Devices', () => {
       console.log('Error creating "bad" test user: ' + JSON.stringify(err, null, 2))
       throw err
     }
+
+    // Mock out the URLs.
+    nock(`http://serverdeployment2_openbazaar_1:4002`)
+    .persist()
+    .post('/ob/listing/')
+    .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
   })
 
   describe('POST /devices', () => {
@@ -790,18 +797,15 @@ describe('Devices', () => {
         const device = await utils.createDevice({token: context.token})
 
         const config = {}
-        config.token = context.token
-        config.userId = device.ownerUser
         config.deviceId = device._id
-        const obContract = await utils.createObContract(config)
+        const newDevice = await utils.registerDevice(config)
 
         console.log(`device: ${JSON.stringify(device, null, 2)}`)
-        console.log(`obContract: ${obContract}`)
+        console.log(`newDevice: ${JSON.stringify(newDevice, null, 2)}`)
 
-        /*
         const options = {
           method: 'DELETE',
-          uri: `${LOCALHOST}/api/devices/${context.deviceId.toString()}`,
+          uri: `${LOCALHOST}/api/devices/${device._id.toString()}`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -810,11 +814,10 @@ describe('Devices', () => {
         }
 
         let result = await rp(options)
-        */
 
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
-        // assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert(true)
       } catch (err) {
         console.error('Error: ', err)
