@@ -201,11 +201,11 @@ async function getDevice (ctx, next) {
       device
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in modules/devicePublicData/controller.js/getDevice()`)
     }
 
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }
