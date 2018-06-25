@@ -192,7 +192,13 @@ async function listById (ctx) {
  */
 async function getDevice (ctx, next) {
   try {
-    const device = await DevicePublicData.findById(ctx.params.id)
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
+    const device = await DevicePublicData.findById(deviceId)
     if (!device) {
       ctx.throw(404)
     }
@@ -201,11 +207,11 @@ async function getDevice (ctx, next) {
       device
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in modules/devicePublicData/controller.js/getDevice()`)
     }
 
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }
