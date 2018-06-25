@@ -37,7 +37,7 @@ async function createStoreListing (obContractModel) {
         {
           discountCode: 'TESTING',
           title: 'TESTING',
-          percentDiscount: 99
+          percentDiscount: 60
         }
       ],
       refundPolicy: '',
