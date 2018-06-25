@@ -1,5 +1,7 @@
 const DevicePublicData = require('../../models/devicepublicdata')
 const DevicePrivateData = require('../../models/deviceprivatedata')
+const ObContract = require('../../models/obcontract')
+const SSH = require('../sshport')
 
 /**
  * @api {post} /api/devices Create a new device
@@ -324,31 +326,49 @@ async function updateDevice (ctx) {
  */
 
 async function deleteDevice (ctx) {
-  // console.log('Entered delteDevice()')
-  const device = ctx.body.device
+  try {
+    // console.log('Entered delteDevice()')
+    const device = ctx.body.device
 
-  // Reject if the request user is not the device owner.
-  if (device.ownerUser !== ctx.state.user._id.toString()) {
-    ctx.throw(401, 'Only device owners can delete devices.')
-  }
+    // Reject if the request user is not the device owner.
+    if (device.ownerUser !== ctx.state.user._id.toString()) {
+      ctx.throw(401, 'Only device owners can delete devices.')
+    }
 
-  // Get the devicePrivateData model associated with this device.
-  const devicePrivateData = await DevicePrivateData.findById(device.privateData)
+    // Get the devicePrivateData model associated with this device.
+    const devicePrivateData = await DevicePrivateData.findById(device.privateData)
 
-  if (!devicePrivateData) {
-    ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
-  }
+    if (!devicePrivateData) {
+      ctx.throw(404, 'Could not find the devicePrivateData model associated with this device.')
+    }
 
-  // TODO:
-  // -Remove any obContracts (and store listings)
-  // -Remove from rentedDevices list
+    // Release the SSH port
+    const port = devicePrivateData.serverSSHPort
+    if (port) {
+      await SSH.releasePort(port)
+    }
 
-  await device.remove()
-  await devicePrivateData.remove()
+    // Remove any obContracts (and store listings)
+    let obContract
+    // If the device.obContract exists and it's a valid GUID, remove the obContract model.
+    if (device.obContract && device.obContract.match(/^[0-9a-fA-F]{24}$/)) {
+      obContract = await ObContract.findById(device.obContract)
+      await obContract.remove()
+    }
 
-  ctx.status = 200
-  ctx.body = {
-    success: true
+    await device.remove()
+    await devicePrivateData.remove()
+
+    ctx.status = 200
+    ctx.body = {
+      success: true
+    }
+  } catch (err) {
+    if (err === 500) {
+      console.error(`Error in modules/devicePublicData/controller.js/deleteDevice(): `, err)
+    }
+
+    ctx.throw(err)
   }
 }
 

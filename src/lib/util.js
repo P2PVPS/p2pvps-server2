@@ -25,14 +25,9 @@ const rp = require('request-promise')
 const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
 const serverUtil = require('../../bin/util')
+const DevicePublicModel = require('../models/devicepublicdata.js')
 
 const LOCALHOST = 'http://localhost:5000'
-
-// Instantiate Keystone Models
-// const logr = keystone.get('logr'); // Logging system
-// const DevicePublicModel = keystone.list('DevicePublicModel');
-// const DevicePrivateModel = keystone.list('DevicePrivateModel');
-// const ObContractModel = keystone.list('obContractModel');
 
 // Return a promise that resolves to the devicePublicModel.
 function getDevicePublicModel (deviceId) {
@@ -134,7 +129,10 @@ async function removeOBListing (deviceData) {
     const token = admin.body.token
 
     // Remove the obContract model from the DB.
-    await obContractApi.removeContract(token, obContract)
+    const config = {}
+    config.token = token
+    config.obContractId = obContract._id
+    await obContractApi.removeContract(config)
   } catch (err) {
     if (err.statusCode === 404) return
 
@@ -159,10 +157,41 @@ function createNewMarketListing (device) {
     clientDevice: device._id.toString(),
     ownerUser: device.ownerUser.toString(),
     renterUser: '',
-    price: 10,
+    price: 3,
     experation: oneMonthFromNow.toISOString(),
     title: device.deviceName,
     description: device.deviceDesc,
+    listingUri: '',
+    imageHash: '',
+    listingState: 'Listed',
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  }
+
+  return submitToMarket(device, obj)
+  // return true
+}
+
+function createRenewalListing (device) {
+  // Generate an expiration date for the store listing.
+  let now = new Date()
+  const oneMonth = 1000 * 60 * 60 * 24 * 30
+  let temp = now.getTime() + oneMonth
+  let oneMonthFromNow = new Date(temp)
+
+  const newDesc = `This is a renewal listing for ${device.deviceName}.
+  Purchasing this listing will renew the contract for the existing renter. ` +
+  device.deviceDesc
+
+  // Create new obContract model
+  var obj = {
+    clientDevice: device._id.toString(),
+    ownerUser: device.ownerUser.toString(),
+    renterUser: '',
+    price: 3,
+    experation: oneMonthFromNow.toISOString(),
+    title: `Renewal - ${device.deviceName}`,
+    description: newDesc,
     listingUri: '',
     imageHash: '',
     listingState: 'Listed',
@@ -279,5 +308,6 @@ module.exports = {
   submitToMarket,
   removeOBListing,
   createNewMarketListing,
+  createRenewalListing,
   loginAdmin
 }

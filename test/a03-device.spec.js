@@ -2,8 +2,11 @@
   This file contains all the tests for the devicePublicData model.
 
   TODO:
-  -A devicePublicData model is associated with a devicePrivateData model after creation.
-  -Deleting a devicePublicData model also deletes the devicePrivateData model.
+  -Ensure deleting device also removes it from the rentedDevices list.
+  -Ensure deleting device releases the SSH port.
+  --This test is implictly enforced, but it should be explicitly tested by
+    querying the rentededDevices list and verifying the port is not there.
+    Good context for a subfunction.
   -Create a device with the 'bad user', and ensure the device is not returned when
   the 'good' user calls listById().
 */
@@ -13,6 +16,10 @@ const should = require('chai').should
 const rp = require('request-promise')
 const assert = require('chai').assert
 const utils = require('./utils.js')
+const nock = require('nock')
+const DevicePrivateData = require('../src/modules/devicePrivateData')
+const serverUtil = require('../bin/util')
+const ObContract = require('../src/modules/obcontract')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -51,6 +58,19 @@ describe('Devices', () => {
       console.log('Error creating "bad" test user: ' + JSON.stringify(err, null, 2))
       throw err
     }
+
+    // Create and system admin user
+    const adminUser = await serverUtil.createSystemUser()
+    // console.log(`adminUser: ${JSON.stringify(adminUser, null, 2)}`)
+    context.adminToken = adminUser.token
+    context.adminUsername = adminUser.username
+    context.adminId = adminUser.id
+
+    // Mock out the URLs.
+    nock(`http://serverdeployment2_openbazaar_1:4002`)
+    .persist()
+    .post('/ob/listing/')
+    .reply(200, { slug: 'test-5aab2816aa39c214596eb900' })
   })
 
   describe('POST /devices', () => {
@@ -173,6 +193,7 @@ describe('Devices', () => {
 
         // A devicePrivateData model is associated with a devicePublidData model after creation.
         assert(result.body.device.privateData !== 'test', 'Should return a GUID to a devicePrivateData model.')
+        assert.match(result.body.device.privateData, /^[0-9a-fA-F]{24}$/, 'privateData is a valid GUID.')
 
         // ownerUser value should be ignored and autoassigned to the current user.
         assert(result.body.device.ownerUser === context.user._id, 'ownerUser should be assigned to current user.')
@@ -386,7 +407,7 @@ describe('Devices', () => {
       }
     })
     */
-    
+
     it('should fetch all devices', async () => {
       const { token } = context
 
@@ -777,6 +798,77 @@ describe('Devices', () => {
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+    it('should delete device from private model, ssh port, rented device list, and obContract', async () => {
+      try {
+        // Create a device
+        const device = await utils.createDevice({token: context.token})
+
+        // Register the device
+        const config = {}
+        config.deviceId = device._id
+        const fullDevice = await utils.registerDevice(config)
+
+        // console.log(`device: ${JSON.stringify(device, null, 2)}`)
+        // console.log(`fullDevice: ${JSON.stringify(fullDevice, null, 2)}`)
+
+        // Save info for later comparison.
+        const obContract = fullDevice.obContract
+        // const port = fullDevice.port
+        const privateId = fullDevice.privateData
+
+        // Delete the device.
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/${device._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+        let result = await rp(options)
+
+        // Try to get the private data model.
+        try {
+          config.adminToken = context.adminToken
+          config.id = privateId
+          const devicePrivateData = await DevicePrivateData.getPrivateModel(config)
+
+          // Exception expected. Throw an error if this code gets executed.
+          const err = {}
+          err.message = `This line should not be executed!`
+          err.devicePrivateData = devicePrivateData
+          throw err
+        } catch (err) {
+          console.log(`Ignore the above error ^^^`)
+          assert(err.statusCode === 404, `Private model should not be found.`)
+        }
+
+        // Try to get the obContract model.
+        try {
+          const obContractModel = await ObContract.getContract(obContract)
+
+          // Exception expected. Throw an error if this code gets executed.
+          const err = {}
+          err.message = `This line should not be executed!`
+          err.obContractModel = obContractModel
+          throw err
+        } catch (err) {
+          console.log(`Ignore the above error ^^^`)
+          assert(err.statusCode === 404, `Private model should not be found.`)
+        }
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(true)
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))

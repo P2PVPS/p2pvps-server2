@@ -139,7 +139,13 @@ async function getContracts (ctx) {
  */
 async function getContract (ctx, next) {
   try {
-    const obContract = await OBContract.findById(ctx.params.id)
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
+    const obContract = await OBContract.findById(deviceId)
     if (!obContract) {
       ctx.throw(404)
     }
@@ -148,12 +154,11 @@ async function getContract (ctx, next) {
       obContract
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError' || err.message === 'Not Found') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in modules/client/controller.js/checkIn()`)
     }
 
-    console.log(`Error in obcontract.getContract: ${JSON.stringify(err, null, 2)}`)
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }

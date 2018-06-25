@@ -3,6 +3,9 @@
 
   TODO:
   -Import addition HTTP unit tests from the user tests to the CRUD APIs in this file.
+  -renew:
+  --Ensure any previous obContract model is deleted from the DB.
+  
 */
 
 'use strict'
@@ -30,7 +33,7 @@ describe('Rented Devices', () => {
     const device = await utils.createDevice({token: context.userToken})
     context.device = device
 
-    // console.log(`context: ${JSON.stringify(context, null, 2)}`) 
+    // console.log(`context: ${JSON.stringify(context, null, 2)}`)
   })
 
   describe('POST /renteddevices', () => {

@@ -35,7 +35,13 @@ const DevicePrivateData = require('../../models/deviceprivatedata')
  */
 async function getModel (ctx, next) {
   try {
-    const devicePrivateData = await DevicePrivateData.findById(ctx.params.id)
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
+    const devicePrivateData = await DevicePrivateData.findById(deviceId)
     if (!devicePrivateData) {
       ctx.throw(404)
     }
@@ -46,12 +52,11 @@ async function getModel (ctx, next) {
       devicePrivateData
     }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in devicePricateData.getModel()`)
     }
 
-    console.log(`Error in obcontract.getContract: ${JSON.stringify(err, null, 2)}`)
-    ctx.throw(500)
+    ctx.throw(err)
   }
 
   if (next) { return next() }

@@ -46,8 +46,14 @@ async function register (ctx, next) {
     // console.log('register() called.')
     // console.log(`body data: ${JSON.stringify(ctx.request.body, null, 2)}`)
 
+    // Validate the input ID.
+    const deviceId = ctx.params.id
+    if (!deviceId.match(/^[0-9a-fA-F]{24}$/)) {
+      ctx.throw(422, 'Invalid GUID')
+    }
+
     // Retrieve the device model from the database.
-    const device = await DevicePublicData.findById(ctx.params.id)
+    const device = await DevicePublicData.findById(deviceId)
     if (!device) {
       ctx.throw(404, 'Could not find that device.')
     }
@@ -124,13 +130,11 @@ async function register (ctx, next) {
 
     // if (next) { return next() }
   } catch (err) {
-    if (err === 404 || err.name === 'CastError') {
-      ctx.throw(404)
+    if (err === 500) {
+      console.error(`Error in modules/client/controller.js/register()`)
     }
 
-    console.error(`Error in modules/client/controller.js/register(): `, err)
-    // console.error(`Error in modules/client/controller.js/register(). `)
-    ctx.throw(500)
+    ctx.throw(err)
   }
 }
 
