@@ -469,12 +469,12 @@ describe('Devices', () => {
     })
   })
 
-  describe('GET /devices/:id', () => {
+  describe('GET /api/devices/:id', () => {
     it('should not fetch user if token is invalid', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/api/devices/1`,
+          uri: `${LOCALHOST}/api/devices/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -501,11 +501,38 @@ describe('Devices', () => {
       }
     })
 
+    it('should throw 422 if GUID is invalid format', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/devices/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
     it('should throw 404 if device doesn\'t exist', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/api/devics/1`,
+          uri: `${LOCALHOST}/api/devics/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -586,11 +613,38 @@ describe('Devices', () => {
       }
     })
 
-    it('should throw 404 if device doesn\'t exist', async () => {
+    it('should throw 422 if GUID is invalid', async () => {
       try {
         const options = {
           method: 'PUT',
           uri: `${LOCALHOST}/api/devices/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should throw 404 if device doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'PUT',
+          uri: `${LOCALHOST}/api/devices/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -727,11 +781,38 @@ describe('Devices', () => {
       }
     })
 
-    it('should throw 404 if device doesn\'t exist', async () => {
+    it('should throw 422 if GUID is invalid', async () => {
       try {
         const options = {
           method: 'DELETE',
           uri: `${LOCALHOST}/api/devices/1`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 422) {
+          assert(err.statusCode === 422, 'Error code 422 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should throw 404 if device doesn\'t exist', async () => {
+      try {
+        const options = {
+          method: 'DELETE',
+          uri: `${LOCALHOST}/api/devices/5b30126004a8c715bf057f41`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
