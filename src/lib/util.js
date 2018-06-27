@@ -175,9 +175,9 @@ function createNewMarketListing (device) {
 function createRenewalListing (device) {
   // Generate an expiration date for the store listing.
   let now = new Date()
-  const oneMonth = 1000 * 60 * 60 * 24 * 30
-  let temp = now.getTime() + oneMonth
-  let oneMonthFromNow = new Date(temp)
+  const oneHour = 1000 * 60 * 60
+  let temp = now.getTime() + oneHour
+  let oneHourFromNow = new Date(temp)
 
   const newDesc = `This is a renewal listing for ${device.deviceName}.
   Purchasing this listing will renew the contract for the existing renter. ` +
@@ -189,7 +189,7 @@ function createRenewalListing (device) {
     ownerUser: device.ownerUser.toString(),
     renterUser: '',
     price: 3,
-    experation: oneMonthFromNow.toISOString(),
+    experation: oneHourFromNow.toISOString(),
     title: `Renewal - ${device.deviceName}`,
     description: newDesc,
     listingUri: '',
