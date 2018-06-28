@@ -44,7 +44,7 @@ async function addDevice (ctx) {
     // deviceId should be passed in Post.
     const deviceId = ctx.request.body.deviceId
 
-    const isKnownDevice = await verifyDeviceExists(deviceId)
+    const isKnownDevice = await _verifyDeviceExists(deviceId)
     if (!isKnownDevice) {
       ctx.throw(404, 'Device not found')
     }
@@ -295,7 +295,7 @@ async function removeDevice (ctx) {
   }
 }
 
-async function verifyDeviceExists (deviceId) {
+async function _verifyDeviceExists (deviceId) {
   try {
     const devices = await DevicePublicData.find({})
 
