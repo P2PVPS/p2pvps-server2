@@ -86,7 +86,7 @@ async function register (ctx, next) {
     // Get any previously used port assignment.
     const usedPort = devicePrivateData.serverSSHPort
 
-    // Get Login, Password, and Port assignment.
+    // Get Login, Password, Port assignment, and Dashboard ID.
     const loginData = await sshPort.requestPort()
     // console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
 
@@ -96,6 +96,7 @@ async function register (ctx, next) {
     devicePrivateData.serverSSHPort = loginData.port
     devicePrivateData.deviceUserName = loginData.username
     devicePrivateData.devicePassword = loginData.password
+    devicePrivateData.dashId = loginData.dashId
     await devicePrivateData.save()
 
     // If a previous port was being used, release it.

@@ -141,13 +141,15 @@ describe('Client', () => {
         assert(result.statusCode === 200, 'Returned status of 200 expected.')
 
         // devicePublicData model has the expiration updated
-        assert(expiration.getTime() >= testStartTime.getTime(), 'Expiratioin date should be greater than now.')
+        assert(expiration.getTime() >= testStartTime.getTime(), 'Expiration date should be greater than now.')
 
         // devicePublicData model statistics get updated
         assert(result.body.device.memory !== context.deviceData.memory, 'Memory statistics updated.')
         assert(result.body.device.diskSpace !== context.deviceData.diskSpace, 'Memory statistics updated.')
         assert(result.body.device.processor !== context.deviceData.processor, 'Memory statistics updated.')
         assert(result.body.device.internetSpeed !== context.deviceData.internetSpeed, 'Memory statistics updated.')
+
+        // TODO: assert the devicePrimateModel gets updated.
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))

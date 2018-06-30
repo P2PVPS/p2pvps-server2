@@ -47,6 +47,7 @@ describe('SSH Ports', () => {
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert.property(result.body.sshPort, 'username', 'Has property username.')
         assert.property(result.body.sshPort, 'password', 'Has property password.')
+        assert.property(result.body.sshPort, 'dashId', 'Has property dashId.')
         assert(result.body.sshPort.port === 6000, 'First port should be 6000')
       } catch (err) {
         console.error('Error: ', err)
@@ -76,6 +77,7 @@ describe('SSH Ports', () => {
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert.property(result.body.sshPort, 'username', 'Has property username.')
         assert.property(result.body.sshPort, 'password', 'Has property password.')
+        assert.property(result.body.sshPort, 'dashId', 'Has property dashId.')
         assert(result.body.sshPort.port === 6001, 'First port should be 6001')
       } catch (err) {
         console.error('Error: ', err)

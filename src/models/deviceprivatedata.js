@@ -7,6 +7,7 @@ const DevicePrivateData = new mongoose.Schema({
   serverSSHPort: { type: String },
   deviceUserName: { type: String },
   devicePassword: { type: String },
+  dashId: { type: String },
   jumperState: {type: Boolean},
   moneyPending: { type: Number },
   moneyOwed: { type: Number }
