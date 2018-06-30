@@ -53,9 +53,13 @@ async function requestPort (ctx) {
     // Randomly generate password
     const password = randomString(10)
 
+    // Randomly generate a Dashboard ID
+    const dashId = randomString(10)
+
     const retVal = {
       username: username,
-      password: password
+      password: password,
+      dashId: dashId
     }
 
     // The new port that will be opened.
