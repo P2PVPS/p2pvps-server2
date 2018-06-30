@@ -7,7 +7,8 @@ const User = new mongoose.Schema({
   type: { type: String, default: 'user' },
   name: { type: String },
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  dashIds: { type: Array }
 })
 
 User.pre('save', function preSave (next) {
