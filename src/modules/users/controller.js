@@ -138,14 +138,19 @@ async function getUsers (ctx) {
  */
 async function getUser (ctx, next) {
   try {
-    const user = await User.findById(ctx.params.id, '-password')
+    // Remove the dashIds array if the caller is not the current user being queried.
+    const thisUser = ctx.state.user
+    let user
+    if (thisUser._id.toString() !== ctx.params.id) {
+      user = await User.findById(ctx.params.id, '-password -dashIds')
+    } else {
+      user = await User.findById(ctx.params.id, '-password')
+    }
+
+    // Throw an error if the user could not be found.
     if (!user) {
       ctx.throw(404)
     }
-
-    // Remove the dashIds array if the caller is not the current user being queried.
-    const thisUser = ctx.state.user
-    if (thisUser._id.toString() !== user._id.toString()) { delete user.dashIds }
 
     ctx.body = {
       user

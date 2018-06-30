@@ -1,12 +1,5 @@
 /*
   TODO:
-  -Get Users
-  --password and dashIds fields are omitted.
-
-  -Get User :id
-  --password is omitted.
-  --dashIds is included for user querying themself.
-  --dashIds is omitted for users querying other user.
 */
 
 const should = require('chai').should
@@ -28,6 +21,7 @@ describe('Users', () => {
 
     cleanDb()
 
+    // Create a second test user.
     const userObj = {
       username: 'test2',
       password: 'pass2'
@@ -239,6 +233,8 @@ describe('Users', () => {
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert.isArray(result.body.users, 'returns an array of users.')
+        assert.notProperty(result.body.users[0], 'password', 'Password not included.')
+        assert.notProperty(result.body.users[0], 'dashIds', 'dashIds not included.')
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
@@ -323,7 +319,34 @@ describe('Users', () => {
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
         assert(result.body.user.username === 'test', 'Username of test expected')
-        assert(result.body.user.password === undefined, 'Password expected to be omited')
+        assert.notProperty(result.body.user, 'password', 'Password not included.')
+        assert.property(result.body.user, 'dashIds', 'dashIds property included.')
+        assert.isArray(result.body.user.dashIds, 'dashIds is an array')
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+
+    it('should not include dashIds when user 2 queries user 1', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/users/${context.user._id.toString()}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.token2}`
+          }
+        }
+
+        let result = await rp(options)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(result.body.user.username === 'test', 'Username of test expected')
+        assert.notProperty(result.body.user, 'password', 'Password not included.')
+        assert.notProperty(result.body.user, 'dashIds', 'dashIds property included.')
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
