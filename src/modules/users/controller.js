@@ -101,7 +101,7 @@ async function createUser (ctx) {
  */
 
 async function getUsers (ctx) {
-  const users = await User.find({}, '-password')
+  const users = await User.find({}, '-password -dashIds')
   ctx.body = { users }
 }
 
@@ -132,6 +132,9 @@ async function getUsers (ctx) {
  *     }
  *
  * @apiUse TokenError
+ * @apiDescription Return data on a specific user. If a user calls this API on
+ * themselves, then a dashIds array will be returned. If not, the dashIds propery
+ * will not be returned.
  */
 async function getUser (ctx, next) {
   try {
@@ -139,6 +142,10 @@ async function getUser (ctx, next) {
     if (!user) {
       ctx.throw(404)
     }
+
+    // Remove the dashIds array if the caller is not the current user being queried.
+    const thisUser = ctx.state.user
+    if (thisUser._id.toString() !== user._id.toString()) { delete user.dashIds }
 
     ctx.body = {
       user

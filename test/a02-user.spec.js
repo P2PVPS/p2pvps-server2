@@ -1,3 +1,14 @@
+/*
+  TODO:
+  -Get Users
+  --password and dashIds fields are omitted.
+
+  -Get User :id
+  --password is omitted.
+  --dashIds is included for user querying themself.
+  --dashIds is omitted for users querying other user.
+*/
+
 const should = require('chai').should
 const cleanDb = require('./utils').cleanDb
 const serverUtil = require('../bin/util')
