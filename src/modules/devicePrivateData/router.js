@@ -8,19 +8,17 @@ module.exports.baseUrl = '/api/deviceprivatedata'
 module.exports.routes = [
   {
     method: 'GET',
+    route: '/dashid/:id',
+    handlers: [validators.ensureUser, devicePrivateData.getModelFromDashId]
+  },
+  {
+    method: 'GET',
     route: '/:id',
-    handlers: [
-      ensureAdmin,
-      devicePrivateData.getModel
-    ]
+    handlers: [ensureAdmin, devicePrivateData.getModel]
   },
   {
     method: 'PUT',
     route: '/:id',
-    handlers: [
-      ensureAdmin,
-      devicePrivateData.getModel,
-      devicePrivateData.updateModel
-    ]
+    handlers: [ensureAdmin, devicePrivateData.getModel, devicePrivateData.updateModel]
   }
 ]

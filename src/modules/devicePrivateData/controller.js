@@ -1,6 +1,72 @@
 const DevicePrivateData = require('../../models/deviceprivatedata')
 
 /**
+ * @api {get} /api/deviceprivatedata/dashid/:id Get private data from a Dash ID
+ * @apiPermission user
+ * @apiVersion 1.0.0
+ * @apiName GetDeviceFromDashID
+ * @apiGroup Device-Private
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <token>" -X GET localhost:5000/api/deviceprivatedata/dashid/986cf65c80
+ *
+ * @apiSuccess {Object}   devicePrivateData               Device Private Data object
+ * @apiSuccess {ObjectId} devicePrivateData._id           Device Private Data id
+ * @apiSuccess {ObjectId} devicePrivateData.ownerUser     Owner id
+ * @apiSuccess {ObjectId} devicePrivateData.publicData    Device Public Data id
+ * @apiSuccess {String} devicePrivateData.deviceUserName  SSH Login
+ * @apiSuccess {String} devicePrivateData.devicePassword  SSH Password
+ * @apiSuccess {String} devicePrivateData.serverSSHPort   SSH Port
+ * @apiSuccess {String} devicePrivateData.dashId          Dashboard ID
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "devicePrivateData":{
+ *        "_id":"5b038287eb56080a3d1b31b6",
+ *        "ownerUser":"5b038000eb56080a3d1b31b4",
+ *        "publicData":"5b038287eb56080a3d1b31b5",
+ *        "devicePassword":"IQGG79CTOH",
+ *        "deviceUserName":"CGG4fTAD30",
+ *        "serverSSHPort":"6000"
+ *        "dashId":"abcde12345"
+ *      }
+ *    }
+ *
+ * @apiUse TokenError
+ */
+async function getModelFromDashId (ctx, next) {
+  try {
+    // Validate the input ID.
+    const dashId = ctx.params.id
+    if (!dashId.match(/^[0-9a-zA-Z]{10}$/)) {
+      ctx.throw(422, 'Invalid Dash ID')
+    }
+
+    const devicePrivateData = await DevicePrivateData.findOne({ dashId: dashId })
+    if (!devicePrivateData) {
+      ctx.throw(404, `No device corresponds to that Dashboard ID.`)
+    }
+
+    // console.log(`devicePrivateData: ${JSON.stringify(devicePrivateData, null, 2)}`)
+
+    ctx.body = {
+      devicePrivateData
+    }
+  } catch (err) {
+    if (err === 500) {
+      console.error(`Error in devicePrivateData.getModelFromDashId()`)
+    }
+
+    ctx.throw(err)
+  }
+
+  if (next) {
+    return next()
+  }
+}
+
+/**
  * @api {get} /api/deviceprivatedata/:id Get device by id
  * @apiPermission admin
  * @apiVersion 1.0.0
@@ -59,7 +125,9 @@ async function getModel (ctx, next) {
     ctx.throw(err)
   }
 
-  if (next) { return next() }
+  if (next) {
+    return next()
+  }
 }
 
 /**
@@ -124,6 +192,7 @@ async function updateModel (ctx) {
 }
 
 module.exports = {
+  getModelFromDashId,
   getModel,
   updateModel
 }

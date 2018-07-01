@@ -35,13 +35,17 @@ describe('Device Private Model', () => {
     context.adminId = adminUser.id
 
     // Create a device
-    const device = await utils.createDevice({token: context.userToken})
-    context.device = device
-    // console.log(`device: ${JSON.stringify(device, null, 2)}`)
+    const device = await utils.createDevice({ token: context.userToken })
+    // context.device = device
+    context.deviceId = device._id
+
+    // Register the device to generate a Dash ID.
+    context.device = await utils.registerDevice(context)
+    // console.log(`device: ${JSON.stringify(context.device, null, 2)}`)
   })
 
   describe('GET /api/deviceprivatedata/:id', () => {
-    it('should throw 404 if model doesn\'t exist', async () => {
+    it("should throw 404 if model doesn't exist", async () => {
       try {
         const options = {
           method: 'GET',
@@ -107,8 +111,14 @@ describe('Device Private Model', () => {
 
         // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
 
+        // Save the dashID for tests below.
+        context.dashId = result.body.devicePrivateData.dashId
+
         assert(result.statusCode === 200, 'Status Code 200 expected.')
-        assert(result.body.devicePrivateData._id.toString() === context.device.privateData, 'IDs match')
+        assert(
+          result.body.devicePrivateData._id.toString() === context.device.privateData,
+          'IDs match'
+        )
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
@@ -164,7 +174,7 @@ describe('Device Private Model', () => {
       }
     })
 
-    it('should throw 404 if model doesn\'t exist', async () => {
+    it("should throw 404 if model doesn't exist", async () => {
       try {
         const options = {
           method: 'PUT',
@@ -207,7 +217,67 @@ describe('Device Private Model', () => {
         // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
-        assert(result.body.devicePrivateData.deviceUserName === 'hasChanged', 'deviceUserName is updated')
+        assert(
+          result.body.devicePrivateData.deviceUserName === 'hasChanged',
+          'deviceUserName is updated'
+        )
+      } catch (err) {
+        console.error('Error: ', err)
+        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+        throw err
+      }
+    })
+  })
+
+  describe('GET /api/deviceprivatedata/dashid/:id', () => {
+    it("should throw 404 if model doesn't exist", async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/deviceprivatedata/dashid/14123286af`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.userToken}`
+          }
+        }
+
+        let result = await rp(options)
+
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        if (err.statusCode === 404) {
+          assert(err.statusCode === 404, 'Error code 404 expected.')
+        } else {
+          console.error('Error: ', err)
+          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
+          throw err
+        }
+      }
+    })
+
+    it('should fetch model given Dash ID', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          uri: `${LOCALHOST}/api/deviceprivatedata/dashid/${context.dashId}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Authorization: `Bearer ${context.userToken}`
+          }
+        }
+
+        let result = await rp(options)
+
+        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
+
+        assert(result.statusCode === 200, 'Status Code 200 expected.')
+        assert(
+          result.body.devicePrivateData._id.toString() === context.device.privateData,
+          'IDs match'
+        )
       } catch (err) {
         console.error('Error: ', err)
         console.log('Error stringified: ' + JSON.stringify(err, null, 2))
