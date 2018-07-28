@@ -7,6 +7,11 @@
   functions.
 */
 
+module.exports = {
+  createStoreListing, // Create a product listing in the OB store.
+  removeMarketListing // Remove a product listing from the OB store.
+}
+
 const obLib = require(`openbazaar-node`)
 
 // Configure for OpenBazaar
@@ -58,18 +63,22 @@ async function createStoreListing (obContractModel) {
         price: obContractModel.price,
         tags: [],
         title: obContractModel.title + ' (' + obContractModel.clientDevice + ')',
-        images: [{
-          filename: 'p2pvp.org.png',
-          original: 'zb2rhdwvBAjky685CtiZHbA291rJGGAVpA7RhvY7vRrznX6Ne',
-          large: 'zb2rhoDG3RLMkFarDGajWALbgeXgGG6xmHCZAqiTYrdrdP8ew',
-          medium: 'zb2rhmdVqhZjnpw6Pwd4tCimB1L79ABcukcRnqDroP1C5B6GE',
-          small: 'zb2rhiBc94WnxN3eNtbnBU2CD9sJ1X1QiaemYFpAVFwQVPDsq',
-          tiny: 'zb2rhYBN6k6udcF86NWaPr1GBB8HpPYLcL1HwFtJZE7gGEpT8'
-        }],
-        skus: [{
-          quantity: 1,
-          productID: obContractModel.clientDevice
-        }]
+        images: [
+          {
+            filename: 'p2pvp.org.png',
+            original: 'zb2rhdwvBAjky685CtiZHbA291rJGGAVpA7RhvY7vRrznX6Ne',
+            large: 'zb2rhoDG3RLMkFarDGajWALbgeXgGG6xmHCZAqiTYrdrdP8ew',
+            medium: 'zb2rhmdVqhZjnpw6Pwd4tCimB1L79ABcukcRnqDroP1C5B6GE',
+            small: 'zb2rhiBc94WnxN3eNtbnBU2CD9sJ1X1QiaemYFpAVFwQVPDsq',
+            tiny: 'zb2rhYBN6k6udcF86NWaPr1GBB8HpPYLcL1HwFtJZE7gGEpT8'
+          }
+        ],
+        skus: [
+          {
+            quantity: 1,
+            productID: obContractModel.clientDevice
+          }
+        ]
       }
     }
 
@@ -192,8 +201,3 @@ async function removeMarketListing (slug) {
 /** BEGIN PRIVATE FUNCTIONS ****/
 
 /** END PRIVATE FUNCTIONS **/
-
-module.exports = {
-  createStoreListing,
-  removeMarketListing
-}
