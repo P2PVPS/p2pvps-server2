@@ -43,5 +43,5 @@ DevicePublicData.methods.generateToken = function generateToken () {
 }
 */
 
-//export default mongoose.model('devicePublicModel', DevicePublicData)
+// export default mongoose.model('devicePublicModel', DevicePublicData)
 module.exports = mongoose.model('devicePublicModel', DevicePublicData)
