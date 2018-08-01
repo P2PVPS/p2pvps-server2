@@ -57,6 +57,7 @@ async function register (ctx, next) {
     if (!device) {
       ctx.throw(404, 'Could not find that device.')
     }
+    console.log(`devicePublicData model: ${JSON.stringify(device, null, 2)}`)
 
     // Save the user-provided data into a handy object.
     const userData = ctx.request.body
@@ -82,6 +83,7 @@ async function register (ctx, next) {
     if (!devicePrivateData) {
       ctx.throw(404, 'Could not find private data model associated with the device.')
     }
+    console.log(`devicePrivateData model: ${JSON.stringify(devicePrivateData, null, 2)}`)
 
     // Get any previously used port assignment.
     const usedPort = devicePrivateData.serverSSHPort
