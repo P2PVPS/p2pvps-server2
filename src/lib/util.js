@@ -14,6 +14,7 @@
   submitToMarket() - generate a new obContract model and store listing.
   removeOBListing() - remove a listing from the OB store.
   createNewMarketListing() - Create a new listing for a device rental.
+  processPayments() - handle pro-rating of payments upon register() call.
 */
 
 'use strict'
@@ -26,8 +27,25 @@ const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
 const serverUtil = require('../../bin/util')
 const DevicePublicModel = require('../models/devicepublicdata.js')
+const DevicePrivateModel = require('../models/deviceprivatedata.js')
+const ObContractModel = require('../models/obcontract.js')
 
 const LOCALHOST = 'http://localhost:5000'
+
+module.exports = {
+  getDevicePublicModel,
+  getDevicePrivateModel,
+  getLoginPassAndPort,
+  getObContractModel,
+  createObContract,
+  createObStoreListing,
+  submitToMarket,
+  removeOBListing,
+  createNewMarketListing,
+  createRenewalListing,
+  loginAdmin,
+  processPayments // Handle pro-rating of payments upon register() call.
+}
 
 // Return a promise that resolves to the devicePublicModel.
 function getDevicePublicModel (deviceId) {
@@ -298,16 +316,7 @@ async function loginAdmin () {
   }
 }
 
-module.exports = {
-  getDevicePublicModel,
-  getDevicePrivateModel,
-  getLoginPassAndPort,
-  getObContractModel,
-  createObContract,
-  createObStoreListing,
-  submitToMarket,
-  removeOBListing,
-  createNewMarketListing,
-  createRenewalListing,
-  loginAdmin
+// Handle pro-rating of payments upon register() call.
+function processPayments () {
+
 }

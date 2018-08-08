@@ -88,11 +88,12 @@ async function register (ctx, next) {
     // Get any previously used port assignment.
     const usedPort = devicePrivateData.serverSSHPort
 
+    // Adjust payments as needed
+    util.processPayments()
+
     // Get Login, Password, Port assignment, and Dashboard ID.
     const loginData = await sshPort.requestPort()
     // console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
-
-    // TODO Move any money pending to money owed.
 
     // Save ssh data to the devicePrivateData model.
     devicePrivateData.serverSSHPort = loginData.port
