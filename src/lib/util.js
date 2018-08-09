@@ -292,24 +292,6 @@ async function loginAdmin () {
     admin.token = result.body.token
 
     return admin
-    /*
-    const existingUser = require(`../config/${JSON_FILE}`)
-
-    const options = {
-      method: 'POST',
-      uri: `${LOCALHOST}/auth`,
-      resolveWithFullResponse: true,
-      json: true,
-      body: {
-        username: 'test',
-        password: 'pass'
-      }
-    }
-
-    let result = await rp(options)
-
-    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
-    */
   } catch (err) {
     console.log('Error retrieving system admin auth info in src/lib/util.js/loginAdmin()')
     throw err
