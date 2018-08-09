@@ -299,6 +299,51 @@ async function loginAdmin () {
 }
 
 // Handle pro-rating of payments upon register() call.
-function processPayments () {
+// TODO right now this function is hard coded for 24 hr rentals. Need to update
+// to handle different rental periods.
+async function processPayments (privateModel) {
+  try {
+    const pmtAry = privateModel.payments
 
+    // Exit if their isn't at least one element in the array.
+    if (!pmtAry || pmtAry.length < 1) return
+
+    const now = new Date()
+    const oneDay = 1000 * 60 * 60 * 24
+    const aryLength = pmtAry.length
+    const lastPmt = pmtAry[aryLength - 1]
+    const lastPmtDate = new Date(lastPmt.payTime)
+
+    // If the last payment date happened less than 24 hours ago, then pro-rate.
+    if (lastPmtDate.getTime() < (now.getTime() - oneDay)) {
+      await prorate(privateModel)
+    }
+  } catch (err) {
+    console.error(`Error in lib/util.js/processPayments(): `, err)
+    throw err
+  }
+}
+
+// Pro-rate a Payment object.
+// TODO right now this function is hard coded for 24 hr rentals. Need to update
+// to handle different rental periods.
+async function prorate (privateModel) {
+  const now = new Date()
+  const oneDay = 1000 * 60 * 60 * 24
+
+  // Convert the payment info into a Date object.
+  const pmtAryLen = privateModel.payments.length
+  const pmt = privateModel.payments[pmtAryLen - 1]
+  const pmtDate = new Date(pmt.payTime)
+
+  // Calculate the percentage consumed.
+  const rentedTime = now.getTime() - pmtDate.getTime()
+  const rentedPercentage = rentedTime / oneDay
+
+  // Calculate prorated amount to send to seller and amount to return to the seller.
+  const proratedSatoshis = Math.floor(pmt.payQty * rentedPercentage)
+  const returnAmount = pmt.payQty - proratedSatoshis
+
+  // Send proratedSatoshis to devicePublicModel.ownerUser.
+  // Send returnAmount to devicePublicModel.renterUser.
 }
