@@ -312,10 +312,14 @@ async function processPayments (privateModel) {
     const oneDay = 1000 * 60 * 60 * 24
     const aryLength = pmtAry.length
     const lastPmt = pmtAry[aryLength - 1]
+
+    // Note: This is the time when the contract will *expire* and payment should be
+    // made to the device owner. This is set 24 hours in the future of when the
+    // trade occured.
     const lastPmtDate = new Date(lastPmt.payTime)
 
     // If the last payment date happened less than 24 hours ago, then pro-rate.
-    if (lastPmtDate.getTime() > (now.getTime() - oneDay)) {
+    if (lastPmtDate.getTime() > now.getTime()) {
       await prorate(privateModel)
     }
   } catch (err) {
@@ -331,7 +335,10 @@ async function prorate (privateModel) {
   const now = new Date()
   const oneDay = 1000 * 60 * 60 * 24
 
-  // Convert the payment info into a Date object.
+  // Convert the payment payTime into a Date object.
+  // Note: This is the time when the contract will *expire* and payment should be
+  // made to the device owner. This is set 24 hours in the future of when the
+  // trade occured.
   const pmtAryLen = privateModel.payments.length
   const pmt = privateModel.payments[pmtAryLen - 1]
   const pmtDate = new Date(pmt.payTime)
@@ -340,17 +347,17 @@ async function prorate (privateModel) {
   console.log(`pmtDate: ${pmtDate.toLocaleString()}`)
 
   // Calculate the percentage consumed.
-  const rentedTime = now.getTime() - pmtDate.getTime()
-  console.log(`rentedTime: ${rentedTime}`)
-  const rentedPercentage = rentedTime / oneDay
-  console.log(`rentedPercentage: ${rentedPercentage}`)
+  const refundTime = pmtDate.getTime() - now.getTime()
+  console.log(`refundTime: ${refundTime}`)
+  const refundPercentage = refundTime / oneDay
+  console.log(`refundPercentage: ${refundPercentage}`)
 
   // Calculate prorated amount to send to seller and amount to return to the seller.
-  const proratedSatoshis = Math.floor(pmt.payQty * rentedPercentage)
-  const returnAmount = pmt.payQty - proratedSatoshis
+  const proratedSatoshis = Math.floor(pmt.payQty * refundPercentage)
+  const refundAmount = pmt.payQty - proratedSatoshis
 
   // Send proratedSatoshis to devicePublicModel.ownerUser.
   // Send returnAmount to pmt.refundAddr
   console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
-  console.log(`returnAmount: ${returnAmount}`)
+  console.log(`refundAmount: ${refundAmount}`)
 }
