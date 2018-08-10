@@ -138,6 +138,7 @@ async function refund (refundObj) {
       memo: 'P2P VPS Rental Refund'
     }
 
+    console.log(`Refunding ${moneyObj.amount} satoshis to ${moneyObj.address}`)
     await obLib.sendMoney(obConfig, moneyObj)
   } catch (err) {
     console.error(`Error in openbazaar.js/refund(): `, err)
