@@ -345,5 +345,7 @@ async function prorate (privateModel) {
   const returnAmount = pmt.payQty - proratedSatoshis
 
   // Send proratedSatoshis to devicePublicModel.ownerUser.
-  // Send returnAmount to devicePublicModel.renterUser.
+  // Send returnAmount to pmt.refundAddr
+  console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
+  console.log(`returnAmount: ${returnAmount}`)
 }
