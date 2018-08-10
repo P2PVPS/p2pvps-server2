@@ -353,11 +353,12 @@ async function prorate (privateModel) {
   console.log(`refundPercentage: ${refundPercentage}`)
 
   // Calculate prorated amount to send to seller and amount to return to the seller.
-  const proratedSatoshis = Math.floor(pmt.payQty * refundPercentage)
-  const refundAmount = pmt.payQty - proratedSatoshis
+  const refundSatoshis = Math.floor(pmt.payQty * refundPercentage)
+  const payAmount = pmt.payQty - refundSatoshis
 
   // Send proratedSatoshis to devicePublicModel.ownerUser.
   // Send returnAmount to pmt.refundAddr
   console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
-  console.log(`refundAmount: ${refundAmount}`)
+  console.log(`refundSatoshis: ${refundSatoshis}`)
+  console.log(`payAmount: ${payAmount}`)
 }
