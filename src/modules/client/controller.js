@@ -89,7 +89,11 @@ async function register (ctx, next) {
     const usedPort = devicePrivateData.serverSSHPort
 
     // Adjust payments as needed
-    await util.processPayments(devicePrivateData)
+    const pmtObj = {
+      devicePublicModel: device,
+      devicePrivateModel: devicePrivateData
+    }
+    await util.processPayments(pmtObj)
 
     // Get Login, Password, Port assignment, and Dashboard ID.
     const loginData = await sshPort.requestPort()

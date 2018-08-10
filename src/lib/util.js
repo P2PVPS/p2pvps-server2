@@ -301,9 +301,9 @@ async function loginAdmin () {
 // Handle pro-rating of payments upon register() call.
 // TODO right now this function is hard coded for 24 hr rentals. Need to update
 // to handle different rental periods.
-async function processPayments (privateModel) {
+async function processPayments (pmtObj) {
   try {
-    const pmtAry = privateModel.payments
+    const pmtAry = pmtObj.devicePrivateModel.payments
 
     // Exit if their isn't at least one element in the array.
     if (!pmtAry || pmtAry.length < 1) return
@@ -320,7 +320,7 @@ async function processPayments (privateModel) {
 
     // If the last payment date happened less than 24 hours ago, then pro-rate.
     if (lastPmtDate.getTime() > now.getTime()) {
-      await prorate(privateModel)
+      await prorate(pmtObj)
     }
   } catch (err) {
     console.error(`Error in lib/util.js/processPayments(): `, err)
@@ -331,7 +331,7 @@ async function processPayments (privateModel) {
 // Pro-rate a Payment object.
 // TODO right now this function is hard coded for 24 hr rentals. Need to update
 // to handle different rental periods.
-async function prorate (privateModel) {
+async function prorate (pmtObj) {
   const now = new Date()
   const oneDay = 1000 * 60 * 60 * 24
 
@@ -339,8 +339,8 @@ async function prorate (privateModel) {
   // Note: This is the time when the contract will *expire* and payment should be
   // made to the device owner. This is set 24 hours in the future of when the
   // trade occured.
-  const pmtAryLen = privateModel.payments.length
-  const pmt = privateModel.payments[pmtAryLen - 1]
+  const pmtAryLen = pmtObj.devicePrivateModel.payments.length
+  const pmt = pmtObj.devicePrivateModel.payments[pmtAryLen - 1]
   const pmtDate = new Date(pmt.payTime)
 
   console.log(`now: ${now.toLocaleString()}`)
