@@ -338,7 +338,9 @@ async function prorate (privateModel) {
 
   // Calculate the percentage consumed.
   const rentedTime = now.getTime() - pmtDate.getTime()
+  console.log(`rentedTime: ${rentedTime}`)
   const rentedPercentage = rentedTime / oneDay
+  console.log(`rentedPercentage: ${rentedPercentage}`)
 
   // Calculate prorated amount to send to seller and amount to return to the seller.
   const proratedSatoshis = Math.floor(pmt.payQty * rentedPercentage)
