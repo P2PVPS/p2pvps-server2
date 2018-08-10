@@ -315,7 +315,7 @@ async function processPayments (privateModel) {
     const lastPmtDate = new Date(lastPmt.payTime)
 
     // If the last payment date happened less than 24 hours ago, then pro-rate.
-    if (lastPmtDate.getTime() < (now.getTime() - oneDay)) {
+    if (lastPmtDate.getTime() > (now.getTime() - oneDay)) {
       await prorate(privateModel)
     }
   } catch (err) {
