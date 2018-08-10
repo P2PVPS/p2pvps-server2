@@ -336,6 +336,9 @@ async function prorate (privateModel) {
   const pmt = privateModel.payments[pmtAryLen - 1]
   const pmtDate = new Date(pmt.payTime)
 
+  console.log(`now: ${now.toLocaleString()}`)
+  console.log(`pmtDate: ${pmtDate.toLocaleString()}`)
+
   // Calculate the percentage consumed.
   const rentedTime = now.getTime() - pmtDate.getTime()
   console.log(`rentedTime: ${rentedTime}`)
