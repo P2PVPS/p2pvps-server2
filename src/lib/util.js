@@ -309,7 +309,7 @@ async function processPayments (pmtObj) {
     if (!pmtAry || pmtAry.length < 1) return
 
     const now = new Date()
-    const oneDay = 1000 * 60 * 60 * 24
+    // const oneDay = 1000 * 60 * 60 * 24
     const aryLength = pmtAry.length
     const lastPmt = pmtAry[aryLength - 1]
 
@@ -332,33 +332,53 @@ async function processPayments (pmtObj) {
 // TODO right now this function is hard coded for 24 hr rentals. Need to update
 // to handle different rental periods.
 async function prorate (pmtObj) {
-  const now = new Date()
-  const oneDay = 1000 * 60 * 60 * 24
+  try {
+    const now = new Date()
+    const oneDay = 1000 * 60 * 60 * 24
 
-  // Convert the payment payTime into a Date object.
-  // Note: This is the time when the contract will *expire* and payment should be
-  // made to the device owner. This is set 24 hours in the future of when the
-  // trade occured.
-  const pmtAryLen = pmtObj.devicePrivateModel.payments.length
-  const pmt = pmtObj.devicePrivateModel.payments[pmtAryLen - 1]
-  const pmtDate = new Date(pmt.payTime)
+    // Convert the payment payTime into a Date object.
+    // Note: This is the time when the contract will *expire* and payment should be
+    // made to the device owner. This is set 24 hours in the future of when the
+    // trade occured.
+    const pmtAryLen = pmtObj.devicePrivateModel.payments.length
+    const pmt = pmtObj.devicePrivateModel.payments[pmtAryLen - 1]
+    const pmtDate = new Date(pmt.payTime)
 
-  console.log(`now: ${now.toLocaleString()}`)
-  console.log(`pmtDate: ${pmtDate.toLocaleString()}`)
+    console.log(`now: ${now.toLocaleString()}`)
+    console.log(`pmtDate: ${pmtDate.toLocaleString()}`)
 
-  // Calculate the percentage consumed.
-  const refundTime = pmtDate.getTime() - now.getTime()
-  console.log(`refundTime: ${refundTime}`)
-  const refundPercentage = refundTime / oneDay
-  console.log(`refundPercentage: ${refundPercentage}`)
+    // Calculate the percentage consumed.
+    const refundTime = pmtDate.getTime() - now.getTime()
+    console.log(`refundTime: ${refundTime}`)
+    const refundPercentage = refundTime / oneDay
+    console.log(`refundPercentage: ${refundPercentage}`)
 
-  // Calculate prorated amount to send to seller and amount to return to the seller.
-  const refundSatoshis = Math.floor(pmt.payQty * refundPercentage)
-  const payAmount = pmt.payQty - refundSatoshis
+    // Calculate prorated amount to send to seller and amount to return to the seller.
+    const refundSatoshis = Math.floor(pmt.payQty * refundPercentage)
+    const payAmount = pmt.payQty - refundSatoshis
 
-  // Send proratedSatoshis to devicePublicModel.ownerUser.
-  // Send returnAmount to pmt.refundAddr
-  console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
-  console.log(`refundSatoshis: ${refundSatoshis}`)
-  console.log(`payAmount: ${payAmount}`)
+    console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
+    console.log(`refundSatoshis: ${refundSatoshis}`)
+    console.log(`payAmount: ${payAmount}`)
+
+    // Send payAmount to devicePublicModel.ownerUser.
+    if (!pmtObj.devicePrivateModel.moneyOwed) pmtObj.devicePrivateModel.moneyOwed = 0
+    pmtObj.devicePrivateModel.moneyOwed += payAmount
+
+    // Remove the payment object from the devicePrivateModel
+    pmtObj.devicePrivateModel.payments.pop()
+
+    // Save the deviePrivateModel.
+    await pmtObj.devicePrivateModel.save()
+
+    // Send returnAmount to pmt.refundAddr
+    const refundObj = {
+      addr: pmt.refundAddr,
+      qty: refundSatoshis
+    }
+    await openbazaar.refund(refundObj)
+  } catch (err) {
+    console.error(`Error in util.js/prorate(): `, err)
+    throw err
+  }
 }
