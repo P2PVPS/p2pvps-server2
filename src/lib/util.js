@@ -197,9 +197,9 @@ function createRenewalListing (device) {
   let temp = now.getTime() + oneHour
   let oneHourFromNow = new Date(temp)
 
-  const newDesc = `This is a renewal listing for ${device.deviceName}.
-  Purchasing this listing will renew the contract for the existing renter. ` +
-  device.deviceDesc
+  const newDesc =
+    `This is a renewal listing for ${device.deviceName}.
+  Purchasing this listing will renew the contract for the existing renter. ` + device.deviceDesc
 
   // Create new obContract model
   var obj = {
@@ -258,7 +258,7 @@ async function submitToMarket (device, obContractData) {
     // Return the GUID of the newly created obContract model.
     return obContractModel._id
 
-  // Catch any errors.
+    // Catch any errors.
   } catch (err) {
     console.error('Error trying to create OB listing in util.js/submitToMarket():')
     throw err
@@ -320,7 +320,7 @@ async function processPayments (pmtObj) {
 
     // If the last payment date happened less than 24 hours ago, then pro-rate.
     if (lastPmtDate.getTime() > now.getTime()) {
-      await prorate(pmtObj)
+      // await prorate(pmtObj)
     }
   } catch (err) {
     console.error(`Error in lib/util.js/processPayments(): `, err)
