@@ -320,7 +320,7 @@ async function processPayments (pmtObj) {
 
     // If the last payment date happened less than 24 hours ago, then pro-rate.
     if (lastPmtDate.getTime() > now.getTime()) {
-      // await prorate(pmtObj)
+      await prorate(pmtObj)
     }
   } catch (err) {
     console.error(`Error in lib/util.js/processPayments(): `, err)
