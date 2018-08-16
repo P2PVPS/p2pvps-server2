@@ -57,6 +57,7 @@ async function register (ctx, next) {
     if (!device) {
       ctx.throw(404, 'Could not find that device.')
     }
+    console.log(`devicePublicData model: ${JSON.stringify(device, null, 2)}`)
 
     // Save the user-provided data into a handy object.
     const userData = ctx.request.body
@@ -82,15 +83,21 @@ async function register (ctx, next) {
     if (!devicePrivateData) {
       ctx.throw(404, 'Could not find private data model associated with the device.')
     }
+    console.log(`devicePrivateData model: ${JSON.stringify(devicePrivateData, null, 2)}`)
 
     // Get any previously used port assignment.
     const usedPort = devicePrivateData.serverSSHPort
 
+    // Adjust payments as needed
+    const pmtObj = {
+      devicePublicModel: device,
+      devicePrivateModel: devicePrivateData
+    }
+    await util.processPayments(pmtObj)
+
     // Get Login, Password, Port assignment, and Dashboard ID.
     const loginData = await sshPort.requestPort()
     // console.log(`loginData: ${JSON.stringify(loginData, null, 2)}`)
-
-    // TODO Move any money pending to money owed.
 
     // Save ssh data to the devicePrivateData model.
     devicePrivateData.serverSSHPort = loginData.port

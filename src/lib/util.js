@@ -14,6 +14,7 @@
   submitToMarket() - generate a new obContract model and store listing.
   removeOBListing() - remove a listing from the OB store.
   createNewMarketListing() - Create a new listing for a device rental.
+  processPayments() - handle pro-rating of payments upon register() call.
 */
 
 'use strict'
@@ -26,8 +27,25 @@ const obContractApi = require('../modules/obcontract/index.js')
 const openbazaar = require(`./openbazaar.js`)
 const serverUtil = require('../../bin/util')
 const DevicePublicModel = require('../models/devicepublicdata.js')
+const DevicePrivateModel = require('../models/deviceprivatedata.js')
+const ObContractModel = require('../models/obcontract.js')
 
 const LOCALHOST = 'http://localhost:5000'
+
+module.exports = {
+  getDevicePublicModel,
+  getDevicePrivateModel,
+  getLoginPassAndPort,
+  getObContractModel,
+  createObContract,
+  createObStoreListing,
+  submitToMarket,
+  removeOBListing,
+  createNewMarketListing,
+  createRenewalListing,
+  loginAdmin,
+  processPayments // Handle pro-rating of payments upon register() call.
+}
 
 // Return a promise that resolves to the devicePublicModel.
 function getDevicePublicModel (deviceId) {
@@ -179,9 +197,9 @@ function createRenewalListing (device) {
   let temp = now.getTime() + oneHour
   let oneHourFromNow = new Date(temp)
 
-  const newDesc = `This is a renewal listing for ${device.deviceName}.
-  Purchasing this listing will renew the contract for the existing renter. ` +
-  device.deviceDesc
+  const newDesc =
+    `This is a renewal listing for ${device.deviceName}.
+  Purchasing this listing will renew the contract for the existing renter. ` + device.deviceDesc
 
   // Create new obContract model
   var obj = {
@@ -240,7 +258,7 @@ async function submitToMarket (device, obContractData) {
     // Return the GUID of the newly created obContract model.
     return obContractModel._id
 
-  // Catch any errors.
+    // Catch any errors.
   } catch (err) {
     console.error('Error trying to create OB listing in util.js/submitToMarket():')
     throw err
@@ -274,40 +292,93 @@ async function loginAdmin () {
     admin.token = result.body.token
 
     return admin
-    /*
-    const existingUser = require(`../config/${JSON_FILE}`)
-
-    const options = {
-      method: 'POST',
-      uri: `${LOCALHOST}/auth`,
-      resolveWithFullResponse: true,
-      json: true,
-      body: {
-        username: 'test',
-        password: 'pass'
-      }
-    }
-
-    let result = await rp(options)
-
-    // console.log(`result: ${JSON.stringify(result, null, 2)}`)
-    */
   } catch (err) {
     console.log('Error retrieving system admin auth info in src/lib/util.js/loginAdmin()')
     throw err
   }
 }
 
-module.exports = {
-  getDevicePublicModel,
-  getDevicePrivateModel,
-  getLoginPassAndPort,
-  getObContractModel,
-  createObContract,
-  createObStoreListing,
-  submitToMarket,
-  removeOBListing,
-  createNewMarketListing,
-  createRenewalListing,
-  loginAdmin
+// Handle pro-rating of payments upon register() call.
+// TODO right now this function is hard coded for 24 hr rentals. Need to update
+// to handle different rental periods.
+async function processPayments (pmtObj) {
+  try {
+    const pmtAry = pmtObj.devicePrivateModel.payments
+
+    // Exit if their isn't at least one element in the array.
+    if (!pmtAry || pmtAry.length < 1) return
+
+    const now = new Date()
+    // const oneDay = 1000 * 60 * 60 * 24
+    const aryLength = pmtAry.length
+    const lastPmt = pmtAry[aryLength - 1]
+
+    // Note: This is the time when the contract will *expire* and payment should be
+    // made to the device owner. This is set 24 hours in the future of when the
+    // trade occured.
+    const lastPmtDate = new Date(lastPmt.payTime)
+
+    // If the last payment date happened less than 24 hours ago, then pro-rate.
+    if (lastPmtDate.getTime() > now.getTime()) {
+      await prorate(pmtObj)
+    }
+  } catch (err) {
+    console.error(`Error in lib/util.js/processPayments(): `, err)
+    throw err
+  }
+}
+
+// Pro-rate a Payment object.
+// TODO right now this function is hard coded for 24 hr rentals. Need to update
+// to handle different rental periods.
+async function prorate (pmtObj) {
+  try {
+    const now = new Date()
+    const oneDay = 1000 * 60 * 60 * 24
+
+    // Convert the payment payTime into a Date object.
+    // Note: This is the time when the contract will *expire* and payment should be
+    // made to the device owner. This is set 24 hours in the future of when the
+    // trade occured.
+    const pmtAryLen = pmtObj.devicePrivateModel.payments.length
+    const pmt = pmtObj.devicePrivateModel.payments[pmtAryLen - 1]
+    const pmtDate = new Date(pmt.payTime)
+
+    console.log(`now: ${now.toLocaleString()}`)
+    console.log(`pmtDate: ${pmtDate.toLocaleString()}`)
+
+    // Calculate the percentage consumed.
+    const refundTime = pmtDate.getTime() - now.getTime()
+    console.log(`refundTime: ${refundTime}`)
+    const refundPercentage = refundTime / oneDay
+    console.log(`refundPercentage: ${refundPercentage}`)
+
+    // Calculate prorated amount to send to seller and amount to return to the seller.
+    const refundSatoshis = Math.floor(pmt.payQty * refundPercentage)
+    const payAmount = pmt.payQty - refundSatoshis
+
+    console.log(`pmt: ${JSON.stringify(pmt, null, 2)}`)
+    console.log(`refundSatoshis: ${refundSatoshis}`)
+    console.log(`payAmount: ${payAmount}`)
+
+    // Send payAmount to devicePublicModel.ownerUser.
+    if (!pmtObj.devicePrivateModel.moneyOwed) pmtObj.devicePrivateModel.moneyOwed = 0
+    pmtObj.devicePrivateModel.moneyOwed += payAmount
+
+    // Remove the payment object from the devicePrivateModel
+    pmtObj.devicePrivateModel.payments.pop()
+
+    // Save the deviePrivateModel.
+    await pmtObj.devicePrivateModel.save()
+
+    // Send returnAmount to pmt.refundAddr
+    const refundObj = {
+      addr: pmt.refundAddr,
+      qty: refundSatoshis
+    }
+    await openbazaar.refund(refundObj)
+  } catch (err) {
+    console.error(`Error in util.js/prorate(): `, err)
+    throw err
+  }
 }

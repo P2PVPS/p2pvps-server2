@@ -10,7 +10,8 @@ const DevicePrivateData = new mongoose.Schema({
   dashId: { type: String },
   jumperState: {type: Boolean},
   moneyPending: { type: Number },
-  moneyOwed: { type: Number }
+  moneyOwed: { type: Number },
+  payments: { type: Array }
 })
 
 module.exports = mongoose.model('devicePrivateModel', DevicePrivateData)
